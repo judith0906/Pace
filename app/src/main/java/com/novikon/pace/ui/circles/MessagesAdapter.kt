@@ -8,17 +8,9 @@ import androidx.recyclerview.widget.RecyclerView
 import com.novikon.pace.R
 import com.novikon.pace.models.Message
 import java.text.SimpleDateFormat
-import java.util.*
+import java.util.Date
+import java.util.Locale
 
-// Adapter del RecyclerView del chat.
-// Usa dos tipos de ítem (VIEW_TYPE_SENT y VIEW_TYPE_RECEIVED)
-// para mostrar las burbujas propias a la derecha y las ajenas a la izquierda,
-// igual que cualquier aplicación de mensajería.
-//
-// Los mensajes se añaden uno a uno con addMessage() cuando llegan
-// del listener en tiempo real — no se usa submitList() ni DiffUtil
-// porque los mensajes de chat nunca se eliminan ni reordenan,
-// siempre se añaden al final.
 class MessagesAdapter(
     private val currentUserId: String
 ) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
@@ -26,9 +18,8 @@ class MessagesAdapter(
     companion object {
         private const val VIEW_TYPE_SENT = 1
         private const val VIEW_TYPE_RECEIVED = 2
-        // Formatea el timestamp del mensaje como "HH:mm" (ej: "14:32")
-        // para mostrar la hora de cada burbuja del chat.
-        fun formatTime(timestamp: Long): String {
+
+        private fun formatTime(timestamp: Long): String {
             if (timestamp == 0L) return ""
             return SimpleDateFormat("HH:mm", Locale.getDefault()).format(Date(timestamp))
         }
@@ -36,8 +27,6 @@ class MessagesAdapter(
 
     private val messages = mutableListOf<Message>()
 
-    // Añade un mensaje al final de la lista y notifica al RecyclerView.
-    // Llamado desde CircleChatActivity cada vez que llega un onChildAdded de Firebase.
     fun addMessage(message: Message) {
         messages.add(message)
         notifyItemInserted(messages.size - 1)
@@ -73,11 +62,6 @@ class MessagesAdapter(
 
     override fun getItemCount(): Int = messages.size
 
-    // ── VIEW HOLDERS ──────────────────────────────────────────────────────────
-
-    // Burbuja propia (enviada) — alineada a la derecha.
-    // Solo muestra texto y hora — no muestra nombre porque el usuario
-    // ya sabe que son sus propios mensajes.
     class SentMessageViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         private val tvText: TextView = itemView.findViewById(R.id.tv_message_text)
         private val tvTime: TextView = itemView.findViewById(R.id.tv_message_time)
@@ -88,9 +72,6 @@ class MessagesAdapter(
         }
     }
 
-    // Burbuja ajena (recibida) — alineada a la izquierda.
-    // Muestra nombre del remitente encima del texto para que se sepa
-    // quién lo envió, especialmente en grupos con muchos miembros.
     class ReceivedMessageViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         private val tvSenderName: TextView = itemView.findViewById(R.id.tv_sender_name)
         private val tvText: TextView = itemView.findViewById(R.id.tv_message_text)

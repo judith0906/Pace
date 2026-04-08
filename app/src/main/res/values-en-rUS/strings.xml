@@ -286,4 +286,5 @@
     <string name="chat_hint_message">Write a message...</string>
     <string name="send_message">Send message</string>
     <string name="error_group_name_required">Enter a group name</string>
+    <string name="chat_send_error">Error sending message. Please try again.</string>
 </resources>
