@@ -20,7 +20,7 @@ import com.novikon.pace.R
 import com.novikon.pace.data.HabitsManager
 import com.novikon.pace.helpers.LanguageHelper
 import com.novikon.pace.helpers.ThemeHelper
-import com.novikon.pace.ui.circles.CirclesFragment
+import com.novikon.pace.ui.circles.CirclesActivity
 import com.novikon.pace.ui.habits.DailyHabitsActivity
 import com.novikon.pace.ui.habits.HabitSelectionActivity
 import com.novikon.pace.ui.main.menus.NavigationMenuManager
@@ -230,10 +230,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun navigateToCircles() {
-        supportFragmentManager.beginTransaction()
-            .replace(R.id.fragment_container, CirclesFragment())
-            .addToBackStack(null)
-            .commit()
+        startActivity(Intent(this, CirclesActivity::class.java))
     }
 
     private fun navigateToAllGroups() {

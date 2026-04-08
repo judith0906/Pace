@@ -79,9 +79,8 @@
             android:exported="false" />
 
         <activity
-            android:name=".ui.circles.CircleChatActivity"
-            android:windowSoftInputMode="adjustResize"
-            android:exported="false"/>
+            android:name=".ui.circles.CirclesActivity"
+            android:exported="false" />
 
         <receiver
             android:name=".receivers.ReminderReceiver"

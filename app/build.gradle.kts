@@ -8,6 +8,10 @@ android {
     namespace = "com.novikon.pace"
     compileSdk = 36
 
+    buildFeatures {
+        viewBinding = true
+    }
+
     defaultConfig {
         applicationId = "com.novikon.pace"
         minSdk = 24

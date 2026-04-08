@@ -268,4 +268,22 @@
 
     <!-- Circulos -->
     <string name="no_messages_yet">No messages yet</string>
+    <string name="dialog_title_group">New circle</string>
+    <string name="tab_join">Join</string>
+    <string name="tab_create">New</string>
+    <string name="hint_join_code">6-digit code</string>
+    <string name="hint_group_name">Group name</string>
+    <string name="btn_join">Join</string>
+    <string name="btn_create">Create</string>
+    <string name="add_circle">Add circle</string>
+    <string name="members_count_format">%1$d members</string>
+    <string name="error_circle_id_required">Enter circle ID</string>
+    <string name="hint_join_circle_id">Circle ID</string>
+    <string name="circle_create_error">Could not create circle</string>
+    <string name="circle_created">Circle created</string>
+    <string name="circle_join_error">Could not join circle</string>
+    <string name="circle_joined">You have joined circle</string>
+    <string name="chat_hint_message">Write a message...</string>
+    <string name="send_message">Send message</string>
+    <string name="error_group_name_required">Enter a group name</string>
 </resources>
