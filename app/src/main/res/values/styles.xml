@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!-- Estilo para NavigationView -->
+    <style name="NavigationViewStyle">
+        <item name="android:background">@color/background_card</item>
+        <item name="itemIconTint">@color/icon_color</item>
+        <item name="itemTextColor">@color/text_primary</item>
+        <item name="itemTextAppearance">@style/NavigationItemTextAppearance</item>
+    </style>
+
+    <!-- Apariencia del texto de los items -->
+    <style name="NavigationItemTextAppearance">
+        <item name="android:textSize">15sp</item>
+        <item name="android:letterSpacing">0.01</item>
+    </style>
+
+    <style name="CircleImageView">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSize">50%</item>
+    </style>
+
+</resources>

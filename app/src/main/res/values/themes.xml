@@ -1,0 +1,26 @@
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <style name="Base.Theme.Pace" parent="Theme.Material3.DayNight.NoActionBar">
+        <!-- Usa el color de fondo de la app en la barra de estado —
+             el tema Material3 por defecto aplica su colorPrimary morado
+             si no se especifica explícitamente aquí. -->
+        <item name="android:statusBarColor">@color/background_primary</item>
+        <item name="android:windowOptOutEdgeToEdgeEnforcement" tools:targetApi="35">true</item>
+    </style>
+
+    <style name="Theme.Pace" parent="Base.Theme.Pace" />
+
+    <!-- Tema para SplashActivity -->
+    <style name="Theme.Pace.Splash" parent="Theme.AppCompat.Light.NoActionBar">
+        <item name="android:windowBackground">@drawable/splash_background</item>
+        <item name="android:statusBarColor">@color/splash_background</item>
+        <item name="android:navigationBarColor">@color/splash_background</item>
+        <item name="android:windowDisablePreview">false</item>
+    </style>
+
+    <style name="BlurredDialogTheme" parent="Theme.AppCompat.Light.Dialog.Alert">
+        <item name="android:backgroundDimAmount">0.7</item>
+        <item name="android:windowBackground">@android:color/transparent</item>
+        <item name="android:windowIsFloating">true</item>
+    </style>
+
+</resources>

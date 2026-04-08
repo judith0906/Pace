@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- ========== PALETA PACE - MODO OSCURO ========== -->
+
+    <!-- Color del splash -->
+    <color name="splash_background">#121212</color>
+
+    <!-- Fondos -->
+    <color name="background_primary">#121212</color>      <!-- Fondo principal oscuro -->
+    <color name="background_card">#1E1E1E</color>         <!-- Cards elevadas -->
+    <color name="background_preview">#2C2C2C</color>      <!-- Previews/containers -->
+
+    <!-- Textos -->
+    <color name="text_primary">#FFFFFF</color>            <!-- Texto principal blanco -->
+    <color name="text_secondary">#B0B0B0</color>          <!-- Texto secundario gris claro -->
+    <color name="text_tertiary">#757575</color>           <!-- Texto terciario gris medio -->
+
+    <!-- Acentos -->
+    <color name="accent_primary">#E0E0E0</color>          <!-- Acentos claros -->
+    <color name="accent_secondary">#2C2C2C</color>        <!-- Acentos oscuros -->
+    <color name="border_color">#3A3A3A</color>            <!-- Bordes sutiles -->
+    <color name="icon_color">#9E9E9E</color>              <!-- Iconos grises -->
+
+    <!-- Colores especiales -->
+    <color name="error_red">#EF5350</color>
+</resources>

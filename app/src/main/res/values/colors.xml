@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Colores base del tema (mantener si ya existen) -->
+    <color name="black">#FF000000</color>
+    <color name="white">#FFFFFFFF</color>
+
+    <!-- ========== PALETA PACE - ESCALA DE GRISES ========== -->
+
+    <!-- Color del splash (añadir este) -->
+    <color name="splash_background">#EEFDFD</color>
+
+    <!-- Fondos -->
+    <color name="background_primary">#F8F9FA</color>
+    <color name="background_card">#FFFFFF</color>
+    <color name="background_preview">#F0F2F5</color>
+
+    <!-- Textos -->
+    <color name="text_primary">#212529</color>
+    <color name="text_secondary">#6C757D</color>
+    <color name="text_tertiary">#ADB5BD</color>
+
+    <!-- Acentos -->
+    <color name="accent_primary">#495057</color>
+    <color name="accent_secondary">#E9ECEF</color>
+    <color name="border_color">#DEE2E6</color>
+    <color name="icon_color">#868E96</color>
+
+    <color name="divider_color">#E0E0E0</color>
+
+    <!-- Colores especiales -->
+    <color name="error_red">#D32F2F</color>        <!-- Para "Cerrar sesión" -->
+</resources>

@@ -1,0 +1,269 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.drawerlayout.widget.DrawerLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/drawerLayout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <!-- Contenido Principal -->
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/background_primary">
+
+        <!-- Cabecera -->
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/headerLayout"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:background="@color/background_card"
+            android:elevation="3dp"
+            android:paddingTop="16dp"
+            android:paddingBottom="16dp"
+            android:paddingStart="20dp"
+            android:paddingEnd="20dp"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent">
+
+            <!-- Icono Menú (3 barras) -->
+            <ImageButton
+                android:id="@+id/menuButton"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:src="@drawable/ic_menu"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:contentDescription="Menú"
+                android:scaleType="centerInside"
+                app:tint="@color/accent_primary"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent" />
+
+            <!-- Logo Pace (centro) -->
+            <ImageView
+                android:id="@+id/logoImage"
+                android:layout_width="45dp"
+                android:layout_height="45dp"
+                android:src="@drawable/ic_pace_logo"
+                android:contentDescription="Pace Logo"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent" />
+
+            <!-- Icono Usuario (derecha) -->
+            <ImageButton
+                android:id="@+id/profileButton"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:src="@drawable/ic_person"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:contentDescription="Perfil"
+                android:scaleType="centerInside"
+                app:tint="@color/accent_primary"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <!-- Contenido con Scroll -->
+        <ScrollView
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:fillViewport="true"
+            app:layout_constraintTop_toBottomOf="@id/headerLayout"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="20dp">
+
+                <!-- Saludo -->
+                <TextView
+                    android:id="@+id/welcomeText"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/title_main"
+                    android:textSize="22sp"
+                    android:textStyle="bold"
+                    android:textColor="@color/text_primary"
+                    android:letterSpacing="0.01"
+                    android:layout_marginBottom="24dp" />
+
+                <!-- Card: Hábitos Diarios -->
+                <com.google.android.material.card.MaterialCardView
+                    android:id="@+id/habitsCard"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="20dp"
+                    app:cardCornerRadius="16dp"
+                    app:cardElevation="2dp"
+                    app:strokeWidth="0dp"
+                    app:cardBackgroundColor="@color/background_card">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:padding="20dp">
+
+                        <!-- Título del Card -->
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/title_hbts"
+                            android:textSize="18sp"
+                            android:textStyle="bold"
+                            android:textColor="@color/text_primary"
+                            android:letterSpacing="0.01"
+                            android:layout_marginBottom="16dp" />
+
+                        <!-- Vista previa de hábitos diarios -->
+                        <androidx.cardview.widget.CardView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_margin="16dp"
+                            app:cardBackgroundColor="@color/background_card"
+                            app:cardCornerRadius="12dp"
+                            app:cardElevation="2dp">
+
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:orientation="vertical"
+                                android:padding="16dp">
+
+                                <LinearLayout
+                                    android:id="@+id/habitsPreviewContainer"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginTop="12dp"
+                                    android:orientation="vertical">
+
+                                    <!-- Los hábitos se añadirán dinámicamente aquí -->
+
+                                </LinearLayout>
+
+                            </LinearLayout>
+
+                        </androidx.cardview.widget.CardView>
+
+                        <!-- Botón Acceder (alineado a la derecha) -->
+                        <FrameLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="16dp">
+
+                            <com.google.android.material.button.MaterialButton
+                                android:id="@+id/accessHabitsButton"
+                                android:layout_width="wrap_content"
+                                android:layout_height="42dp"
+                                android:text="@string/btn_hbts"
+                                android:textSize="14sp"
+                                android:textStyle="bold"
+                                android:textColor="@color/white"
+                                android:letterSpacing="0.02"
+                                android:layout_gravity="end"
+                                app:cornerRadius="10dp"
+                                app:backgroundTint="@color/accent_primary" />
+
+                        </FrameLayout>
+
+                    </LinearLayout>
+
+                </com.google.android.material.card.MaterialCardView>
+
+                <!-- Card: Mis Conexiones -->
+                <com.google.android.material.card.MaterialCardView
+                    android:id="@+id/connectionsCard"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:cardCornerRadius="16dp"
+                    app:cardElevation="2dp"
+                    app:strokeWidth="0dp"
+                    app:cardBackgroundColor="@color/background_card">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:padding="20dp">
+
+                        <!-- Título del Card -->
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/title_cnx"
+                            android:textSize="18sp"
+                            android:textStyle="bold"
+                            android:textColor="@color/text_primary"
+                            android:letterSpacing="0.01"
+                            android:layout_marginBottom="16dp" />
+
+                        <!-- Lista de Grupos (RecyclerView) -->
+                        <androidx.recyclerview.widget.RecyclerView
+                            android:id="@+id/groupsRecyclerView"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:nestedScrollingEnabled="false"
+                            android:layout_marginBottom="12dp" />
+
+                        <!-- Botón "Ver todas" (solo visible si hay más de 5) -->
+                        <com.google.android.material.button.MaterialButton
+                            android:id="@+id/viewAllGroupsButton"
+                            android:layout_width="wrap_content"
+                            android:layout_height="42dp"
+                            android:text="@string/btn_cnx"
+                            android:textSize="14sp"
+                            android:textStyle="bold"
+                            android:textColor="@color/text_primary"
+                            android:letterSpacing="0.01"
+                            android:layout_gravity="center_horizontal"
+                            android:visibility="gone"
+                            app:cornerRadius="10dp"
+                            app:strokeWidth="1.5dp"
+                            app:strokeColor="@color/border_color"
+                            app:backgroundTint="@color/accent_secondary" />
+
+                    </LinearLayout>
+
+                </com.google.android.material.card.MaterialCardView>
+
+            </LinearLayout>
+
+        </ScrollView>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <!-- Menú General (Izquierda) -->
+    <com.google.android.material.navigation.NavigationView
+        android:id="@+id/navigationViewGeneral"
+        android:layout_width="280dp"
+        android:layout_height="match_parent"
+        android:layout_gravity="start"
+        android:background="@color/background_card"
+        app:headerLayout="@layout/drawer_header_general"
+        app:menu="@menu/menu_general_items"
+        app:itemIconTint="@color/icon_color"
+        app:itemTextColor="@color/text_primary" />
+
+    <!-- Menú Usuario (Derecha) -->
+    <com.google.android.material.navigation.NavigationView
+        android:id="@+id/navigationViewUser"
+        android:layout_width="280dp"
+        android:layout_height="match_parent"
+        android:layout_gravity="end"
+        android:background="@color/background_card"
+        app:headerLayout="@layout/drawer_header_user"
+        app:menu="@menu/menu_user_items"
+        app:itemIconTint="@color/icon_color"
+        app:itemTextColor="@color/text_primary" />
+
+</androidx.drawerlayout.widget.DrawerLayout>

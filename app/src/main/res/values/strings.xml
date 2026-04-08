@@ -1,0 +1,270 @@
+<resources>
+    <string name="app_name">Pace</string>
+    <!--- Forgot password -->
+    <string name="back">Volver</string>
+    <string name="title_frgt_psswd">Recuperar contraseña</string>
+    <string name="subtitle_frgt_psswd">Ingresa tu correo electrónico y te enviaremos instrucciones para restablecer tu contraseña</string>
+    <string name="in_mail">Correo electrónico</string>
+    <string name="btn_link">Enviar enlace</string>
+    <string name="txt_login">Volver al inicio de sesión</string>
+
+    <!--- Log in -->
+    <string name="title_login">Bienvenido a Pace</string>
+    <string name="subtitle_login">Inicia sesión para continuar</string>
+    <string name="in_psswd">Contraseña</string>
+    <string name="txt_frgt_psswd">¿Olvidaste tu contraseña?</string>
+    <string name="btn_login">Iniciar Sesión</string>
+    <string name="btn_google">Continuar con Google</string>
+    <string name="txt_q_regist">¿No tienes cuenta?</string>
+    <string name="txt_regist">Regístrate</string>
+
+    <!--- Main -->
+    <string name="title_main">Bienvenido/a Usuario</string>
+    <string name="title_welcome">Bienvenido/a </string>
+    <string name="title_hbts">Hábitos diarios</string>
+    <string name="preview_hbts">📊 Vista previa de hábitos</string>
+    <string name="btn_hbts">Acceder</string>
+    <string name="title_cnx">Mis conexiones</string>
+    <string name="btn_cnx">Ver todas</string>
+    <string name="user_default">Usuario</string>
+    <string name="habits_history">Historial de hábitos</string>
+    <string name="daily_habits">Hábitos diarios</string>
+    <string name="my_circles">Mis círculos</string>
+    <string name="change_profile_photo">Cambiar foto de perfil</string>
+    <string name="change_password">Cambiar contraseña</string>
+    <string name="account_settings">Ajustes de cuenta</string>
+    <string name="logout_title">Cerrar sesión</string>
+    <string name="logout_message">¿Estás seguro de que quieres cerrar sesión?</string>
+    <string name="yes">Sí</string>
+    <string name="view_all_connections">Ver todas las conexiones</string>
+    <string name="default_user">Usuario</string>
+    <string name="coming_soon">Funcionalidad próximamente</string>
+    <string name="google_account_no_password">No se puede cambiar la contraseña de una cuenta de Google</string>
+
+    <!--- Settings -->
+    <string name="title_stngs">Ajustes</string>
+    <string name="title_gnrl">General</string>
+    <string name="dark_mode">Modo oscuro</string>
+    <string name="sub_dark_mode">Activa/desactiva modo oscuro</string>
+    <string name="idiom">Idioma</string>
+    <string name="sub_idiom">Español</string>
+    <string name="title_ntf">Notificaciones</string>
+    <string name="remember">Recordatorios</string>
+    <string name="sub_remember">Activa/desactiva recordatorios</string>
+    <string name="time">Hora de recordatorio</string>
+    <string name="title_rithm">Ritmo personal</string>
+    <string name="days">Días activos</string>
+    <string name="sub_days">Lun, Mar, Mié, Jue, Vie</string>
+    <string-array name="week_days_short">
+        <item>Lun</item>
+        <item>Mar</item>
+        <item>Mié</item>
+        <item>Jue</item>
+        <item>Vie</item>
+        <item>Sáb</item>
+        <item>Dom</item>
+    </string-array>
+    <string name="notification_channel_name">Recordatorios diarios</string>
+    <string name="notification_channel_description">Notificaciones para recordarte registrar tus hábitos</string>
+    <string name="notification_title">¡Es hora de registrar tu día!</string>
+    <string name="notification_message">Abre Pace y cuenta qué has hecho hoy</string>
+    <string name="notification_permission_denied">No se pueden activar recordatorios sin permiso de notificaciones</string>
+    <string name="notification_permission_title">Permiso de notificaciones</string>
+    <string name="notification_permission_message">Pace necesita permiso para enviarte recordatorios diarios. ¿Deseas conceder el permiso?</string>
+    <string name="grant_permission">Conceder permiso</string>
+    <string name="alarm_permission_title">Permiso necesario</string>
+    <string name="alarm_permission_message">Para los recordatorios, Pace necesita permiso para alarmas exactas. ¿Deseas activarlo?</string>
+    <string name="activate">Activar</string>
+
+
+    <!--- Sign up -->
+    <string name="title_signup">Crear cuenta</string>
+    <string name="subtitle_signup">Regístrate para comenzar</string>
+    <string name="in_name">Nombre completo</string>
+    <string name="in_conf_psswd">Confirmar contraseña</string>
+    <string name="btn_signup">Crear cuenta</string>
+    <string name="btn_google_signup">Registrarse con Google</string>
+    <string name="txt_q_login">¿Ya tienes cuenta?</string>
+    <string name="txt_log_in">Inicia sesión</string>
+
+    <!--- Daily habits -->
+    <string name="change_date">Cambiar fecha</string>
+    <string name="rest_day_title">Día de descanso</string>
+    <string name="rest_day_message">Disfruta tu día libre. ¡Te lo mereces!</string>
+    <string name="daily_progress">Progreso del día</string>
+    <string name="not_done">No hecho</string>
+    <string name="done">✓ Hecho</string>
+
+    <!-- Selección de hábitos -->
+    <string name="select_your_habits">Selecciona tus hábitos</string>
+    <string name="select_habits_subtitle">Elige los hábitos que quieres seguir cada día</string>
+    <string name="category_physical">🏃 Físicos</string>
+    <string name="category_mental">🧠 Mentales</string>
+    <string name="category_study">📖 Estudio</string>
+    <string name="category_routine">🏠 Rutina</string>
+    <string name="category_bad_habits">🚫 Eliminar</string>
+    <string name="category_wellbeing">💚 Bienestar</string>
+    <string name="category_custom">✨ Otros</string>
+    <string name="custom_habits_title">Hábitos personalizados</string>
+    <string name="custom_habits_message">Crea tus propios hábitos según tus necesidades</string>
+    <string name="add_custom_habit">+ Añadir hábito</string>
+    <string name="selected_habits_count">%d hábitos seleccionados</string>
+    <string name="later">Más tarde</string>
+    <string name="save_habits">Guardar</string>
+    <string name="habit_name">Nombre del hábito</string>
+    <string name="select_emoji">Selecciona un emoji</string>
+    <string name="duration_optional">Duración (opcional)</string>
+    <string name="edit_habits">Editar hábitos</string>
+    <string name="no_habits_configured">Sin hábitos configurados</string>
+    <string name="configure_habits_message">Configura tus hábitos para empezar a seguirlos</string>
+    <string name="configure_habits">Configurar hábitos</string>
+    <string name="daily_habits_preview">Hábitos de hoy</string>
+    <string name="more_habits">hábitos más</string>
+    <string name="custom_duration">Personalizado</string>
+    <string name="habit_added">Hábito añadido</string>
+    <string name="habit_name_required">El nombre es requerido</string>
+    <string name="select_at_least_one">Selecciona al menos un hábito</string>
+    <string name="habits_saved">Hábitos guardados</string>
+    <string name="habits_saved_locally">Hábitos guardados localmente</string>
+    <string name="time_of_day_title">¿Cuándo harás %s?</string>
+
+    <!-- Historial de hábitos -->
+    <string name="habit_history">Historial de hábitos</string>
+    <string name="previous_month">Mes anterior</string>
+    <string name="next_month">Mes siguiente</string>
+    <string name="close">Cerrar</string>
+    <string name="day_monday_short">L</string>
+    <string name="day_tuesday_short">M</string>
+    <string name="day_wednesday_short">X</string>
+    <string name="day_thursday_short">J</string>
+    <string name="day_friday_short">V</string>
+    <string name="day_saturday_short">S</string>
+    <string name="day_sunday_short">D</string>
+
+    <!-- Account Settings -->
+    <string name="profile_section">Perfil</string>
+    <string name="security_section">Seguridad</string>
+    <string name="privacy_section">Privacidad</string>
+    <string name="data_account_section">Datos y cuenta</string>
+
+    <string name="change_name">Cambiar nombre</string>
+    <string name="timezone">Zona horaria</string>
+    <string name="timezone_changed">Zona horaria actualizada</string>
+    <string name="timezone_reset_device">Zona horaria del dispositivo restaurada</string>
+    <string name="sign_out_all_devices">Cerrar sesión en todos los dispositivos</string>
+    <string name="view_active_devices">Ver dispositivos activos</string>
+    <string name="who_can_invite_circles">Quién puede invitarte a círculos</string>
+    <string name="who_can_see_habits">Quién puede ver tus hábitos</string>
+    <string name="block_users">Bloquear usuarios</string>
+    <string name="download_my_data">Descargar mis datos</string>
+    <string name="delete_account">Eliminar cuenta</string>
+
+    <string name="current_password">Contraseña actual</string>
+    <string name="new_password">Nueva contraseña</string>
+    <string name="confirm_new_password">Confirmar nueva contraseña</string>
+    <string name="password_changed_success">Contraseña cambiada correctamente</string>
+    <string name="password_mismatch">Las contraseñas no coinciden</string>
+    <string name="current_password_incorrect">La contraseña actual es incorrecta</string>
+
+    <string name="change_profile_photo_title">Cambiar foto de perfil</string>
+    <string name="take_photo">Tomar foto</string>
+    <string name="choose_from_gallery">Elegir de la galería</string>
+    <string name="camera_permission_needed">Se necesita permiso de cámara</string>
+    <string name="gallery_permission_needed">Se necesita permiso para acceder a las fotos</string>
+
+    <string name="new_name">Nuevo nombre</string>
+    <string name="name_changed_success">Nombre cambiado correctamente</string>
+
+    <string name="everyone">Todos</string>
+    <string name="friends_only">Solo amigos</string>
+    <string name="nobody">Nadie</string>
+
+    <string name="delete_account_title">¿Eliminar cuenta?</string>
+    <string name="delete_account_message">Esta acción es irreversible. Se eliminarán todos tus datos permanentemente.</string>
+    <string name="delete_account_confirm">Eliminar permanentemente</string>
+    <string name="account_deleted">Cuenta eliminada</string>
+
+    <string name="sign_out_all_title">¿Cerrar sesión en todos los dispositivos?</string>
+    <string name="sign_out_all_message">Se cerrará tu sesión en todos los dispositivos donde has iniciado sesión.</string>
+    <string name="signed_out_all">Sesión cerrada en todos los dispositivos</string>
+
+    <!--- Menus -->
+    <string name="header_grl">Tu compañero de hábitos</string>
+    <string name="usr_foto">Cambiar foto de perfil</string>
+    <string name="usr_psswd">Cambiar contraseña</string>
+    <string name="usr_other">Otros ajustes de cuenta</string>
+    <string name="usr_logout">Cerrar sesión</string>
+    <string name="grl_hbts">Historial de hábitos</string>
+    <string name="grl_hbts_d">Hábitos diarios</string>
+    <string name="grl_cnx">Mis conexiones</string>
+    <string name="grl_stngs">Ajustes</string>
+
+    <!--- Settings Toasts -->
+    <string name="dark_on">Modo oscuro activado</string>
+    <string name="dark_off">Modo oscuro desactivado</string>
+    <string name="rmb_on">Recordatorios activados</string>
+    <string name="rmb_off">Recordatorios desactivados</string>
+    <string name="idm_chng">Idioma cambiado a </string>
+    <string name="hr_chng">Hora actualizada: </string>
+    <string name="day_chng">Días activos actualizados</string>
+    <string name="no_days_selected">No hay ningun día seleccionado</string>
+
+    <!--- Settings Dialogs -->
+    <string name="select_language">Seleccionar idioma</string>
+    <string name="cancel">Cancelar</string>
+    <string name="active_days_title">Días activos</string>
+    <string name="save">Guardar</string>
+
+    <!--- SignUp Toasts -->
+    <string name="creating_account">Creando cuenta...</string>
+    <string name="create_account">Crear cuenta</string>
+    <string name="error">Error: </string>
+    <string name="pswd_reset_email_sent">Se ha enviado un correo para restablecer tu contraseña</string>
+    <string name="account_created_success">Cuenta creada exitosamente</string>
+    <string name="name_required">El nombre es requerido</string>
+    <string name="name_too_short">El nombre debe tener al menos 2 caracteres</string>
+    <string name="password_needs_number">La contraseña debe contener al menos un número</string>
+    <string name="confirm_password_required">Debes confirmar la contraseña</string>
+    <string name="passwords_do_not_match">Las contraseñas no coinciden</string>
+
+    <!--- Login Toasts -->
+    <string name="welcome">Bienvenido</string>
+    <string name="welcome_user">Bienvenido %1$s</string>
+
+    <!--- ForgotPassword Toasts -->
+    <string name="email_required">El email es requerido</string>
+    <string name="invalid_email">Email inválido</string>
+    <string name="sending">Enviando...</string>
+    <string name="send_link">Enviar enlace</string>
+    <string name="password_reset_email_sent">Se ha enviado un correo para restablecer tu contraseña</string>
+
+    <!--- LoginValidator Toasts -->
+    <string name="password_required">La contraseña es requerida</string>
+    <string name="password_too_short">La contraseña debe tener al menos 6 caracteres</string>
+
+    <!--- LoginAuthManager Toasts -->
+    <string name="error_unknown">Error desconocido</string>
+    <string name="error_google_token">No se pudo obtener el token de Google</string>
+    <string name="error_google_signin">Error al iniciar sesión con Google</string>
+    <string name="error_firebase_auth">Autenticación con Firebase fallida</string>
+
+    <!--- DailyHabit Day Time -->
+    <string name="time_morning">🌅 Mañana</string>
+    <string name="time_afternoon">☀️ Tarde</string>
+    <string name="time_evening">🌙 Noche</string>
+    <string name="time_all_day">📅 Todo el día</string>
+
+    <!-- Dispositivos activos -->
+    <string name="active_devices_title">Dispositivos activos</string>
+    <string name="active_devices_empty">No hay otros dispositivos activos</string>
+    <string name="active_devices_this_device">Este dispositivo</string>
+    <string name="active_devices_close_session">Cerrar sesión</string>
+    <string name="active_devices_close_confirm_title">¿Cerrar sesión en este dispositivo?</string>
+    <string name="active_devices_close_confirm_message">Se cerrará la sesión en %s</string>
+    <string name="active_devices_session_closed">Sesión cerrada en %s</string>
+    <string name="active_devices_last_active">Último acceso: %s</string>
+    <string name="active_devices_loading">Cargando dispositivos…</string>
+
+    <!-- Circulos -->
+    <string name="no_messages_yet">Aún no hay mensajes</string>
+</resources>

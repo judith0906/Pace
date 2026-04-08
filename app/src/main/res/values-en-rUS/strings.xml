@@ -1,0 +1,271 @@
+<resources>
+    <string name="app_name">Pace</string>
+
+    <!-- Forgot password -->
+    <string name="back">Back</string>
+    <string name="title_frgt_psswd">Recover password</string>
+    <string name="subtitle_frgt_psswd">Enter your email and we will send you instructions to reset your password</string>
+    <string name="in_mail">Email</string>
+    <string name="btn_link">Send link</string>
+    <string name="txt_login">Back to login</string>
+
+    <!-- Log in -->
+    <string name="title_login">Welcome to Pace</string>
+    <string name="subtitle_login">Sign in to continue</string>
+    <string name="in_psswd">Password</string>
+    <string name="txt_frgt_psswd">Forgot your password?</string>
+    <string name="btn_login">Log in</string>
+    <string name="btn_google">Continue with Google</string>
+    <string name="txt_q_regist">Don’t have an account?</string>
+    <string name="txt_regist">Sign up</string>
+
+    <!-- Main -->
+    <string name="title_main">Welcome User</string>
+    <string name="title_welcome">Welcome </string>
+    <string name="title_hbts">Daily habits</string>
+    <string name="preview_hbts">📊 Habit preview</string>
+    <string name="btn_hbts">Access</string>
+    <string name="title_cnx">My connections</string>
+    <string name="btn_cnx">View all</string>
+    <string name="user_default">User</string>
+    <string name="habits_history">Habits history</string>
+    <string name="daily_habits">Daily habits</string>
+    <string name="my_circles">My circles</string>
+    <string name="change_profile_photo">Change profile photo</string>
+    <string name="change_password">Change password</string>
+    <string name="account_settings">Account settings</string>
+    <string name="logout_title">Log out</string>
+    <string name="logout_message">Are you sure you want to log out?</string>
+    <string name="yes">Yes</string>
+    <string name="view_all_connections">View all connections</string>
+    <string name="default_user">User</string>
+    <string name="coming_soon">Coming soon</string>
+    <string name="google_account_no_password">Cannot change the password of a Google account</string>
+
+    <!-- Settings -->
+    <string name="title_stngs">Settings</string>
+    <string name="title_gnrl">General</string>
+    <string name="dark_mode">Dark mode</string>
+    <string name="sub_dark_mode">Enable/disable dark mode</string>
+    <string name="idiom">Language</string>
+    <string name="sub_idiom">English</string>
+    <string name="title_ntf">Notifications</string>
+    <string name="remember">Reminders</string>
+    <string name="sub_remember">Enable/disable reminders</string>
+    <string name="time">Reminder time</string>
+    <string name="title_rithm">Personal rhythm</string>
+    <string name="days">Active days</string>
+    <string name="sub_days">Mon, Tue, Wed, Thu, Fri</string>
+    <string-array name="week_days_short">
+        <item>Mon</item>
+        <item>Tue</item>
+        <item>Wed</item>
+        <item>Thu</item>
+        <item>Fri</item>
+        <item>Sat</item>
+        <item>Sun</item>
+    </string-array>
+    <string name="notification_channel_name">Daily reminders</string>
+    <string name="notification_channel_description">Notifications to remind you to log your habits</string>
+    <string name="notification_title">Time to log your day!</string>
+    <string name="notification_message">Open Pace and share what you did today</string>
+    <string name="notification_permission_denied">Cannot enable reminders without notification permission</string>
+    <string name="notification_permission_title">Notification permission</string>
+    <string name="notification_permission_message">Pace needs permission to send you daily reminders. Do you want to grant permission?</string>
+    <string name="grant_permission">Grant permission</string>
+    <string name="alarm_permission_title">Permission needed</string>
+    <string name="alarm_permission_message">For reminders, Pace needs permission for exact alarms. Do you want to enable it?</string>
+    <string name="activate">Activate</string>
+
+
+    <!-- Sign up -->
+    <string name="title_signup">Create account</string>
+    <string name="subtitle_signup">Sign up to get started</string>
+    <string name="in_name">Full name</string>
+    <string name="in_conf_psswd">Confirm password</string>
+    <string name="btn_signup">Create account</string>
+    <string name="btn_google_signup">Sign up with Google</string>
+    <string name="txt_q_login">Already have an account?</string>
+    <string name="txt_log_in">Log in</string>
+
+    <!--- Daily habits -->
+    <string name="change_date">Change date</string>
+    <string name="rest_day_title">Rest day</string>
+    <string name="rest_day_message">Enjoy your day off. You deserve it!</string>
+    <string name="daily_progress">Daily progress</string>
+    <string name="not_done">Not done</string>
+    <string name="done">✓ Done</string>
+
+    <!-- Habit selection -->
+    <string name="select_your_habits">Select your habits</string>
+    <string name="select_habits_subtitle">Choose the habits you want to track daily</string>
+    <string name="category_physical">🏃 Physical</string>
+    <string name="category_mental">🧠 Mental</string>
+    <string name="category_study">📖 Study</string>
+    <string name="category_routine">🏠 Routine</string>
+    <string name="category_bad_habits">🚫 Eliminate</string>
+    <string name="category_wellbeing">💚 Wellbeing</string>
+    <string name="category_custom">✨ Custom</string>
+    <string name="custom_habits_title">Custom habits</string>
+    <string name="custom_habits_message">Create your own habits according to your needs</string>
+    <string name="add_custom_habit">+ Add habit</string>
+    <string name="selected_habits_count">%d habits selected</string>
+    <string name="later">Later</string>
+    <string name="save_habits">Save</string>
+    <string name="habit_name">Habit name</string>
+    <string name="select_emoji">Select an emoji</string>
+    <string name="duration_optional">Duration (optional)</string>
+    <string name="edit_habits">Edit habits</string>
+    <string name="no_habits_configured">No habits configured</string>
+    <string name="configure_habits_message">Configure your habits to start tracking them</string>
+    <string name="configure_habits">Configure habits</string>
+    <string name="daily_habits_preview">Today\'s habits</string>
+    <string name="more_habits">more habits</string>
+    <string name="custom_duration">Custom</string>
+    <string name="habit_added">Habit added</string>
+    <string name="habit_name_required">Name is required</string>
+    <string name="select_at_least_one">Select at least one habit</string>
+    <string name="habits_saved">Habits saved</string>
+    <string name="habits_saved_locally">Habits saved locally</string>
+    <string name="time_of_day_title">When will you do %s?</string>
+
+    <!-- Historial de hábitos -->
+    <string name="habit_history">Habit history</string>
+    <string name="previous_month">Previous month</string>
+    <string name="next_month">Next month</string>
+    <string name="close">Close</string>
+    <string name="day_monday_short">M</string>
+    <string name="day_tuesday_short">T</string>
+    <string name="day_wednesday_short">W</string>
+    <string name="day_thursday_short">T</string>
+    <string name="day_friday_short">F</string>
+    <string name="day_saturday_short">S</string>
+    <string name="day_sunday_short">S</string>
+
+    <!-- Account Settings -->
+    <string name="profile_section">Profile</string>
+    <string name="security_section">Security</string>
+    <string name="privacy_section">Privacy</string>
+    <string name="data_account_section">Data and Account</string>
+
+    <string name="change_name">Change name</string>
+    <string name="timezone">Time zone</string>
+    <string name="timezone_changed">Updated time zone</string>
+    <string name="timezone_reset_device">Device time zone restored</string>
+    <string name="sign_out_all_devices">Sign out on all devices</string>
+    <string name="view_active_devices">View active devices</string>
+    <string name="who_can_invite_circles">Who can invite you to circles</string>
+    <string name="who_can_see_habits">Who can see your habits</string>
+    <string name="block_users">Block users</string>
+    <string name="download_my_data">Download my data</string>
+    <string name="delete_account">Delete account</string>
+
+    <string name="current_password">Current password</string>
+    <string name="new_password">New password</string>
+    <string name="confirm_new_password">Confirm new password</string>
+    <string name="password_changed_success">Password changed successfully</string>
+    <string name="password_mismatch">Passwords do not match</string>
+    <string name="current_password_incorrect">Current password is incorrect</string>
+
+    <string name="change_profile_photo_title">Change profile photo</string>
+    <string name="take_photo">Take photo</string>
+    <string name="choose_from_gallery">Choose from gallery</string>
+    <string name="camera_permission_needed">Camera permission is needed</string>
+    <string name="gallery_permission_needed">Gallery access permission is needed</string>
+
+    <string name="new_name">New name</string>
+    <string name="name_changed_success">Name changed successfully</string>
+
+    <string name="everyone">Everyone</string>
+    <string name="friends_only">Friends only</string>
+    <string name="nobody">Nobody</string>
+
+    <string name="delete_account_title">Delete account?</string>
+    <string name="delete_account_message">This action is irreversible. All your data will be permanently deleted.</string>
+    <string name="delete_account_confirm">Delete permanently</string>
+    <string name="account_deleted">Account deleted</string>
+
+    <string name="sign_out_all_title">Sign out on all devices?</string>
+    <string name="sign_out_all_message">You will be signed out on all devices where you have logged in.</string>
+    <string name="signed_out_all">Signed out on all devices</string>
+
+    <!-- Menus -->
+    <string name="header_grl">Your habit companion</string>
+    <string name="usr_foto">Change profile picture</string>
+    <string name="usr_psswd">Change password</string>
+    <string name="usr_other">Other account settings</string>
+    <string name="usr_logout">Log out</string>
+    <string name="grl_hbts">Habit history</string>
+    <string name="grl_hbts_d">Daily habits</string>
+    <string name="grl_cnx">My connections</string>
+    <string name="grl_stngs">Settings</string>
+
+    <!--- Settings Toasts -->
+    <string name="dark_on">Dark mode enabled</string>
+    <string name="dark_off">Light mode enabled</string>
+    <string name="rmb_on">Reminders enabled</string>
+    <string name="rmb_off">Reminders disabled</string>
+    <string name="idm_chng">Language changed to </string>
+    <string name="hr_chng">Time updated: </string>
+    <string name="day_chng">Active days updated</string>
+    <string name="no_days_selected">No days selected</string>
+
+    <!--- Settings Dialogs -->
+    <string name="select_language">Select language</string>
+    <string name="cancel">Cancel</string>
+    <string name="active_days_title">Active days</string>
+    <string name="save">Save</string>
+
+    <!--- SignUp Toasts -->
+    <string name="creating_account">Creating account...</string>
+    <string name="create_account">Create account</string>
+    <string name="error">Error: </string>
+    <string name="pswd_reset_email_sent">An email has been sent to reset your password.</string>
+    <string name="account_created_success">Account created successfully</string>
+    <string name="name_required">Name is required</string>
+    <string name="name_too_short">Name must be at least 2 characters</string>
+    <string name="password_needs_number">Password must contain at least one number</string>
+    <string name="confirm_password_required">You must confirm your password</string>
+    <string name="passwords_do_not_match">Passwords do not match</string>
+
+    <!--- Login Toasts -->
+    <string name="welcome">Welcome</string>
+    <string name="welcome_user">Welcome %1$s</string>
+
+    <!--- ForgotPassword Toasts -->
+    <string name="email_required">Email is required</string>
+    <string name="invalid_email">Invalid email</string>
+    <string name="sending">Sending...</string>
+    <string name="send_link">Send link</string>
+    <string name="password_reset_email_sent">A password reset email has been sent</string>
+
+    <!--- LoginValidator Toasts -->
+    <string name="password_required">Password is required</string>
+    <string name="password_too_short">The password must be at least 6 characters long</string>
+
+    <!--- LoginAuthManager Toasts -->
+    <string name="error_unknown">Unknown error</string>
+    <string name="error_google_token">Could not obtain Google token</string>
+    <string name="error_google_signin">Error signing in with Google</string>
+    <string name="error_firebase_auth">Firebase authentication failed</string>
+
+    <!--- DailyHabit Day Time -->
+    <string name="time_morning">🌅 Morning</string>
+    <string name="time_afternoon">☀️ Afternoon</string>
+    <string name="time_evening">🌙 Evening</string>
+    <string name="time_all_day">📅 All day</string>
+
+    <!-- Active Devices -->
+    <string name="active_devices_title">Active Devices</string>
+    <string name="active_devices_empty">No other active devices</string>
+    <string name="active_devices_this_device">This Device</string>
+    <string name="active_devices_close_session">Sign out</string>
+    <string name="active_devices_close_confirm_title">Sign out of this device?</string>
+    <string name="active_devices_close_confirm_message">You will be signed out in %s</string>
+    <string name="active_devices_session_closed">Session closed in %s</string>
+    <string name="active_devices_last_active">Last accessed: %s</string>
+    <string name="active_devices_loading">Loading devices…</string>
+
+    <!-- Circulos -->
+    <string name="no_messages_yet">No messages yet</string>
+</resources>

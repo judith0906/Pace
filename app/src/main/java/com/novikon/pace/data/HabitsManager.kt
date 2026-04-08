@@ -1,0 +1,193 @@
+package com.novikon.pace.data
+
+import android.content.Context
+import android.content.SharedPreferences
+import androidx.core.content.edit
+import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
+import com.novikon.pace.constants.PrefsConstants
+import com.novikon.pace.models.DailyHabitLog
+import com.novikon.pace.models.Habit
+
+// Clase intermediaria entre la UI y Firebase.
+// La UI nunca habla directamente con Firebase — siempre pasa por aquí.
+//
+// Estrategia de datos:
+//   - Guardar: siempre en local (caché) Y en Firebase
+//   - Leer: primero Firebase, si falla usa el caché local como respaldo
+//   - Esto permite que la app funcione sin internet y que el historial
+//     se conserve si el usuario cambia de móvil
+//
+// Todos los hábitos (predefinidos y personalizados) se guardan en Firebase.
+class HabitsManager(context: Context) {
+
+    private val prefs: SharedPreferences = context.getSharedPreferences(
+        PrefsConstants.PREFS_NAME,
+        Context.MODE_PRIVATE
+    )
+    private val gson = Gson()
+    private val databaseManager = RealtimeDatabaseManager()
+
+    companion object {
+        private const val KEY_SELECTED_HABITS = "selected_habits"
+        private const val KEY_HABIT_LOGS = "habit_logs"
+        private const val KEY_HABITS_CONFIGURED = "habits_configured"
+        private const val KEY_CURRENT_USER_ID = "current_user_id"
+    }
+
+    // ── GESTIÓN DE USUARIO ────────────────────────────────────────────────────
+
+    // Guarda el id del usuario actual y limpia el caché si
+    // cambió de usuario — para no mezclar datos de distintos usuarios.
+    fun setCurrentUserId(userId: String) {
+        val previousUserId = getCurrentUserId()
+
+        if (previousUserId != userId && previousUserId.isNotEmpty()) {
+            clearLocalCache()
+        }
+
+        prefs.edit { putString(KEY_CURRENT_USER_ID, userId) }
+    }
+
+    fun getCurrentUserId(): String {
+        return prefs.getString(KEY_CURRENT_USER_ID, "") ?: ""
+    }
+
+    // Elimina todos los datos del caché local del usuario actual.
+    // Se llama cuando se detecta un cambio de usuario.
+    private fun clearLocalCache() {
+        prefs.edit {
+            remove(KEY_SELECTED_HABITS)
+            remove(KEY_HABIT_LOGS)
+            remove(KEY_HABITS_CONFIGURED)
+        }
+    }
+
+    // ── HÁBITOS SELECCIONADOS ─────────────────────────────────────────────────
+
+    // Guarda los hábitos seleccionados en local Y en Firebase.
+    // Es suspend para que la Activity use lifecycleScope — sin CoroutineScope huérfanos.
+    // Devuelve true si Firebase confirmó el guardado, false si hubo error.
+    suspend fun saveSelectedHabits(habits: List<Habit>): Boolean {
+        // Guardar en caché local primero — así funciona aunque no haya internet
+        prefs.edit {
+            putString(KEY_SELECTED_HABITS, gson.toJson(habits))
+            putBoolean(KEY_HABITS_CONFIGURED, true)
+        }
+
+        // Guardar en Firebase — tanto predefinidos como personalizados
+        return databaseManager.saveHabits(habits)
+    }
+
+    // Recupera los hábitos desde Firebase.
+    // Si Firebase falla o devuelve vacío, usa el caché local como respaldo.
+    suspend fun getSelectedHabitsAsync(): List<Habit> {
+        return try {
+            val habitsFromFirebase = databaseManager.getHabits()
+
+            if (habitsFromFirebase.isNotEmpty()) {
+                // Actualizar caché local con los datos de Firebase
+                prefs.edit {
+                    putString(KEY_SELECTED_HABITS, gson.toJson(habitsFromFirebase))
+                    putBoolean(KEY_HABITS_CONFIGURED, true)
+                }
+                habitsFromFirebase
+            } else {
+                // Firebase vacío — usar caché local como respaldo
+                getSelectedHabitsFromCache()
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+            // Error de red o Firebase — usar caché local como respaldo
+            getSelectedHabitsFromCache()
+        }
+    }
+
+    // Devuelve los hábitos del caché local sin consultar Firebase.
+    // Se usa como respaldo cuando Firebase no está disponible.
+    fun getSelectedHabitsFromCache(): List<Habit> {
+        val json = prefs.getString(KEY_SELECTED_HABITS, null) ?: return emptyList()
+        val type = object : TypeToken<List<Habit>>() {}.type
+        return gson.fromJson(json, type)
+    }
+
+    // ── REGISTRO DIARIO ───────────────────────────────────────────────────────
+
+    // Guarda el registro de un hábito en un día concreto en local Y en Firebase.
+    // Es suspend para que la Activity use lifecycleScope — sin CoroutineScope huérfanos.
+    // Devuelve true si Firebase confirmó el guardado, false si hubo error.
+    suspend fun logHabit(habitId: String, date: String, isDone: Boolean): Boolean {
+        val log = DailyHabitLog(habitId, date, isDone)
+
+        // Actualizar caché local — eliminar el registro anterior del mismo
+        // hábito en el mismo día (si existe) y añadir el nuevo
+        val logs = getHabitLogs().toMutableList()
+        logs.removeAll { it.habitId == habitId && it.date == date }
+        logs.add(log)
+        prefs.edit { putString(KEY_HABIT_LOGS, gson.toJson(logs)) }
+
+        // Guardar en Firebase
+        return databaseManager.saveHabitLog(log)
+    }
+
+    // Devuelve todos los registros del caché local.
+    fun getHabitLogs(): List<DailyHabitLog> {
+        val json = prefs.getString(KEY_HABIT_LOGS, null) ?: return emptyList()
+        val type = object : TypeToken<List<DailyHabitLog>>() {}.type
+        return gson.fromJson(json, type)
+    }
+
+    // Devuelve los registros de un día concreto filtrando el caché local.
+    fun getHabitLogsForDate(date: String): List<DailyHabitLog> {
+        return getHabitLogs().filter { it.date == date }
+    }
+
+    // ── SINCRONIZACIÓN ────────────────────────────────────────────────────────
+
+    // Descarga todos los datos del usuario desde Firebase y actualiza el caché local.
+    // Se llama al arrancar la app en MainActivity para asegurarse de que
+    // el caché está actualizado, especialmente si el usuario cambió de móvil.
+    suspend fun syncFromFirebase(): Boolean {
+        return try {
+            // Sincronizar hábitos
+            val habits = databaseManager.getHabits()
+            if (habits.isNotEmpty()) {
+                prefs.edit {
+                    putString(KEY_SELECTED_HABITS, gson.toJson(habits))
+                    putBoolean(KEY_HABITS_CONFIGURED, true)
+                }
+            }
+
+            // Sincronizar registros diarios
+            val logs = databaseManager.getHabitLogs()
+            if (logs.isNotEmpty()) {
+                prefs.edit { putString(KEY_HABIT_LOGS, gson.toJson(logs)) }
+            }
+
+            true
+        } catch (e: Exception) {
+            e.printStackTrace()
+            false
+        }
+    }
+
+    // ── CONFIGURACIÓN INICIAL ─────────────────────────────────────────────────
+
+    // Comprueba si el usuario ya tiene hábitos configurados consultando Firebase.
+    // Si Firebase falla, usa el caché local como respaldo.
+    // Se usa en MainActivity para saber si hay que mostrar la pantalla
+    // de selección de hábitos la primera vez.
+    suspend fun areHabitsConfiguredAsync(): Boolean {
+        return try {
+            databaseManager.getHabits().isNotEmpty()
+        } catch (e: Exception) {
+            prefs.getBoolean(KEY_HABITS_CONFIGURED, false)
+        }
+    }
+
+    // Elimina todos los datos locales del usuario.
+    // Se llama al cerrar sesión para no dejar datos huérfanos en el dispositivo.
+    fun clearLocalData() {
+        prefs.edit { clear() }
+    }
+}

@@ -1,0 +1,173 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.google.android.material.card.MaterialCardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginBottom="16dp"
+    app:cardBackgroundColor="@color/background_card"
+    app:cardElevation="4dp"
+    app:cardCornerRadius="32dp"
+    app:strokeWidth="0dp">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="24dp">
+
+        <!-- Grupo de avatares superpuestos -->
+        <FrameLayout
+            android:id="@+id/avatars_container"
+            android:layout_width="120dp"
+            android:layout_height="80dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent">
+
+            <!-- Avatar 1 (abajo izquierda) -->
+            <com.google.android.material.imageview.ShapeableImageView
+                android:id="@+id/iv_avatar_1"
+                android:layout_width="56dp"
+                android:layout_height="56dp"
+                android:layout_gravity="bottom|start"
+                android:scaleType="centerCrop"
+                android:src="@drawable/ic_person"
+                android:elevation="1dp"
+                app:shapeAppearanceOverlay="@style/CircleImageView"
+                app:strokeColor="@color/background_card"
+                app:strokeWidth="3dp"/>
+
+            <!-- Avatar 2 (arriba izquierda) -->
+            <com.google.android.material.imageview.ShapeableImageView
+                android:id="@+id/iv_avatar_2"
+                android:layout_width="56dp"
+                android:layout_height="56dp"
+                android:layout_gravity="top|start"
+                android:layout_marginStart="8dp"
+                android:scaleType="centerCrop"
+                android:src="@drawable/ic_person"
+                android:elevation="2dp"
+                app:shapeAppearanceOverlay="@style/CircleImageView"
+                app:strokeColor="@color/background_card"
+                app:strokeWidth="3dp"/>
+
+            <!-- Avatar 3 (centro derecha) -->
+            <com.google.android.material.imageview.ShapeableImageView
+                android:id="@+id/iv_avatar_3"
+                android:layout_width="56dp"
+                android:layout_height="56dp"
+                android:layout_gravity="center_vertical|start"
+                android:layout_marginStart="48dp"
+                android:scaleType="centerCrop"
+                android:src="@drawable/ic_person"
+                android:elevation="3dp"
+                app:shapeAppearanceOverlay="@style/CircleImageView"
+                app:strokeColor="@color/background_card"
+                app:strokeWidth="3dp"/>
+
+            <!-- Avatar 4 (abajo derecha) - opcional -->
+            <com.google.android.material.imageview.ShapeableImageView
+                android:id="@+id/iv_avatar_4"
+                android:layout_width="46dp"
+                android:layout_height="46dp"
+                android:layout_gravity="bottom|start"
+                android:layout_marginStart="56dp"
+                android:layout_marginBottom="8dp"
+                android:scaleType="centerCrop"
+                android:src="@drawable/ic_person"
+                android:elevation="4dp"
+                android:visibility="gone"
+                app:shapeAppearanceOverlay="@style/CircleImageView"
+                app:strokeColor="@color/background_card"
+                app:strokeWidth="3dp"/>
+
+        </FrameLayout>
+
+        <!-- Información del círculo -->
+        <LinearLayout
+            android:id="@+id/info_container"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:layout_marginStart="16dp"
+            android:layout_marginEnd="16dp"
+            app:layout_constraintStart_toEndOf="@id/avatars_container"
+            app:layout_constraintEnd_toStartOf="@id/iv_arrow"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent">
+
+            <!-- Nombre del círculo -->
+            <TextView
+                android:id="@+id/tv_circle_name"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Familia"
+                android:textSize="22sp"
+                android:textStyle="bold"
+                android:textColor="@color/text_primary"/>
+
+            <!-- Número de miembros -->
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginTop="4dp"
+                android:gravity="center_vertical">
+
+                <ImageView
+                    android:layout_width="16dp"
+                    android:layout_height="16dp"
+                    android:src="@drawable/ic_group_placeholder"
+                    app:tint="@color/text_secondary"/>
+
+                <TextView
+                    android:id="@+id/tv_members_count"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="4 miembros"
+                    android:textSize="14sp"
+                    android:textColor="@color/text_secondary"
+                    android:layout_marginStart="6dp"/>
+
+            </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginTop="4dp"
+            android:gravity="center_vertical">
+            <TextView
+                android:id="@+id/tv_last_message"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Jose: Heyy que tal"
+                android:textSize="14sp"
+                android:textColor="@color/text_secondary"/>
+
+            <TextView
+                android:id="@+id/tv_last_message_time"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="11:45"
+                android:textSize="14sp"
+                android:textColor="@color/text_secondary"
+                android:layout_marginStart="6dp"/>
+
+        </LinearLayout>
+        </LinearLayout>
+
+        <!-- Flecha de navegación -->
+        <ImageView
+            android:id="@+id/iv_arrow"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:src="@drawable/ic_arrow_right"
+            app:tint="@color/icon_color"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"/>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</com.google.android.material.card.MaterialCardView>

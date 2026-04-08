@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp"
+    android:height="24dp"
+    android:viewportWidth="24"
+    android:viewportHeight="24">
+
+    <!-- Forma de la P con el hueco interior -->
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M5,2 L5,22 L7.5,22 L7.5,14.5 L12.5,14.5
+                          C16.8,14.5 19.5,12 19.5,8.5
+                          C19.5,5 16.8,2 12.5,2 Z
+                          M7.5,4.5 L12.5,4.5
+                          C15.2,4.5 17,6.2 17,8.5
+                          C17,10.8 15.2,12 12.5,12
+                          L7.5,12 Z" />
+
+    <!-- Nodo central — círculo dibujado con path -->
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M12.5,6.7 A1.8,1.8 0 1,1 12.499,6.7 Z" />
+
+    <!-- Nodo superior izquierdo -->
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M9.5,5.4 A1.1,1.1 0 1,1 9.499,5.4 Z" />
+
+    <!-- Nodo superior derecho -->
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M15,5.9 A1.1,1.1 0 1,1 14.999,5.9 Z" />
+
+    <!-- Nodo inferior derecho -->
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M14.5,9.4 A1.1,1.1 0 1,1 14.499,9.4 Z" />
+
+    <!-- Nodo inferior izquierdo -->
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M9.5,9.4 A1.1,1.1 0 1,1 9.499,9.4 Z" />
+
+    <!-- Líneas de conexión entre nodos -->
+    <path
+        android:strokeColor="#FFFFFF"
+        android:strokeWidth="0.6"
+        android:fillColor="@android:color/transparent"
+        android:pathData="M12.5,8.5 L9.5,6.5 M12.5,8.5 L15,7 M12.5,8.5 L14.5,10.5 M12.5,8.5 L9.5,10.5" />
+
+</vector>

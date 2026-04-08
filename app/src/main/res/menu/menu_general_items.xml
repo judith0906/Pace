@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <group android:checkableBehavior="single">
+
+        <item
+            android:id="@+id/menu_habits_history"
+            android:icon="@drawable/ic_history"
+            android:title="@string/grl_hbts" />
+
+        <item
+            android:id="@+id/menu_daily_habits"
+            android:icon="@drawable/ic_habits"
+            android:title="@string/grl_hbts_d" />
+
+        <item
+            android:id="@+id/menu_circles"
+            android:icon="@drawable/ic_circles"
+            android:title="@string/grl_cnx" />
+
+    </group>
+
+    <!-- Separador visual -->
+    <item android:title="">
+        <menu>
+            <item
+                android:id="@+id/menu_settings"
+                android:icon="@drawable/ic_settings"
+                android:title="@string/grl_stngs" />
+        </menu>
+    </item>
+
+</menu>

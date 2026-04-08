@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "485785577266",
+    "firebase_url": "https://pace-novikon-default-rtdb.europe-west1.firebasedatabase.app",
+    "project_id": "pace-novikon",
+    "storage_bucket": "pace-novikon.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:485785577266:android:ffa4a9a6035c0728bf992b",
+        "android_client_info": {
+          "package_name": "com.novikon.pace"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "485785577266-827vpjg9r3ms4kv6kn8f37hsal9lfrqp.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.novikon.pace",
+            "certificate_hash": "23071b9928ccfda29ea3d4b8375bb01e4ecfe3a2"
+          }
+        },
+        {
+          "client_id": "485785577266-es6u7llmnjpu3ct4frk8gk4dpk7smfls.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAfYbuot_GyUyy-ToC_W5DOxkaS-ZfDUEg"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "485785577266-es6u7llmnjpu3ct4frk8gk4dpk7smfls.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

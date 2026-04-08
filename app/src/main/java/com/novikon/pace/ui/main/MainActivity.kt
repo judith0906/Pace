@@ -1,0 +1,339 @@
+package com.novikon.pace.ui.main
+
+import android.content.Intent
+import android.os.Bundle
+import android.widget.TextView
+import android.widget.Toast
+import androidx.activity.addCallback
+import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.GravityCompat
+import androidx.drawerlayout.widget.DrawerLayout
+import androidx.lifecycle.lifecycleScope
+import com.google.android.material.navigation.NavigationView
+import com.google.firebase.auth.ktx.auth
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
+import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.database.ValueEventListener
+import com.google.firebase.ktx.Firebase
+import com.novikon.pace.R
+import com.novikon.pace.data.HabitsManager
+import com.novikon.pace.helpers.LanguageHelper
+import com.novikon.pace.helpers.ThemeHelper
+import com.novikon.pace.ui.circles.CirclesFragment
+import com.novikon.pace.ui.habits.DailyHabitsActivity
+import com.novikon.pace.ui.habits.HabitSelectionActivity
+import com.novikon.pace.ui.main.menus.NavigationMenuManager
+import com.novikon.pace.ui.main.menus.UserMenuManager
+import com.novikon.pace.utils.ReminderScheduler
+import com.novikon.pace.utils.SessionManager
+import com.novikon.pace.utils.SettingsManager
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+
+class MainActivity : AppCompatActivity() {
+
+    private lateinit var drawerLayout: DrawerLayout
+    private lateinit var navigationViewGeneral: NavigationView
+    private lateinit var navigationViewUser: NavigationView
+    private lateinit var welcomeText: TextView
+    private lateinit var habitsPreviewContainer: android.widget.LinearLayout
+
+    private lateinit var sessionManager: SessionManager
+    private lateinit var habitsManager: HabitsManager
+    private lateinit var settingsManager: SettingsManager
+    private lateinit var database: FirebaseDatabase
+
+    private lateinit var navigationMenuManager: NavigationMenuManager
+    private lateinit var userMenuManager: UserMenuManager
+
+    // Controla si onCreate ya ejecutó la carga inicial de hábitos.
+    // Evita que onResume vuelva a pintar la preview justo después de onCreate,
+    // ya que onResume siempre se ejecuta tras onCreate y causaría duplicados.
+    private var initialLoadDone = false
+
+    // Launcher para detectar cuando el usuario vuelve de Settings —
+    // recreamos la Activity para aplicar posibles cambios de tema o idioma
+    private val settingsLauncher = registerForActivityResult(
+        androidx.activity.result.contract.ActivityResultContracts.StartActivityForResult()
+    ) { recreate() }
+
+    // Launcher para detectar cuando el usuario vuelve de seleccionar hábitos —
+    // recargamos la previsualización con los nuevos hábitos
+    private val habitSelectionLauncher = registerForActivityResult(
+        androidx.activity.result.contract.ActivityResultContracts.StartActivityForResult()
+    ) {
+        lifecycleScope.launch { loadAndDisplayHabits() }
+    }
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+
+        ThemeHelper.applyTheme(this)
+        LanguageHelper.applyLanguage(this)
+
+        setContentView(R.layout.activity_main)
+
+        sessionManager = SessionManager(this)
+        // Actualizar timestamp de última actividad al arrancar
+        sessionManager.updateLastActive()
+        habitsManager = HabitsManager(this)
+        settingsManager = SettingsManager(this)
+        database = FirebaseDatabase.getInstance()
+
+        initializeViews()
+        setupMenuManagers()
+        setupListeners()
+
+        // Escuchar cambios de nombre en tiempo real desde Firebase
+        listenToNameChanges()
+
+        // Mostrar el email en el header del drawer derecho
+        userMenuManager.setupUserEmail()
+
+        reprogramRemindersIfNeeded()
+
+        lifecycleScope.launch {
+            val userId = Firebase.auth.currentUser?.uid
+            if (userId != null) {
+                habitsManager.setCurrentUserId(userId)
+                saveUserEmailToFirebase(userId)
+            }
+
+            // Sincroniza hábitos desde Firebase si hay red
+            habitsManager.syncFromFirebase()
+
+            // Sincroniza ajustes del usuario desde Firebase —
+            // restaura tema, idioma y recordatorios si el usuario
+            // cambió de dispositivo o reinstalό la app
+            val settingsManager = SettingsManager(this@MainActivity)
+            settingsManager.syncSettingsFromFirebase()
+
+            // Marcamos que la carga inicial ya se hizo para que
+            // onResume no vuelva a pintar nada en este mismo ciclo
+            withContext(Dispatchers.Main) {
+                // Aplicar tema e idioma si cambiaron tras la sincronización
+                ThemeHelper.applyTheme(this@MainActivity)
+                LanguageHelper.applyLanguage(this@MainActivity)
+
+                // Carga y pinta los hábitos una única vez al arrancar
+                loadAndDisplayHabits()
+                checkFirstTimeHabitSelection()
+                initialLoadDone = true
+            }
+        }
+
+        // Gestionar el botón de atrás — cierra el drawer abierto si lo hay
+        onBackPressedDispatcher.addCallback(this) {
+            when {
+                drawerLayout.isDrawerOpen(GravityCompat.START) ->
+                    drawerLayout.closeDrawer(GravityCompat.START)
+                drawerLayout.isDrawerOpen(GravityCompat.END) ->
+                    drawerLayout.closeDrawer(GravityCompat.END)
+                else -> {
+                    isEnabled = false
+                    onBackPressedDispatcher.onBackPressed()
+                }
+            }
+        }
+    }
+
+    private fun initializeViews() {
+        drawerLayout = findViewById(R.id.drawerLayout)
+        navigationViewGeneral = findViewById(R.id.navigationViewGeneral)
+        navigationViewUser = findViewById(R.id.navigationViewUser)
+        welcomeText = findViewById(R.id.welcomeText)
+        habitsPreviewContainer = findViewById(R.id.habitsPreviewContainer)
+    }
+
+    private fun setupMenuManagers() {
+        navigationMenuManager = NavigationMenuManager(
+            activity = this,
+            navigationView = navigationViewGeneral,
+            drawerLayout = drawerLayout,
+            settingsLauncher = settingsLauncher,
+            onNavigateToDailyHabits = { navigateToDailyHabits() },
+            onNavigateToCircles = { navigateToCircles() }
+        )
+
+        userMenuManager = UserMenuManager(
+            activity = this,
+            navigationView = navigationViewUser,
+            drawerLayout = drawerLayout,
+            habitsManager = habitsManager,
+            sessionManager = sessionManager
+        )
+
+        navigationMenuManager.setup()
+        userMenuManager.setup()
+    }
+
+    // Escucha cambios de nombre en Firebase en tiempo real.
+    // Actualiza el welcomeText y el header del drawer simultáneamente.
+    private fun listenToNameChanges() {
+        val userId = Firebase.auth.currentUser?.uid ?: return
+
+        database.getReference("users/$userId/profile/displayName")
+            .addValueEventListener(object : ValueEventListener {
+                override fun onDataChange(snapshot: DataSnapshot) {
+                    val nameFromDb = snapshot.getValue(String::class.java)
+
+                    // Si no hay nombre en Realtime Database todavía,
+                    // usamos el de Firebase Auth (puede venir del registro o de Google)
+                    // y lo escribimos en la DB para que quede persistido
+                    val name = if (!nameFromDb.isNullOrBlank()) {
+                        nameFromDb
+                    } else {
+                        val authName = Firebase.auth.currentUser?.displayName
+                        if (!authName.isNullOrBlank()) {
+                            // Persistir en DB para las próximas veces
+                            database.getReference("users/$userId/profile/displayName")
+                                .setValue(authName)
+                            authName
+                        } else {
+                            getString(R.string.default_user)
+                        }
+                    }
+
+                    welcomeText.text = "${getString(R.string.title_welcome)} $name"
+                    userMenuManager.updateUserName(name)
+                }
+
+                override fun onCancelled(error: DatabaseError) {
+                    val name = Firebase.auth.currentUser?.displayName
+                        ?: getString(R.string.default_user)
+                    welcomeText.text = "${getString(R.string.title_welcome)} $name"
+                }
+            })
+    }
+
+    private fun setupListeners() {
+        findViewById<android.widget.ImageButton>(R.id.menuButton).setOnClickListener {
+            drawerLayout.openDrawer(GravityCompat.START)
+        }
+        findViewById<android.widget.ImageButton>(R.id.profileButton).setOnClickListener {
+            drawerLayout.openDrawer(GravityCompat.END)
+        }
+        findViewById<com.google.android.material.button.MaterialButton>(R.id.accessHabitsButton).setOnClickListener {
+            navigateToDailyHabits()
+        }
+        findViewById<com.google.android.material.button.MaterialButton>(R.id.viewAllGroupsButton).setOnClickListener {
+            navigateToAllGroups()
+        }
+    }
+
+    // ── NAVEGACIÓN ────────────────────────────────────────────────────────────
+
+    private fun navigateToDailyHabits() {
+        startActivity(Intent(this, DailyHabitsActivity::class.java))
+    }
+
+    private fun navigateToCircles() {
+        supportFragmentManager.beginTransaction()
+            .replace(R.id.fragment_container, CirclesFragment())
+            .addToBackStack(null)
+            .commit()
+    }
+
+    private fun navigateToAllGroups() {
+        Toast.makeText(this, getString(R.string.view_all_connections), Toast.LENGTH_SHORT).show()
+    }
+
+    // ── HÁBITOS ───────────────────────────────────────────────────────────────
+
+    // Función única de carga de hábitos — decide la fuente según conectividad:
+    //   - Con internet  → sincroniza Firebase al caché, luego pinta desde caché
+    //   - Sin internet  → pinta directamente desde caché local
+    // Al usar siempre el caché como fuente final de pintado, se garantiza
+    // que la UI se actualiza una sola vez y nunca aparecen duplicados.
+    private suspend fun loadAndDisplayHabits() {
+        // Sincroniza desde Firebase si hay red — actualiza el caché local.
+        // Si no hay red, el caché ya tiene los datos de la última sesión.
+        habitsManager.syncFromFirebase()
+
+        withContext(Dispatchers.Main) {
+            paintHabitsFromCache()
+        }
+    }
+
+    // Pinta la previsualización de hábitos usando el caché local.
+    // Es siempre llamada después de syncFromFirebase(), por lo que
+    // el caché ya contiene los datos más recientes disponibles.
+    private fun paintHabitsFromCache() {
+        habitsPreviewContainer.removeAllViews()
+        val selectedHabits = habitsManager.getSelectedHabitsFromCache()
+
+        if (selectedHabits.isEmpty()) {
+            val emptyView = layoutInflater.inflate(
+                R.layout.habits_preview_empty, habitsPreviewContainer, false
+            )
+            habitsPreviewContainer.addView(emptyView)
+            emptyView.findViewById<com.google.android.material.button.MaterialButton>(
+                R.id.configureHabitsButton
+            ).setOnClickListener {
+                habitSelectionLauncher.launch(
+                    Intent(this, HabitSelectionActivity::class.java)
+                )
+            }
+        } else {
+            selectedHabits.take(3).forEach { habit ->
+                val habitView = layoutInflater.inflate(
+                    R.layout.habit_preview_item, habitsPreviewContainer, false
+                )
+                habitView.findViewById<TextView>(R.id.habitPreviewEmoji).text = habit.emoji
+                habitView.findViewById<TextView>(R.id.habitPreviewName).text = habit.name
+                habitView.findViewById<TextView>(R.id.habitPreviewDuration).text = habit.duration
+                habitsPreviewContainer.addView(habitView)
+            }
+            if (selectedHabits.size > 3) {
+                val moreView = layoutInflater.inflate(
+                    R.layout.habits_preview_more, habitsPreviewContainer, false
+                )
+                moreView.findViewById<TextView>(R.id.moreHabitsText).text =
+                    "+${selectedHabits.size - 3} ${getString(R.string.more_habits)}"
+                habitsPreviewContainer.addView(moreView)
+            }
+        }
+    }
+
+    // ── UTILIDADES ────────────────────────────────────────────────────────────
+
+    private fun saveUserEmailToFirebase(userId: String) {
+        val email = Firebase.auth.currentUser?.email ?: return
+        database.getReference("users/$userId/profile/email").setValue(email)
+    }
+
+    private fun checkFirstTimeHabitSelection() {
+        lifecycleScope.launch {
+            if (!habitsManager.areHabitsConfiguredAsync()) {
+                withContext(Dispatchers.Main) {
+                    habitSelectionLauncher.launch(
+                        Intent(this@MainActivity, HabitSelectionActivity::class.java)
+                    )
+                }
+            }
+        }
+    }
+
+    private fun reprogramRemindersIfNeeded() {
+        if (settingsManager.areRemindersEnabled) {
+            ReminderScheduler.scheduleReminders(
+                context = this,
+                areRemindersEnabled = settingsManager.areRemindersEnabled,
+                activeDayIndices = settingsManager.activeDayIndices,
+                reminderTime = settingsManager.reminderTime
+            )
+        }
+    }
+
+    // onResume se ejecuta siempre después de onCreate y también al volver
+    // de otra Activity. Solo recargamos si la carga inicial ya terminó —
+    // si no, el propio onCreate ya está gestionando la primera carga.
+    override fun onResume() {
+        super.onResume()
+        if (initialLoadDone) {
+            lifecycleScope.launch { loadAndDisplayHabits() }
+        }
+    }
+}

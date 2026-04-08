@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <group android:checkableBehavior="none">
+
+        <item
+            android:id="@+id/menu_change_photo"
+            android:icon="@drawable/ic_camera"
+            android:title="@string/usr_foto" />
+
+        <item
+            android:id="@+id/menu_change_password"
+            android:icon="@drawable/ic_lock"
+            android:title="@string/usr_psswd" />
+
+        <item
+            android:id="@+id/menu_account_settings"
+            android:icon="@drawable/ic_account_settings"
+            android:title="@string/usr_other" />
+
+    </group>
+
+    <!-- Separador visual -->
+    <item android:title="">
+        <menu>
+            <item
+                android:id="@+id/menu_logout"
+                android:icon="@drawable/ic_logout"
+                android:title="@string/usr_logout" />
+        </menu>
+    </item>
+
+</menu>
