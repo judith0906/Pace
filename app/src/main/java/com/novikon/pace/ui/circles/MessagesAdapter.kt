@@ -89,7 +89,7 @@ class MessagesAdapter(
         private val tvSenderName: TextView = itemView.findViewById(R.id.tv_sender_name)
         private val tvText: TextView = itemView.findViewById(R.id.tv_message_text)
         private val tvTime: TextView = itemView.findViewById(R.id.tv_message_time)
-//TODO arregl
+
         fun bind(message: Message) {
             tvSenderName.text = message.senderName
             tvText.text = message.text
