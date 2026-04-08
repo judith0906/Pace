@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/action_group_info"
+        android:title="@string/group_info"
+        android:showAsAction="never" />
+
+    <item
+        android:id="@+id/action_block_user"
+        android:title="@string/block_user"
+        android:showAsAction="never" />
+</menu>

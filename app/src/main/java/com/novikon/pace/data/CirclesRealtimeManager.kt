@@ -357,4 +357,215 @@ class CirclesRealtimeManager {
                 }
         }
     }
+
+    data class GroupInfo(
+        val circleId: String,
+        val name: String,
+        val createdBy: String,
+        val joinCode: String,
+        val maxParticipants: Int,
+        val memberIds: List<String>
+    )
+
+    private fun randomJoinCode(length: Int = 6): String {
+        val chars = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789"
+        return (1..length).map { chars.random() }.joinToString("")
+    }
+
+    private suspend fun generateUniqueJoinCode(): String {
+        while (true) {
+            val code = randomJoinCode()
+            val exists = suspendCancellableCoroutine<Boolean> { cont ->
+                database.getReference("circleJoinCodes/$code")
+                    .addListenerForSingleValueEvent(object : ValueEventListener {
+                        override fun onDataChange(snapshot: DataSnapshot) {
+                            cont.resume(snapshot.exists())
+                        }
+                        override fun onCancelled(error: DatabaseError) {
+                            cont.resume(false)
+                        }
+                    })
+            }
+            if (!exists) return code
+        }
+    }
+
+    suspend fun createCircle(name: String, maxParticipants: Int): String? {
+        val userId = getUserId() ?: return null
+        val joinCode = generateUniqueJoinCode()
+
+        return suspendCancellableCoroutine { cont ->
+            val newCircleRef = database.getReference("circles").push()
+            val circleId = newCircleRef.key ?: run {
+                cont.resume(null); return@suspendCancellableCoroutine
+            }
+
+            val ts = System.currentTimeMillis()
+            val updates = mapOf(
+                "circles/$circleId/name" to name,
+                "circles/$circleId/createdBy" to userId,
+                "circles/$circleId/createdAt" to ts,
+                "circles/$circleId/joinCode" to joinCode,
+                "circles/$circleId/maxParticipants" to maxParticipants,
+                "circles/$circleId/members/$userId" to true,
+                "users/$userId/circles/$circleId" to true,
+                "circleJoinCodes/$joinCode" to circleId
+            )
+
+            database.reference.updateChildren(updates)
+                .addOnSuccessListener { cont.resume(circleId) }
+                .addOnFailureListener { cont.resume(null) }
+        }
+    }
+
+    suspend fun joinCircleByCode(code: String): Boolean {
+        val userId = getUserId() ?: return false
+
+        val circleId = suspendCancellableCoroutine<String?> { cont ->
+            database.getReference("circleJoinCodes/$code")
+                .addListenerForSingleValueEvent(object : ValueEventListener {
+                    override fun onDataChange(snapshot: DataSnapshot) {
+                        cont.resume(snapshot.getValue(String::class.java))
+                    }
+                    override fun onCancelled(error: DatabaseError) {
+                        cont.resume(null)
+                    }
+                })
+        } ?: return false
+
+        return addMemberToCircleTransactional(circleId, userId)
+    }
+
+    private suspend fun addMemberToCircleTransactional(circleId: String, targetUserId: String): Boolean {
+        return suspendCancellableCoroutine { cont ->
+            val membersRef = database.getReference("circles/$circleId/members")
+            val maxRef = database.getReference("circles/$circleId/maxParticipants")
+
+            maxRef.addListenerForSingleValueEvent(object : ValueEventListener {
+                override fun onDataChange(maxSnap: DataSnapshot) {
+                    val max = maxSnap.getValue(Int::class.java) ?: 6
+                    membersRef.runTransaction(object : Transaction.Handler {
+                        override fun doTransaction(currentData: MutableData): Transaction.Result {
+                            val map = currentData.value as? Map<String, Any?> ?: emptyMap()
+                            if (map.containsKey(targetUserId)) return Transaction.success(currentData)
+                            if (map.size >= max) return Transaction.abort()
+
+                            val mutable = map.toMutableMap()
+                            mutable[targetUserId] = true
+                            currentData.value = mutable
+                            return Transaction.success(currentData)
+                        }
+
+                        override fun onComplete(error: DatabaseError?, committed: Boolean, snapshot: DataSnapshot?) {
+                            if (error != null || !committed) {
+                                cont.resume(false)
+                                return
+                            }
+                            database.getReference("users/$targetUserId/circles/$circleId")
+                                .setValue(true)
+                                .addOnSuccessListener { cont.resume(true) }
+                                .addOnFailureListener { cont.resume(false) }
+                        }
+                    })
+                }
+
+                override fun onCancelled(error: DatabaseError) {
+                    cont.resume(false)
+                }
+            })
+        }
+    }
+
+    suspend fun getGroupInfo(circleId: String): GroupInfo? {
+        return suspendCancellableCoroutine { cont ->
+            database.getReference("circles/$circleId")
+                .addListenerForSingleValueEvent(object : ValueEventListener {
+                    override fun onDataChange(snapshot: DataSnapshot) {
+                        if (!snapshot.exists()) {
+                            cont.resume(null); return
+                        }
+                        val name = snapshot.child("name").getValue(String::class.java) ?: ""
+                        val createdBy = snapshot.child("createdBy").getValue(String::class.java) ?: ""
+                        val joinCode = snapshot.child("joinCode").getValue(String::class.java) ?: ""
+                        val max = snapshot.child("maxParticipants").getValue(Int::class.java) ?: 6
+                        val members = snapshot.child("members").children.mapNotNull { it.key }
+
+                        cont.resume(
+                            GroupInfo(
+                                circleId = circleId,
+                                name = name,
+                                createdBy = createdBy,
+                                joinCode = joinCode,
+                                maxParticipants = max,
+                                memberIds = members
+                            )
+                        )
+                    }
+
+                    override fun onCancelled(error: DatabaseError) {
+                        cont.resume(null)
+                    }
+                })
+        }
+    }
+
+    suspend fun getMemberDisplayNames(userIds: List<String>): List<com.novikon.pace.models.CircleMember> {
+        val result = mutableListOf<com.novikon.pace.models.CircleMember>()
+        for (uid in userIds) {
+            val name = suspendCancellableCoroutine<String> { cont ->
+                database.getReference("users/$uid/profile/displayName")
+                    .addListenerForSingleValueEvent(object : ValueEventListener {
+                        override fun onDataChange(snapshot: DataSnapshot) {
+                            cont.resume(snapshot.getValue(String::class.java) ?: uid)
+                        }
+                        override fun onCancelled(error: DatabaseError) {
+                            cont.resume(uid)
+                        }
+                    })
+            }
+            result.add(com.novikon.pace.models.CircleMember(uid, name))
+        }
+        return result
+    }
+
+    suspend fun updateMaxParticipants(circleId: String, newMax: Int): Boolean {
+        val uid = getUserId() ?: return false
+        val info = getGroupInfo(circleId) ?: return false
+        if (info.createdBy != uid) return false
+        if (newMax < info.memberIds.size) return false
+
+        return suspendCancellableCoroutine { cont ->
+            database.getReference("circles/$circleId/maxParticipants")
+                .setValue(newMax)
+                .addOnSuccessListener { cont.resume(true) }
+                .addOnFailureListener { cont.resume(false) }
+        }
+    }
+
+    suspend fun removeMember(circleId: String, memberUid: String): Boolean {
+        val uid = getUserId() ?: return false
+        val info = getGroupInfo(circleId) ?: return false
+        if (info.createdBy != uid) return false
+        if (memberUid == info.createdBy) return false
+
+        return suspendCancellableCoroutine { cont ->
+            val updates = mapOf(
+                "circles/$circleId/members/$memberUid" to null,
+                "users/$memberUid/circles/$circleId" to null
+            )
+            database.reference.updateChildren(updates)
+                .addOnSuccessListener { cont.resume(true) }
+                .addOnFailureListener { cont.resume(false) }
+        }
+    }
+
+    suspend fun blockUser(targetUid: String): Boolean {
+        val uid = getUserId() ?: return false
+        return suspendCancellableCoroutine { cont ->
+            database.getReference("users/$uid/blocked/$targetUid")
+                .setValue(true)
+                .addOnSuccessListener { cont.resume(true) }
+                .addOnFailureListener { cont.resume(false) }
+        }
+    }
 }

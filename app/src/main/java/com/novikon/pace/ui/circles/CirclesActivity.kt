@@ -51,8 +51,8 @@ class CirclesActivity : AppCompatActivity() {
 
         addButton.setOnClickListener {
             AddCircleDialog(
-                onJoinCircle = { circleId -> joinCircle(circleId) },
-                onCreateCircle = { name -> createCircle(name) }
+                onJoinCircleByCode = { code -> joinByCode(code) },
+                onCreateCircle = { name, max -> createCircle(name, max) }
             ).show(supportFragmentManager, "AddCircleDialog")
         }
 
@@ -93,26 +93,27 @@ class CirclesActivity : AppCompatActivity() {
         }
     }
 
-    private fun joinCircle(circleId: String) {
-        val userId = circlesManager.getUserId()
-        if (userId.isNullOrBlank()) {
-            Toast.makeText(
-                this,
-                getString(R.string.circle_join_error),
-                Toast.LENGTH_SHORT
-            ).show()
-            return
-        }
-
+    private fun createCircle(name: String, maxParticipants: Int) {
         lifecycleScope.launch {
-            val success = circlesManager.addMemberToCircle(circleId, userId)
+            val createdId = circlesManager.createCircle(name, maxParticipants)
             Toast.makeText(
                 this@CirclesActivity,
-                if (success) getString(R.string.circle_joined) else getString(R.string.circle_join_error),
+                if (createdId != null) getString(R.string.circle_created) else getString(R.string.circle_create_error),
                 Toast.LENGTH_SHORT
             ).show()
+            if (createdId != null) loadCircles()
+        }
+    }
 
-            if (success) loadCircles()
+    private fun joinByCode(code: String) {
+        lifecycleScope.launch {
+            val ok = circlesManager.joinCircleByCode(code)
+            Toast.makeText(
+                this@CirclesActivity,
+                if (ok) getString(R.string.circle_joined) else getString(R.string.circle_join_error),
+                Toast.LENGTH_SHORT
+            ).show()
+            if (ok) loadCircles()
         }
     }
 }

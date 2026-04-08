@@ -10,8 +10,8 @@ import com.novikon.pace.R
 import com.novikon.pace.databinding.DialogAddCircleBinding
 
 class AddCircleDialog(
-    private val onJoinCircle: (circleId: String) -> Unit,
-    private val onCreateCircle: (name: String) -> Unit
+    private val onJoinCircleByCode: (code: String) -> Unit,
+    private val onCreateCircle: (name: String, maxParticipants: Int) -> Unit
 ) : BottomSheetDialogFragment() {
 
     private var _binding: DialogAddCircleBinding? = null
@@ -45,22 +45,22 @@ class AddCircleDialog(
         }
 
         binding.btnJoin.setOnClickListener {
-            val circleId = binding.etJoinCode.text?.toString()?.trim().orEmpty()
-            if (circleId.isEmpty()) {
-                binding.etJoinCode.error = getString(R.string.error_circle_id_required)
+            val code = binding.etJoinCode.text?.toString()?.trim().orEmpty().uppercase()
+            if (code.isEmpty()) {
+                binding.etJoinCode.error = getString(R.string.error_circle_code_required)
                 return@setOnClickListener
             }
-            onJoinCircle(circleId)
+            onJoinCircleByCode(code)
             dismiss()
         }
-
         binding.btnCreate.setOnClickListener {
             val name = binding.etGroupName.text?.toString()?.trim().orEmpty()
             if (name.isEmpty()) {
                 binding.etGroupName.error = getString(R.string.error_group_name_required)
                 return@setOnClickListener
             }
-            onCreateCircle(name)
+            val max = binding.sliderMembers.value.toInt()
+            onCreateCircle(name, max)
             dismiss()
         }
     }

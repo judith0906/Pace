@@ -286,4 +286,23 @@
     <string name="send_message">Enviar mensaje</string>
     <string name="error_group_name_required">Escribe un nombre del grupo</string>
     <string name="chat_send_error">Error al enviar el mensaje. Inténtalo de nuevo.</string>
+    <string name="group_info">Información del grupo</string>
+    <string name="group_join_code_label">Código de invitación</string>
+    <string name="group_members_label">Miembros</string>
+    <string name="group_members_summary">%1$d/%2$d participantes</string>
+    <string name="group_max_members">Máximo participantes</string>
+    <string name="group_max_updated">Máximo actualizado</string>
+    <string name="group_max_update_error">No se pudo actualizar el máximo</string>
+
+    <string name="block_user">Bloquear usuario</string>
+    <string name="block_user_error">No se pudo bloquear al usuario</string>
+    <string name="no_users_to_block">No hay usuarios para bloquear</string>
+    <string name="user_blocked">Usuario bloqueado</string>
+
+    <string name="remove_member">Expulsar miembro</string>
+    <string name="remove_member_confirm">¿Expulsar a %1$s del grupo?</string>
+    <string name="member_removed">Miembro expulsado</string>
+    <string name="member_remove_error">No se pudo expulsar al miembro</string>
+
+    <string name="error_circle_code_required">Introduce el código de invitación</string>
 </resources>

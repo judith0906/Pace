@@ -287,4 +287,23 @@
     <string name="send_message">Send message</string>
     <string name="error_group_name_required">Enter a group name</string>
     <string name="chat_send_error">Error sending message. Please try again.</string>
+    <string name="group_info">Group info</string>
+    <string name="group_join_code_label">Invite code</string>
+    <string name="group_members_label">Members</string>
+    <string name="group_members_summary">%1$d/%2$d participants</string>
+    <string name="group_max_members">Max participants</string>
+    <string name="group_max_updated">Maximum updated</string>
+    <string name="group_max_update_error">Could not update maximum</string>
+
+    <string name="block_user">Block user</string>
+    <string name="block_user_error">Could not block user</string>
+    <string name="no_users_to_block">No users to block</string>
+    <string name="user_blocked">User blocked</string>
+
+    <string name="remove_member">Remove member</string>
+    <string name="remove_member_confirm">Remove %1$s from the group?</string>
+    <string name="member_removed">Member removed</string>
+    <string name="member_remove_error">Could not remove member</string>
+
+    <string name="error_circle_code_required">Enter the invite code</string>
 </resources>
