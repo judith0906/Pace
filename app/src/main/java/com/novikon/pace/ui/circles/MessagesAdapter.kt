@@ -26,6 +26,12 @@ class MessagesAdapter(
     companion object {
         private const val VIEW_TYPE_SENT = 1
         private const val VIEW_TYPE_RECEIVED = 2
+        // Formatea el timestamp del mensaje como "HH:mm" (ej: "14:32")
+        // para mostrar la hora de cada burbuja del chat.
+        fun formatTime(timestamp: Long): String {
+            if (timestamp == 0L) return ""
+            return SimpleDateFormat("HH:mm", Locale.getDefault()).format(Date(timestamp))
+        }
     }
 
     private val messages = mutableListOf<Message>()
@@ -95,12 +101,5 @@ class MessagesAdapter(
             tvText.text = message.text
             tvTime.text = formatTime(message.timestamp)
         }
-    }
-
-    // Formatea el timestamp del mensaje como "HH:mm" (ej: "14:32")
-    // para mostrar la hora de cada burbuja del chat.
-    private fun formatTime(timestamp: Long): String {
-        if (timestamp == 0L) return ""
-        return SimpleDateFormat("HH:mm", Locale.getDefault()).format(Date(timestamp))
     }
 }
