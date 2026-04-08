@@ -173,7 +173,7 @@
                                 android:layout_height="wrap_content"
                                 android:text="@string/timezone"
                                 android:textSize="16sp"
-                                android:textColor="@color/text_primary"
+                                android:textColor="@color/text_secondary"
                                 android:textStyle="bold" />
 
                             <TextView
@@ -186,13 +186,6 @@
                                 android:layout_marginTop="2dp" />
 
                         </LinearLayout>
-
-                        <ImageView
-                            android:layout_width="20dp"
-                            android:layout_height="20dp"
-                            android:src="@drawable/ic_arrow_right"
-                            android:contentDescription="Cambiar zona horaria"
-                            app:tint="@color/icon_color" />
 
                     </LinearLayout>
 

@@ -5,6 +5,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
+import com.google.android.material.imageview.ShapeableImageView
 import com.novikon.pace.R
 import com.novikon.pace.models.Circle
 import java.text.SimpleDateFormat
@@ -18,6 +19,8 @@ class CirclesAdapter(
     private val items = mutableListOf<Circle>()
 
     class CircleViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+        val ivAvatarPrimary: ShapeableImageView = itemView.findViewById(R.id.iv_avatar_primary)
+        val tvAvatarMore: TextView = itemView.findViewById(R.id.tv_avatar_more)
         val tvName: TextView = itemView.findViewById(R.id.tv_circle_name)
         val tvMembers: TextView = itemView.findViewById(R.id.tv_members_count)
         val tvLastMessage: TextView = itemView.findViewById(R.id.tv_last_message)
@@ -36,15 +39,26 @@ class CirclesAdapter(
 
         holder.tvName.text = circle.name
         holder.tvMembers.text = context.getString(R.string.members_count_format, circle.memberCount)
-        holder.tvLastMessage.text = if (circle.lastMessage.isBlank()) {
+
+        holder.tvLastMessage.text = circle.lastMessage.ifBlank {
             context.getString(R.string.no_messages_yet)
-        } else {
-            circle.lastMessage
         }
+
         holder.tvLastTime.text = if (circle.lastMessageTime > 0L) {
             SimpleDateFormat("HH:mm", Locale.getDefault()).format(Date(circle.lastMessageTime))
         } else {
             ""
+        }
+
+        // Escalable: 1 avatar principal + badge +N para miembros extra
+        val members = circle.memberCount.coerceAtLeast(1)
+        val extras = (members - 1).coerceAtLeast(0)
+
+        if (extras > 0) {
+            holder.tvAvatarMore.visibility = View.VISIBLE
+            holder.tvAvatarMore.text = "+$extras"
+        } else {
+            holder.tvAvatarMore.visibility = View.GONE
         }
 
         holder.itemView.setOnClickListener { onCircleClick(circle) }

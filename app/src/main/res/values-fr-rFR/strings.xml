@@ -25,7 +25,7 @@
     <string name="title_hbts">Habitudes quotidiennes</string>
     <string name="preview_hbts">📊 Aperçu des habitudes</string>
     <string name="btn_hbts">Accéder</string>
-    <string name="title_cnx">Mes connexions</string>
+    <string name="title_cnx">Mes cercles</string>
     <string name="btn_cnx">Voir tout</string>
     <string name="user_default">Utilisateur</string>
     <string name="habits_history">Historique des habitudes</string>
@@ -197,7 +197,7 @@
     <string name="usr_logout">Se déconnecter</string>
     <string name="grl_hbts">Historique des habitudes</string>
     <string name="grl_hbts_d">Habitudes quotidiennes</string>
-    <string name="grl_cnx">Mes connexions</string>
+    <string name="grl_cnx">Mes cercles</string>
     <string name="grl_stngs">Paramètres</string>
 
     <!--- Settings Toasts -->
