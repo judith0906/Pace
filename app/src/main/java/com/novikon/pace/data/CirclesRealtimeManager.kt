@@ -311,7 +311,7 @@ class CirclesRealtimeManager {
                             continuation.resume(
                                 when {
                                     !name.isNullOrBlank() -> name
-                                    uid == me -> getUserName()
+                                    uid == me -> getUserName()   // tu propio nombre desde Auth
                                     else -> "Usuario"
                                 }
                             )
