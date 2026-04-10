@@ -74,8 +74,16 @@ class CircleChatActivity : AppCompatActivity() {
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
-            R.id.action_group_info -> { showGroupInfoDialog(); true }
-            R.id.action_block_user -> { showBlockUserDialog(); true }
+            R.id.action_group_info -> {
+                showGroupInfoDialog()
+                true
+            }
+
+            R.id.action_block_user -> {
+                showBlockUserDialog()
+                true
+            }
+
             else -> super.onOptionsItemSelected(item)
         }
     }
@@ -155,27 +163,39 @@ class CircleChatActivity : AppCompatActivity() {
             val isAdmin = circlesManager.getUserId() == info.createdBy
 
             val view = layoutInflater.inflate(R.layout.dialog_group_info, null)
-            val tvName = view.findViewById<TextView>(R.id.tv_group_name)
-            val tvCode = view.findViewById<TextView>(R.id.tv_join_code)
-            val tvSummary = view.findViewById<TextView>(R.id.tv_members_summary)
-            val layoutAdmin = view.findViewById<View>(R.id.layout_admin_max)
+            val tvGroupName = view.findViewById<TextView>(R.id.tv_group_name)
+            val btnDeleteGroup = view.findViewById<com.google.android.material.button.MaterialButton>(R.id.btn_delete_group)
+            val tvJoinCode = view.findViewById<TextView>(R.id.tv_join_code)
+            val tvMembersSummary = view.findViewById<TextView>(R.id.tv_members_summary)
+            val layoutAdminMax = view.findViewById<View>(R.id.layout_admin_max)
             val etNewMax = view.findViewById<EditText>(R.id.et_new_max)
             val btnSaveMax = view.findViewById<Button>(R.id.btn_save_max)
             val lvMembers = view.findViewById<ListView>(R.id.lv_members)
 
-            tvName.text = info.name
-            tvCode.text = info.joinCode
-            tvSummary.text = getString(R.string.group_members_summary, members.size, info.maxParticipants)
+            tvGroupName.text = info.name
+            tvJoinCode.text = if (info.joinCode.isBlank()) "-" else info.joinCode
+            tvMembersSummary.text = getString(
+                R.string.group_members_summary,
+                members.size,
+                info.maxParticipants
+            )
 
-            val names = members.map { it.displayName }
-            lvMembers.adapter =
-                ArrayAdapter(this@CircleChatActivity, android.R.layout.simple_list_item_1, names)
+            val memberNames = members.map { it.displayName }
+            lvMembers.adapter = ArrayAdapter(
+                this@CircleChatActivity,
+                android.R.layout.simple_list_item_1,
+                memberNames
+            )
 
             if (isAdmin) {
-                layoutAdmin.visibility = View.VISIBLE
+                layoutAdminMax.visibility = View.VISIBLE
+                btnDeleteGroup.visibility = View.VISIBLE
                 etNewMax.setText(info.maxParticipants.toString())
+
                 btnSaveMax.setOnClickListener {
-                    val newMax = etNewMax.text.toString().toIntOrNull() ?: return@setOnClickListener
+                    val newMax = etNewMax.text.toString().toIntOrNull()
+                    if (newMax == null || newMax <= 0) return@setOnClickListener
+
                     lifecycleScope.launch {
                         val ok = circlesManager.updateMaxParticipants(circleId, newMax)
                         Toast.makeText(
@@ -184,6 +204,25 @@ class CircleChatActivity : AppCompatActivity() {
                             Toast.LENGTH_SHORT
                         ).show()
                     }
+                }
+
+                btnDeleteGroup.setOnClickListener {
+                    AlertDialog.Builder(this@CircleChatActivity)
+                        .setTitle(getString(R.string.delete_group))
+                        .setMessage(getString(R.string.delete_group_confirm))
+                        .setPositiveButton(getString(R.string.delete_group_confirm_button)) { _, _ ->
+                            lifecycleScope.launch {
+                                val ok = circlesManager.deleteCircle(circleId)
+                                Toast.makeText(
+                                    this@CircleChatActivity,
+                                    if (ok) getString(R.string.group_deleted) else getString(R.string.group_delete_error),
+                                    Toast.LENGTH_SHORT
+                                ).show()
+                                if (ok) finish()
+                            }
+                        }
+                        .setNegativeButton(getString(R.string.cancel), null)
+                        .show()
                 }
 
                 lvMembers.setOnItemLongClickListener { _, _, position, _ ->
@@ -221,11 +260,16 @@ class CircleChatActivity : AppCompatActivity() {
     private fun showBlockUserDialog() {
         lifecycleScope.launch {
             val info = circlesManager.getGroupInfo(circleId) ?: return@launch
+            val me = circlesManager.getUserId()
             val members = circlesManager.getMemberDisplayNames(info.memberIds)
-                .filter { it.userId != circlesManager.getUserId() }
+                .filter { it.userId != me }
 
             if (members.isEmpty()) {
-                Toast.makeText(this@CircleChatActivity, getString(R.string.no_users_to_block), Toast.LENGTH_SHORT).show()
+                Toast.makeText(
+                    this@CircleChatActivity,
+                    getString(R.string.no_users_to_block),
+                    Toast.LENGTH_SHORT
+                ).show()
                 return@launch
             }
 

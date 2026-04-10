@@ -306,4 +306,9 @@
     <string name="member_remove_error">Could not remove member</string>
 
     <string name="error_circle_code_required">Enter the invite code</string>
+    <string name="delete_group">Delete circle</string>
+    <string name="delete_group_confirm">This action will delete the circle for all members. Do you want to continue?</string>
+    <string name="delete_group_confirm_button">Delete</string>
+    <string name="group_deleted">Circle deleted</string>
+    <string name="group_delete_error">Could not delete the circle</string>
 </resources>

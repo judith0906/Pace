@@ -45,22 +45,26 @@ class AddCircleDialog(
         }
 
         binding.btnJoin.setOnClickListener {
-            val code = binding.etJoinCode.text?.toString()?.trim().orEmpty().uppercase()
-            if (code.isEmpty()) {
+            val code = binding.etJoinCode.text?.toString()?.trim().orEmpty()
+
+            if (!code.matches(Regex("^\\d{6}$"))) {
                 binding.etJoinCode.error = getString(R.string.error_circle_code_required)
                 return@setOnClickListener
             }
+
             onJoinCircleByCode(code)
             dismiss()
         }
+
         binding.btnCreate.setOnClickListener {
             val name = binding.etGroupName.text?.toString()?.trim().orEmpty()
             if (name.isEmpty()) {
                 binding.etGroupName.error = getString(R.string.error_group_name_required)
                 return@setOnClickListener
             }
-            val max = binding.sliderMembers.value.toInt()
-            onCreateCircle(name, max)
+
+            val maxParticipants = binding.sliderMembers.value.toInt()
+            onCreateCircle(name, maxParticipants)
             dismiss()
         }
     }

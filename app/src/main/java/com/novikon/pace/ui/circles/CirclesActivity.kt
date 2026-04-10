@@ -71,28 +71,6 @@ class CirclesActivity : AppCompatActivity() {
         }
     }
 
-    private fun createCircle(name: String) {
-        lifecycleScope.launch {
-            val createdId = circlesManager.createCircle(name)
-            if (createdId == null) {
-                Toast.makeText(
-                    this@CirclesActivity,
-                    getString(R.string.circle_create_error),
-                    Toast.LENGTH_SHORT
-                ).show()
-                return@launch
-            }
-
-            Toast.makeText(
-                this@CirclesActivity,
-                getString(R.string.circle_created),
-                Toast.LENGTH_SHORT
-            ).show()
-
-            loadCircles()
-        }
-    }
-
     private fun createCircle(name: String, maxParticipants: Int) {
         lifecycleScope.launch {
             val createdId = circlesManager.createCircle(name, maxParticipants)
@@ -101,19 +79,21 @@ class CirclesActivity : AppCompatActivity() {
                 if (createdId != null) getString(R.string.circle_created) else getString(R.string.circle_create_error),
                 Toast.LENGTH_SHORT
             ).show()
+
             if (createdId != null) loadCircles()
         }
     }
 
     private fun joinByCode(code: String) {
         lifecycleScope.launch {
-            val ok = circlesManager.joinCircleByCode(code)
+            val success = circlesManager.joinCircleByCode(code)
             Toast.makeText(
                 this@CirclesActivity,
-                if (ok) getString(R.string.circle_joined) else getString(R.string.circle_join_error),
+                if (success) getString(R.string.circle_joined) else getString(R.string.circle_join_error),
                 Toast.LENGTH_SHORT
             ).show()
-            if (ok) loadCircles()
+
+            if (success) loadCircles()
         }
     }
 }

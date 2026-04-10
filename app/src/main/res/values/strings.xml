@@ -305,4 +305,9 @@
     <string name="member_remove_error">No se pudo expulsar al miembro</string>
 
     <string name="error_circle_code_required">Introduce el código de invitación</string>
+    <string name="delete_group">Eliminar círculo</string>
+    <string name="delete_group_confirm">Esta acción eliminará el círculo para todos los miembros. ¿Deseas continuar?</string>
+    <string name="delete_group_confirm_button">Eliminar</string>
+    <string name="group_deleted">Círculo eliminado</string>
+    <string name="group_delete_error">No se pudo eliminar el círculo</string>
 </resources>

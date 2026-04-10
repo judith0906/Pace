@@ -306,5 +306,10 @@
     <string name="member_remove_error">Impossible d’exclure le membre</string>
 
     <string name="error_circle_code_required">Saisissez le code d’invitation</string>
+    <string name="delete_group">Supprimer le cercle</string>
+    <string name="delete_group_confirm">Cette action supprimera le cercle pour tous les membres. Voulez-vous continuer ?</string>
+    <string name="delete_group_confirm_button">Supprimer</string>
+    <string name="group_deleted">Cercle supprimé</string>
+    <string name="group_delete_error">Impossible de supprimer le cercle</string>
 
 </resources>
