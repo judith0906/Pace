@@ -90,7 +90,7 @@ class CirclesRealtimeManager {
 
     suspend fun joinCircleByCode(codeRaw: String): Boolean {
         val userId = getUserId() ?: return false
-        val code = codeRaw.trim().uppercase()
+        val code = codeRaw.trim()
         if (code.isBlank()) return false
 
         val circleId = suspendCancellableCoroutine<String?> { continuation ->
@@ -106,7 +106,12 @@ class CirclesRealtimeManager {
                 })
         } ?: return false
 
-        return addMemberToCircleTransactional(circleId, userId)
+        val joined = addMemberToCircleTransactional(circleId, userId)
+        if (joined) {
+            val joinedUserName = getUserName()
+            sendSystemMessage(circleId, "$joinedUserName se ha unido al círculo")
+        }
+        return joined
     }
 
     private suspend fun addMemberToCircleTransactional(circleId: String, targetUserId: String): Boolean {
@@ -158,6 +163,29 @@ class CirclesRealtimeManager {
                     continuation.resume(false)
                 }
             })
+        }
+    }
+
+    suspend fun leaveCircle(circleId: String): Boolean {
+        val uid = getUserId() ?: return false
+        val info = getGroupInfo(circleId) ?: return false
+
+        // El admin no "sale"; usa eliminar círculo
+        if (info.createdBy == uid) return false
+
+        return suspendCancellableCoroutine { continuation ->
+            val updates = mapOf(
+                "circles/$circleId/members/$uid" to null,
+                "users/$uid/circles/$circleId" to null
+            )
+
+            database.reference.updateChildren(updates)
+                .addOnSuccessListener {
+                    continuation.resume(true)
+                }
+                .addOnFailureListener {
+                    continuation.resume(false)
+                }
         }
     }
 
@@ -271,17 +299,26 @@ class CirclesRealtimeManager {
     }
 
     suspend fun getMemberDisplayNames(userIds: List<String>): List<CircleMember> {
+        val me = getUserId()
         val result = mutableListOf<CircleMember>()
+
         for (uid in userIds) {
             val displayName = suspendCancellableCoroutine<String> { continuation ->
                 database.getReference("users/$uid/profile/displayName")
                     .addListenerForSingleValueEvent(object : ValueEventListener {
                         override fun onDataChange(snapshot: DataSnapshot) {
-                            continuation.resume(snapshot.getValue(String::class.java) ?: uid)
+                            val name = snapshot.getValue(String::class.java)
+                            continuation.resume(
+                                when {
+                                    !name.isNullOrBlank() -> name
+                                    uid == me -> getUserName()
+                                    else -> "Usuario"
+                                }
+                            )
                         }
 
                         override fun onCancelled(error: DatabaseError) {
-                            continuation.resume(uid)
+                            continuation.resume(if (uid == me) getUserName() else "Usuario")
                         }
                     })
             }
@@ -354,6 +391,29 @@ class CirclesRealtimeManager {
 
         return suspendCancellableCoroutine { continuation ->
             database.reference.updateChildren(updates)
+                .addOnSuccessListener { continuation.resume(true) }
+                .addOnFailureListener { continuation.resume(false) }
+        }
+    }
+
+    private suspend fun sendSystemMessage(circleId: String, text: String): Boolean {
+        return suspendCancellableCoroutine { continuation ->
+            val messagesRef = database.getReference("circles/$circleId/messages")
+            val newMsgRef = messagesRef.push()
+            val messageId = newMsgRef.key ?: run {
+                continuation.resume(false)
+                return@suspendCancellableCoroutine
+            }
+
+            val messageMap = mapOf(
+                "id" to messageId,
+                "text" to text,
+                "senderId" to "system",
+                "senderName" to "system",
+                "timestamp" to System.currentTimeMillis()
+            )
+
+            newMsgRef.setValue(messageMap)
                 .addOnSuccessListener { continuation.resume(true) }
                 .addOnFailureListener { continuation.resume(false) }
         }

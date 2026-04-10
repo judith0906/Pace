@@ -8,7 +8,6 @@ import android.view.inputmethod.EditorInfo
 import android.widget.ArrayAdapter
 import android.widget.Button
 import android.widget.EditText
-import android.widget.ImageButton
 import android.widget.ListView
 import android.widget.TextView
 import android.widget.Toast
@@ -18,6 +17,7 @@ import androidx.appcompat.widget.Toolbar
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.google.android.material.button.MaterialButton
 import com.google.android.material.textfield.TextInputEditText
 import com.google.firebase.database.ChildEventListener
 import com.novikon.pace.R
@@ -36,7 +36,7 @@ class CircleChatActivity : AppCompatActivity() {
     private lateinit var toolbar: Toolbar
     private lateinit var rvMessages: RecyclerView
     private lateinit var etMessage: TextInputEditText
-    private lateinit var btnSend: ImageButton
+    private lateinit var btnSend: android.widget.ImageButton
 
     private val circlesManager = CirclesRealtimeManager()
     private lateinit var messagesAdapter: MessagesAdapter
@@ -78,12 +78,10 @@ class CircleChatActivity : AppCompatActivity() {
                 showGroupInfoDialog()
                 true
             }
-
             R.id.action_block_user -> {
                 showBlockUserDialog()
                 true
             }
-
             else -> super.onOptionsItemSelected(item)
         }
     }
@@ -164,16 +162,22 @@ class CircleChatActivity : AppCompatActivity() {
 
             val view = layoutInflater.inflate(R.layout.dialog_group_info, null)
             val tvGroupName = view.findViewById<TextView>(R.id.tv_group_name)
-            val btnDeleteGroup = view.findViewById<com.google.android.material.button.MaterialButton>(R.id.btn_delete_group)
+            val btnDeleteGroup = view.findViewById<MaterialButton>(R.id.btn_delete_group)
             val tvJoinCode = view.findViewById<TextView>(R.id.tv_join_code)
             val tvMembersSummary = view.findViewById<TextView>(R.id.tv_members_summary)
             val layoutAdminMax = view.findViewById<View>(R.id.layout_admin_max)
             val etNewMax = view.findViewById<EditText>(R.id.et_new_max)
             val btnSaveMax = view.findViewById<Button>(R.id.btn_save_max)
             val lvMembers = view.findViewById<ListView>(R.id.lv_members)
+            val btnLeaveGroup = view.findViewById<MaterialButton>(R.id.btn_leave_group)
 
             tvGroupName.text = info.name
-            tvJoinCode.text = if (info.joinCode.isBlank()) "-" else info.joinCode
+            tvJoinCode.text = if (isAdmin) {
+                if (info.joinCode.isBlank()) "-" else info.joinCode
+            } else {
+                getString(R.string.hidden_for_members)
+            }
+
             tvMembersSummary.text = getString(
                 R.string.group_members_summary,
                 members.size,
@@ -247,7 +251,29 @@ class CircleChatActivity : AppCompatActivity() {
 
                     true
                 }
+            } else {
+                btnLeaveGroup.visibility = View.VISIBLE
+                btnLeaveGroup.setOnClickListener {
+                    AlertDialog.Builder(this@CircleChatActivity)
+                        .setTitle(getString(R.string.leave_group))
+                        .setMessage(getString(R.string.leave_group_confirm))
+                        .setPositiveButton(getString(R.string.leave_group)) { _, _ ->
+                            lifecycleScope.launch {
+                                val ok = circlesManager.leaveCircle(circleId)
+                                Toast.makeText(
+                                    this@CircleChatActivity,
+                                    if (ok) getString(R.string.group_left) else getString(R.string.group_left_error),
+                                    Toast.LENGTH_SHORT
+                                ).show()
+                                if (ok) finish()
+                            }
+                        }
+                        .setNegativeButton(getString(R.string.cancel), null)
+                        .show()
+                }
             }
+
+            if (isFinishing || isDestroyed) return@launch
 
             AlertDialog.Builder(this@CircleChatActivity)
                 .setTitle(getString(R.string.group_info))

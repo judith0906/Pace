@@ -18,6 +18,7 @@ class MessagesAdapter(
     companion object {
         private const val VIEW_TYPE_SENT = 1
         private const val VIEW_TYPE_RECEIVED = 2
+        private const val VIEW_TYPE_SYSTEM = 3
 
         private fun formatTime(timestamp: Long): String {
             if (timestamp == 0L) return ""
@@ -33,22 +34,31 @@ class MessagesAdapter(
     }
 
     override fun getItemViewType(position: Int): Int {
-        return if (messages[position].senderId == currentUserId) {
-            VIEW_TYPE_SENT
-        } else {
-            VIEW_TYPE_RECEIVED
+        val msg = messages[position]
+        return when {
+            msg.senderId == "system" -> VIEW_TYPE_SYSTEM
+            msg.senderId == currentUserId -> VIEW_TYPE_SENT
+            else -> VIEW_TYPE_RECEIVED
         }
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
-        return if (viewType == VIEW_TYPE_SENT) {
-            val view = LayoutInflater.from(parent.context)
-                .inflate(R.layout.item_message_sent, parent, false)
-            SentMessageViewHolder(view)
-        } else {
-            val view = LayoutInflater.from(parent.context)
-                .inflate(R.layout.item_message_received, parent, false)
-            ReceivedMessageViewHolder(view)
+        return when (viewType) {
+            VIEW_TYPE_SENT -> {
+                val view = LayoutInflater.from(parent.context)
+                    .inflate(R.layout.item_message_sent, parent, false)
+                SentMessageViewHolder(view)
+            }
+            VIEW_TYPE_RECEIVED -> {
+                val view = LayoutInflater.from(parent.context)
+                    .inflate(R.layout.item_message_received, parent, false)
+                ReceivedMessageViewHolder(view)
+            }
+            else -> {
+                val view = LayoutInflater.from(parent.context)
+                    .inflate(R.layout.item_message_system, parent, false)
+                SystemMessageViewHolder(view)
+            }
         }
     }
 
@@ -57,6 +67,7 @@ class MessagesAdapter(
         when (holder) {
             is SentMessageViewHolder -> holder.bind(message)
             is ReceivedMessageViewHolder -> holder.bind(message)
+            is SystemMessageViewHolder -> holder.bind(message)
         }
     }
 
@@ -81,6 +92,14 @@ class MessagesAdapter(
             tvSenderName.text = message.senderName
             tvText.text = message.text
             tvTime.text = formatTime(message.timestamp)
+        }
+    }
+
+    class SystemMessageViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+        private val tvSystemMessage: TextView = itemView.findViewById(R.id.tv_system_message)
+
+        fun bind(message: Message) {
+            tvSystemMessage.text = message.text
         }
     }
 }

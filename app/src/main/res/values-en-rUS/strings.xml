@@ -311,4 +311,9 @@
     <string name="delete_group_confirm_button">Delete</string>
     <string name="group_deleted">Circle deleted</string>
     <string name="group_delete_error">Could not delete the circle</string>
+    <string name="hidden_for_members">Visible to admins only</string>
+    <string name="leave_group">Leave group</string>
+    <string name="leave_group_confirm">Are you sure you want to leave the group?</string>
+    <string name="group_left">You left the group</string>
+    <string name="group_left_error">Could not leave the group</string>
 </resources>

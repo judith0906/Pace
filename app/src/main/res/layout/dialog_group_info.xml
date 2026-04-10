@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:padding="20dp">
 
     <LinearLayout
@@ -88,5 +88,15 @@
             android:layout_width="match_parent"
             android:layout_height="220dp"
             android:dividerHeight="1dp" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btn_leave_group"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:text="@string/leave_group"
+            android:textColor="@color/white"
+            android:visibility="gone"
+            app:backgroundTint="@color/error_red" />
     </LinearLayout>
 </ScrollView>

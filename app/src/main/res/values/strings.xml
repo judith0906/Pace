@@ -310,4 +310,9 @@
     <string name="delete_group_confirm_button">Eliminar</string>
     <string name="group_deleted">Círculo eliminado</string>
     <string name="group_delete_error">No se pudo eliminar el círculo</string>
+    <string name="hidden_for_members">Solo visible para administradores</string>
+    <string name="leave_group">Salir del grupo</string>
+    <string name="leave_group_confirm">¿Seguro que quieres salir del grupo?</string>
+    <string name="group_left">Has salido del grupo</string>
+    <string name="group_left_error">No se pudo salir del grupo</string>
 </resources>

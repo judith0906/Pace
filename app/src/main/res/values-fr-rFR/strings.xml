@@ -311,5 +311,10 @@
     <string name="delete_group_confirm_button">Supprimer</string>
     <string name="group_deleted">Cercle supprimé</string>
     <string name="group_delete_error">Impossible de supprimer le cercle</string>
+    <string name="hidden_for_members">Visible uniquement pour les administrateurs</string>
+    <string name="leave_group">Quitter le groupe</string>
+    <string name="leave_group_confirm">Voulez-vous vraiment quitter le groupe ?</string>
+    <string name="group_left">Vous avez quitté le groupe</string>
+    <string name="group_left_error">Impossible de quitter le groupe</string>
 
 </resources>
