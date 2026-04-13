@@ -325,4 +325,10 @@
     <string name="block_user_confirm">¿Quieres bloquear a %1$s?</string>
     <string name="block_and_left_group_success">Usuario bloqueado. Has salido del círculo.</string>
     <string name="block_and_remove_success">Usuario bloqueado y expulsado del círculo.</string>
+
+    <string name="circle_code_not_found">No existe ningún círculo con ese código</string>
+    <string name="circle_not_found">No se encontró el círculo</string>
+    <string name="cannot_join_blocked_user">No puedes unirte porque hay un bloqueo activo entre miembros</string>
+    <string name="circle_join_error_group_full_or_permissions">No fue posible unirse (grupo lleno o sin permisos)</string>
+    <string name="error_code_6_digits">Introduce 6 dígitos</string>
 </resources>

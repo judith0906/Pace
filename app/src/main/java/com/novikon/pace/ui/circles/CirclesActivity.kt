@@ -86,14 +86,34 @@ class CirclesActivity : AppCompatActivity() {
 
     private fun joinByCode(code: String) {
         lifecycleScope.launch {
-            val success = circlesManager.joinCircleByCode(code)
-            Toast.makeText(
-                this@CirclesActivity,
-                if (success) getString(R.string.circle_joined) else getString(R.string.circle_join_error),
-                Toast.LENGTH_SHORT
-            ).show()
+            val result = circlesManager.joinCircleByCode(code)
 
-            if (success) loadCircles()
+            if (result.success) {
+                Toast.makeText(
+                    this@CirclesActivity,
+                    getString(R.string.circle_joined),
+                    Toast.LENGTH_SHORT
+                ).show()
+                loadCircles()
+                return@launch
+            }
+
+            val msg = when (result.reason) {
+                com.novikon.pace.data.JoinFailReason.INVALID_CODE ->
+                    getString(R.string.error_code_6_digits)
+                com.novikon.pace.data.JoinFailReason.CODE_NOT_FOUND ->
+                    getString(R.string.circle_code_not_found)
+                com.novikon.pace.data.JoinFailReason.GROUP_NOT_FOUND ->
+                    getString(R.string.circle_not_found)
+                com.novikon.pace.data.JoinFailReason.BLOCKED ->
+                    getString(R.string.cannot_join_blocked_user)
+                com.novikon.pace.data.JoinFailReason.GROUP_FULL_OR_TRANSACTION_FAILED ->
+                    getString(R.string.circle_join_error_group_full_or_permissions)
+                null ->
+                    getString(R.string.circle_join_error)
+            }
+
+            Toast.makeText(this@CirclesActivity, msg, Toast.LENGTH_SHORT).show()
         }
     }
 }

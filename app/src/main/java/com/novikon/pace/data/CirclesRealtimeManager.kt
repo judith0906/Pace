@@ -29,6 +29,18 @@ data class BlockActionResult(
     val blockerLeftGroup: Boolean,
     val blockedUserRemoved: Boolean
 )
+enum class JoinFailReason {
+    INVALID_CODE,
+    CODE_NOT_FOUND,
+    GROUP_NOT_FOUND,
+    BLOCKED,
+    GROUP_FULL_OR_TRANSACTION_FAILED
+}
+
+data class JoinResult(
+    val success: Boolean,
+    val reason: JoinFailReason? = null
+)
 
 class CirclesRealtimeManager {
 
@@ -120,10 +132,10 @@ class CirclesRealtimeManager {
         }
     }
 
-    suspend fun joinCircleByCode(codeRaw: String): Boolean {
-        val userId = getUserId() ?: return false
+    suspend fun joinCircleByCode(codeRaw: String): JoinResult {
+        val userId = getUserId() ?: return JoinResult(false, JoinFailReason.GROUP_NOT_FOUND)
         val code = codeRaw.trim()
-        if (!code.matches(Regex("^\\d{6}$"))) return false
+        if (!code.matches(Regex("^\\d{6}$"))) return JoinResult(false, JoinFailReason.INVALID_CODE)
 
         val circleId = suspendCancellableCoroutine<String?> { cont ->
             database.getReference("circleJoinCodes/$code")
@@ -136,20 +148,34 @@ class CirclesRealtimeManager {
                         cont.resume(null)
                     }
                 })
-        } ?: return false
+        } ?: return JoinResult(false, JoinFailReason.CODE_NOT_FOUND)
 
-        val info = getGroupInfo(circleId) ?: return false
+        // Leer SOLO members (permitido por reglas), no /circles/$circleId completo
+        val memberIds = suspendCancellableCoroutine<List<String>> { cont ->
+            database.getReference("circles/$circleId/members")
+                .addListenerForSingleValueEvent(object : ValueEventListener {
+                    override fun onDataChange(snapshot: DataSnapshot) {
+                        cont.resume(snapshot.children.mapNotNull { it.key })
+                    }
 
-        // No permitir reingreso si hay bloqueo en cualquier dirección con miembros actuales
-        for (memberId in info.memberIds) {
-            if (existsBlockBetween(memberId, userId)) return false
+                    override fun onCancelled(error: DatabaseError) {
+                        cont.resume(emptyList())
+                    }
+                })
+        }
+
+        // Bloqueo bidireccional con miembros actuales
+        for (memberId in memberIds) {
+            if (existsBlockBetween(memberId, userId)) {
+                return JoinResult(false, JoinFailReason.BLOCKED)
+            }
         }
 
         val joined = addMemberToCircleTransactional(circleId, userId)
-        if (joined) {
-            sendSystemMessage(circleId, "${getUserName()} se ha unido al círculo")
-        }
-        return joined
+        if (!joined) return JoinResult(false, JoinFailReason.GROUP_FULL_OR_TRANSACTION_FAILED)
+
+        sendSystemMessage(circleId, "${getUserName()} se ha unido al círculo")
+        return JoinResult(true, null)
     }
 
     private suspend fun addMemberToCircleTransactional(circleId: String, targetUserId: String): Boolean {

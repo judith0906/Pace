@@ -327,4 +327,10 @@
     <string name="block_and_left_group_success">Utilisateur bloqué. Vous avez quitté le cercle.</string>
     <string name="block_and_remove_success">Utilisateur bloqué et exclu du cercle.</string>
 
+    <string name="circle_code_not_found">Aucun cercle trouvé avec ce code</string>
+    <string name="circle_not_found">Cercle introuvable</string>
+    <string name="cannot_join_blocked_user">Impossible de rejoindre : un blocage actif existe entre membres</string>
+    <string name="circle_join_error_group_full_or_permissions">Impossible de rejoindre (groupe complet ou permissions manquantes)</string>
+    <string name="error_code_6_digits">Saisissez 6 chiffres</string>
+
 </resources>

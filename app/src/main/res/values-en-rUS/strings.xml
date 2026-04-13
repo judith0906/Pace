@@ -326,4 +326,10 @@
     <string name="block_user_confirm">Do you want to block %1$s?</string>
     <string name="block_and_left_group_success">User blocked. You left the circle.</string>
     <string name="block_and_remove_success">User blocked and removed from the circle.</string>
+
+    <string name="circle_code_not_found">No circle found with that code</string>
+    <string name="circle_not_found">Circle not found</string>
+    <string name="cannot_join_blocked_user">You cannot join because there is an active block between members</string>
+    <string name="circle_join_error_group_full_or_permissions">Could not join (group is full or missing permissions)</string>
+    <string name="error_code_6_digits">Enter 6 digits</string>
 </resources>
