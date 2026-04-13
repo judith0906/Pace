@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.google.android.material.card.MaterialCardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginBottom="10dp"
+    app:cardBackgroundColor="@color/background_card"
+    app:cardCornerRadius="14dp"
+    app:cardElevation="1dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:padding="12dp">
+
+        <ImageView
+            android:id="@+id/iv_blocked_profile"
+            android:layout_width="44dp"
+            android:layout_height="44dp"
+            android:src="@drawable/ic_person"
+            android:contentDescription="@string/change_profile_photo"
+            android:background="@drawable/bg_send_button"
+            android:padding="8dp" />
+
+        <TextView
+            android:id="@+id/tv_blocked_name"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:layout_marginStart="12dp"
+            android:textColor="@color/text_primary"
+            android:textSize="15sp"
+            android:textStyle="bold" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btn_unblock"
+            android:layout_width="wrap_content"
+            android:layout_height="36dp"
+            android:text="@string/unblock_user"
+            android:textAllCaps="false"
+            android:textColor="@color/white"
+            app:backgroundTint="@color/error_red" />
+    </LinearLayout>
+</com.google.android.material.card.MaterialCardView>

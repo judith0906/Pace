@@ -315,4 +315,14 @@
     <string name="leave_group_confirm">¿Seguro que quieres salir del grupo?</string>
     <string name="group_left">Has salido del grupo</string>
     <string name="group_left_error">No se pudo salir del grupo</string>
+
+    <string name="unblock_user">Desbloquear</string>
+    <string name="unblock_user_confirm">¿Quieres desbloquear a %1$s?</string>
+    <string name="user_unblocked">Usuario desbloqueado</string>
+    <string name="unblock_user_error">No se pudo desbloquear al usuario</string>
+    <string name="no_blocked_users">No tienes usuarios bloqueados</string>
+
+    <string name="block_user_confirm">¿Quieres bloquear a %1$s?</string>
+    <string name="block_and_left_group_success">Usuario bloqueado. Has salido del círculo.</string>
+    <string name="block_and_remove_success">Usuario bloqueado y expulsado del círculo.</string>
 </resources>

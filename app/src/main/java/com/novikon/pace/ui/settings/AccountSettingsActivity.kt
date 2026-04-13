@@ -2,11 +2,14 @@ package com.novikon.pace.ui.settings
 
 import android.content.Intent
 import android.os.Bundle
+import android.view.View
 import android.widget.ImageButton
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.lifecycleScope
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.textfield.TextInputEditText
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
@@ -17,11 +20,13 @@ import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
 import com.google.firebase.ktx.Firebase
 import com.novikon.pace.R
+import com.novikon.pace.data.CirclesRealtimeManager
 import com.novikon.pace.data.HabitsManager
 import com.novikon.pace.helpers.LanguageHelper
 import com.novikon.pace.helpers.ThemeHelper
 import com.novikon.pace.ui.login.LoginActivity
 import com.novikon.pace.utils.SessionManager
+import kotlinx.coroutines.launch
 import java.util.TimeZone
 
 class AccountSettingsActivity : AppCompatActivity() {
@@ -33,6 +38,9 @@ class AccountSettingsActivity : AppCompatActivity() {
     private lateinit var database: FirebaseDatabase
     private lateinit var habitsManager: HabitsManager
     private lateinit var sessionManager: SessionManager
+
+    private val circlesManager by lazy { CirclesRealtimeManager() }
+    private var blockedUsersDialog: AlertDialog? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -60,54 +68,48 @@ class AccountSettingsActivity : AppCompatActivity() {
     }
 
     private fun setupListeners() {
-        backButton.setOnClickListener {
-            finish()
-        }
+        backButton.setOnClickListener { finish() }
 
-        findViewById<android.view.View>(R.id.changeNameOption).setOnClickListener {
+        findViewById<View>(R.id.changeNameOption).setOnClickListener {
             showChangeNameDialog()
         }
 
-        // La zona horaria es solo informativa — siempre se coge del sistema,
-        // no hay nada que configurar al pulsarla
-        findViewById<android.view.View>(R.id.timezoneOption).setOnClickListener { }
+        // Zona horaria informativa
+        findViewById<View>(R.id.timezoneOption).setOnClickListener { }
 
-        findViewById<android.view.View>(R.id.signOutAllDevicesOption).setOnClickListener {
+        findViewById<View>(R.id.signOutAllDevicesOption).setOnClickListener {
             showSignOutAllDevicesDialog()
         }
 
-        findViewById<android.view.View>(R.id.viewActiveDevicesOption).setOnClickListener {
+        findViewById<View>(R.id.viewActiveDevicesOption).setOnClickListener {
             startActivity(Intent(this, ActiveDevicesActivity::class.java))
         }
 
-        findViewById<android.view.View>(R.id.whoCanInviteOption).setOnClickListener {
+        findViewById<View>(R.id.whoCanInviteOption).setOnClickListener {
             showPrivacyDialog(getString(R.string.who_can_invite_circles))
         }
 
-        findViewById<android.view.View>(R.id.whoCanSeeHabitsOption).setOnClickListener {
+        findViewById<View>(R.id.whoCanSeeHabitsOption).setOnClickListener {
             showPrivacyDialog(getString(R.string.who_can_see_habits))
         }
 
-        findViewById<android.view.View>(R.id.blockUsersOption).setOnClickListener {
+        findViewById<View>(R.id.blockUsersOption).setOnClickListener {
+            showBlockedUsersDialog()
+        }
+
+        findViewById<View>(R.id.downloadDataOption).setOnClickListener {
             Toast.makeText(this, getString(R.string.coming_soon), Toast.LENGTH_SHORT).show()
         }
 
-        findViewById<android.view.View>(R.id.downloadDataOption).setOnClickListener {
-            Toast.makeText(this, getString(R.string.coming_soon), Toast.LENGTH_SHORT).show()
-        }
-
-        findViewById<android.view.View>(R.id.deleteAccountOption).setOnClickListener {
+        findViewById<View>(R.id.deleteAccountOption).setOnClickListener {
             showDeleteAccountDialog()
         }
     }
-
-    // ========== CARGAR NOMBRE ==========
 
     private fun loadUserName() {
         val user = auth.currentUser ?: return
         val userId = user.uid
 
-        // Escuchar cambios en tiempo real desde Firebase
         database.getReference("users/$userId/profile/displayName")
             .addValueEventListener(object : ValueEventListener {
                 override fun onDataChange(snapshot: DataSnapshot) {
@@ -116,18 +118,11 @@ class AccountSettingsActivity : AppCompatActivity() {
                 }
 
                 override fun onCancelled(error: DatabaseError) {
-                    // Fallback a Firebase Auth
                     currentNameText.text = user.displayName ?: "Usuario"
                 }
             })
     }
 
-    // ========== ZONA HORARIA ==========
-
-    // Lee la zona horaria directamente del sistema en cada apertura de la pantalla.
-    // TimeZone.getDefault() siempre devuelve el valor actual del dispositivo,
-    // por lo que si el usuario la cambió en los ajustes del móvil, aquí
-    // ya aparecerá actualizada sin necesidad de ningún botón extra.
     private fun loadSystemTimezone() {
         val tz = TimeZone.getDefault()
         val offsetMs = tz.rawOffset
@@ -139,13 +134,9 @@ class AccountSettingsActivity : AppCompatActivity() {
             else -> "GMT%+d".format(offsetHours)
         }
 
-        // Convertir el ID estilo "Europe/Madrid" a "Europa/Madrid"
-        // reemplazando guiones bajos por espacios para mejor legibilidad
         val readableName = tz.id.replace("_", " ")
         currentTimezoneText.text = "$readableName ($gmtOffset)"
     }
-
-    // ========== CAMBIAR NOMBRE ==========
 
     private fun showChangeNameDialog() {
         val dialogView = layoutInflater.inflate(R.layout.dialog_input, null)
@@ -159,9 +150,7 @@ class AccountSettingsActivity : AppCompatActivity() {
             .setView(dialogView)
             .setPositiveButton(getString(R.string.save)) { _, _ ->
                 val newName = nameInput.text.toString().trim()
-                if (newName.isNotEmpty()) {
-                    changeName(newName)
-                }
+                if (newName.isNotEmpty()) changeName(newName)
             }
             .setNegativeButton(getString(R.string.cancel), null)
             .show()
@@ -171,11 +160,9 @@ class AccountSettingsActivity : AppCompatActivity() {
         val user = auth.currentUser ?: return
         val userId = user.uid
 
-        // 1. Guardar en Realtime Database
         database.getReference("users/$userId/profile/displayName")
             .setValue(newName)
             .addOnSuccessListener {
-                // 2. Actualizar en Firebase Auth
                 val profileUpdates = userProfileChangeRequest {
                     displayName = newName
                 }
@@ -183,7 +170,6 @@ class AccountSettingsActivity : AppCompatActivity() {
                 user.updateProfile(profileUpdates)
                     .addOnSuccessListener {
                         Toast.makeText(this, getString(R.string.name_changed_success), Toast.LENGTH_SHORT).show()
-                        // El listener en loadUserName() y en MainActivity actualizarán automáticamente
                     }
                     .addOnFailureListener { e ->
                         Toast.makeText(this, "${getString(R.string.error)}${e.message}", Toast.LENGTH_LONG).show()
@@ -193,8 +179,6 @@ class AccountSettingsActivity : AppCompatActivity() {
                 Toast.makeText(this, "${getString(R.string.error)}${e.message}", Toast.LENGTH_LONG).show()
             }
     }
-
-    // ========== PRIVACIDAD ==========
 
     private fun showPrivacyDialog(title: String) {
         val options = arrayOf(
@@ -208,20 +192,67 @@ class AccountSettingsActivity : AppCompatActivity() {
             .setItems(options) { _, which ->
                 val selected = options[which]
                 Toast.makeText(this, "Seleccionado: $selected", Toast.LENGTH_SHORT).show()
-                // Aquí guardarías la preferencia en Firebase
             }
             .show()
     }
 
-    // ========== CERRAR SESIÓN EN TODOS LOS DISPOSITIVOS ==========
+    private fun showBlockedUsersDialog() {
+        val dialogView = layoutInflater.inflate(R.layout.dialog_blocked_users, null)
+        val rvBlockedUsers = dialogView.findViewById<androidx.recyclerview.widget.RecyclerView>(R.id.rv_blocked_users)
+        val tvEmpty = dialogView.findViewById<TextView>(R.id.tv_blocked_empty)
+
+        lateinit var adapter: BlockedUsersAdapter
+        adapter = BlockedUsersAdapter { blockedUser ->
+            showUnblockConfirmation(blockedUser.userId, blockedUser.displayName) {
+                loadBlockedUsersInto(adapter, tvEmpty)
+            }
+        }
+
+        rvBlockedUsers.layoutManager = LinearLayoutManager(this)
+        rvBlockedUsers.adapter = adapter
+
+        blockedUsersDialog = AlertDialog.Builder(this)
+            .setTitle(getString(R.string.block_users))
+            .setView(dialogView)
+            .setPositiveButton(getString(R.string.close), null)
+            .create()
+
+        blockedUsersDialog?.show()
+        loadBlockedUsersInto(adapter, tvEmpty)
+    }
+
+    private fun loadBlockedUsersInto(adapter: BlockedUsersAdapter, tvEmpty: TextView) {
+        lifecycleScope.launch {
+            val blockedUsers = circlesManager.getBlockedUsers()
+            adapter.submitList(blockedUsers)
+            tvEmpty.visibility = if (blockedUsers.isEmpty()) View.VISIBLE else View.GONE
+        }
+    }
+
+    private fun showUnblockConfirmation(targetUid: String, displayName: String, onDone: () -> Unit) {
+        AlertDialog.Builder(this)
+            .setTitle(getString(R.string.unblock_user))
+            .setMessage(getString(R.string.unblock_user_confirm, displayName))
+            .setPositiveButton(getString(R.string.unblock_user)) { _, _ ->
+                lifecycleScope.launch {
+                    val ok = circlesManager.unblockUser(targetUid)
+                    Toast.makeText(
+                        this@AccountSettingsActivity,
+                        if (ok) getString(R.string.user_unblocked) else getString(R.string.unblock_user_error),
+                        Toast.LENGTH_SHORT
+                    ).show()
+                    if (ok) onDone()
+                }
+            }
+            .setNegativeButton(getString(R.string.cancel), null)
+            .show()
+    }
 
     private fun showSignOutAllDevicesDialog() {
         AlertDialog.Builder(this)
             .setTitle(getString(R.string.sign_out_all_title))
             .setMessage(getString(R.string.sign_out_all_message))
-            .setPositiveButton(getString(R.string.yes)) { _, _ ->
-                signOutAllDevices()
-            }
+            .setPositiveButton(getString(R.string.yes)) { _, _ -> signOutAllDevices() }
             .setNegativeButton(getString(R.string.cancel), null)
             .show()
     }
@@ -229,9 +260,7 @@ class AccountSettingsActivity : AppCompatActivity() {
     private fun signOutAllDevices() {
         habitsManager.clearLocalData()
 
-        // Primero borrar Firebase (auth todavía activo), luego cerrar sesión
         sessionManager.markAllDevicesLoggedOut {
-            // Esto se ejecuta en el hilo IO, hay que volver al main para UI
             runOnUiThread {
                 auth.signOut()
                 Toast.makeText(this, getString(R.string.signed_out_all), Toast.LENGTH_SHORT).show()
@@ -243,8 +272,6 @@ class AccountSettingsActivity : AppCompatActivity() {
             }
         }
     }
-
-    // ========== ELIMINAR CUENTA ==========
 
     private fun showDeleteAccountDialog() {
         AlertDialog.Builder(this)
@@ -261,20 +288,18 @@ class AccountSettingsActivity : AppCompatActivity() {
         val user = auth.currentUser ?: return
         val userId = user.uid
 
-        // 1. Eliminar datos de Firebase Realtime Database
         database.getReference("users/$userId")
             .removeValue()
             .addOnSuccessListener {
-                // 2. Eliminar cuenta de Firebase Auth
                 user.delete()
                     .addOnSuccessListener {
                         habitsManager.clearLocalData()
                         sessionManager.markUserLoggedOut()
-
                         Toast.makeText(this, getString(R.string.account_deleted), Toast.LENGTH_SHORT).show()
 
-                        val intent = Intent(this, LoginActivity::class.java)
-                        intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+                        val intent = Intent(this, LoginActivity::class.java).apply {
+                            flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+                        }
                         startActivity(intent)
                         finish()
                     }
@@ -285,5 +310,10 @@ class AccountSettingsActivity : AppCompatActivity() {
             .addOnFailureListener { e ->
                 Toast.makeText(this, "${getString(R.string.error)}${e.message}", Toast.LENGTH_LONG).show()
             }
+    }
+
+    override fun onDestroy() {
+        blockedUsersDialog?.dismiss()
+        super.onDestroy()
     }
 }

@@ -316,4 +316,14 @@
     <string name="leave_group_confirm">Are you sure you want to leave the group?</string>
     <string name="group_left">You left the group</string>
     <string name="group_left_error">Could not leave the group</string>
+
+    <string name="unblock_user">Unblock</string>
+    <string name="unblock_user_confirm">Do you want to unblock %1$s?</string>
+    <string name="user_unblocked">User unblocked</string>
+    <string name="unblock_user_error">Could not unblock user</string>
+    <string name="no_blocked_users">You have no blocked users</string>
+
+    <string name="block_user_confirm">Do you want to block %1$s?</string>
+    <string name="block_and_left_group_success">User blocked. You left the circle.</string>
+    <string name="block_and_remove_success">User blocked and removed from the circle.</string>
 </resources>

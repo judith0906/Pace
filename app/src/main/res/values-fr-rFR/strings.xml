@@ -317,4 +317,14 @@
     <string name="group_left">Vous avez quitté le groupe</string>
     <string name="group_left_error">Impossible de quitter le groupe</string>
 
+    <string name="unblock_user">Débloquer</string>
+    <string name="unblock_user_confirm">Voulez-vous débloquer %1$s ?</string>
+    <string name="user_unblocked">Utilisateur débloqué</string>
+    <string name="unblock_user_error">Impossible de débloquer l’utilisateur</string>
+    <string name="no_blocked_users">Vous n’avez aucun utilisateur bloqué</string>
+
+    <string name="block_user_confirm">Voulez-vous bloquer %1$s ?</string>
+    <string name="block_and_left_group_success">Utilisateur bloqué. Vous avez quitté le cercle.</string>
+    <string name="block_and_remove_success">Utilisateur bloqué et exclu du cercle.</string>
+
 </resources>
