@@ -8,6 +8,7 @@ import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.MutableData
 import com.google.firebase.database.Transaction
 import com.google.firebase.database.ValueEventListener
+import com.novikon.pace.models.BlockedUser
 import com.novikon.pace.models.Circle
 import com.novikon.pace.models.CircleMember
 import com.novikon.pace.models.Message
@@ -22,6 +23,7 @@ data class GroupInfo(
     val maxParticipants: Int,
     val memberIds: List<String>
 )
+
 data class BlockActionResult(
     val success: Boolean,
     val blockerLeftGroup: Boolean,
@@ -38,6 +40,8 @@ class CirclesRealtimeManager {
     fun getUserName(): String = auth.currentUser?.displayName
         ?: auth.currentUser?.email?.substringBefore("@")
         ?: "Usuario"
+
+    // -------- CREATING / JOINING CIRCLES --------
 
     private fun randomJoinCode(length: Int = 6): String {
         return (1..length).map { ('0'..'9').random() }.joinToString("")
@@ -75,13 +79,14 @@ class CirclesRealtimeManager {
             }
 
             val timestamp = System.currentTimeMillis()
+            val safeMax = maxParticipants.coerceAtLeast(2)
 
             val updates = mapOf(
                 "circles/$circleId/name" to name,
                 "circles/$circleId/createdBy" to userId,
                 "circles/$circleId/createdAt" to timestamp,
                 "circles/$circleId/joinCode" to joinCode,
-                "circles/$circleId/maxParticipants" to maxParticipants,
+                "circles/$circleId/maxParticipants" to safeMax,
                 "circles/$circleId/members/$userId" to true,
                 "users/$userId/circles/$circleId" to true,
                 "circleJoinCodes/$joinCode" to circleId
@@ -96,7 +101,7 @@ class CirclesRealtimeManager {
     suspend fun joinCircleByCode(codeRaw: String): Boolean {
         val userId = getUserId() ?: return false
         val code = codeRaw.trim()
-        if (code.isBlank()) return false
+        if (!code.matches(Regex("^\\d{6}$"))) return false
 
         val circleId = suspendCancellableCoroutine<String?> { continuation ->
             database.getReference("circleJoinCodes/$code")
@@ -113,8 +118,8 @@ class CirclesRealtimeManager {
 
         val joined = addMemberToCircleTransactional(circleId, userId)
         if (joined) {
-            val joinedUserName = getUserName()
-            sendSystemMessage(circleId, "$joinedUserName se ha unido al círculo")
+            val joinedName = getUserName()
+            sendSystemMessage(circleId, "$joinedName se ha unido al círculo")
         }
         return joined
     }
@@ -175,7 +180,7 @@ class CirclesRealtimeManager {
         val uid = getUserId() ?: return false
         val info = getGroupInfo(circleId) ?: return false
 
-        // El admin no "sale"; usa eliminar círculo
+        // El admin no sale; para admin se usa deleteCircle
         if (info.createdBy == uid) return false
 
         return suspendCancellableCoroutine { continuation ->
@@ -186,13 +191,24 @@ class CirclesRealtimeManager {
 
             database.reference.updateChildren(updates)
                 .addOnSuccessListener {
+                    val leaverName = getUserName()
+                    // fire and forget, no bloquea el success principal
+                    database.getReference("circles/$circleId/messages").push().setValue(
+                        mapOf(
+                            "id" to "",
+                            "text" to "$leaverName ha abandonado el círculo",
+                            "senderId" to "system",
+                            "senderName" to "system",
+                            "timestamp" to System.currentTimeMillis()
+                        )
+                    )
                     continuation.resume(true)
                 }
-                .addOnFailureListener {
-                    continuation.resume(false)
-                }
+                .addOnFailureListener { continuation.resume(false) }
         }
     }
+
+    // -------- CIRCLE LIST / INFO --------
 
     suspend fun getUserCircles(): List<Circle> {
         val userId = getUserId() ?: return emptyList()
@@ -219,7 +235,7 @@ class CirclesRealtimeManager {
         }
 
         return circles.sortedByDescending {
-            it.lastMessageTime.takeIf { t -> t > 0 } ?: it.createdAt
+            it.lastMessageTime.takeIf { t -> t > 0L } ?: it.createdAt
         }
     }
 
@@ -238,14 +254,12 @@ class CirclesRealtimeManager {
                         val createdAt = snapshot.child("createdAt").getValue(Long::class.java) ?: 0L
                         val memberCount = snapshot.child("members").childrenCount.toInt()
 
-                        val lastMsgSnapshot = snapshot.child("messages")
                         var lastMessage = ""
                         var lastMessageTime = 0L
-
-                        if (lastMsgSnapshot.exists()) {
-                            val lastMsg = lastMsgSnapshot.children.lastOrNull()
-                            lastMessage = lastMsg?.child("text")?.getValue(String::class.java) ?: ""
-                            lastMessageTime = lastMsg?.child("timestamp")?.getValue(Long::class.java) ?: 0L
+                        val lastMsg = snapshot.child("messages").children.lastOrNull()
+                        if (lastMsg != null) {
+                            lastMessage = lastMsg.child("text").getValue(String::class.java) ?: ""
+                            lastMessageTime = lastMsg.child("timestamp").getValue(Long::class.java) ?: 0L
                         }
 
                         continuation.resume(
@@ -305,6 +319,7 @@ class CirclesRealtimeManager {
 
     suspend fun getMemberDisplayNames(userIds: List<String>): List<CircleMember> {
         val me = getUserId()
+        val myName = getUserName()
         val result = mutableListOf<CircleMember>()
 
         for (uid in userIds) {
@@ -312,24 +327,25 @@ class CirclesRealtimeManager {
                 database.getReference("users/$uid/profile/displayName")
                     .addListenerForSingleValueEvent(object : ValueEventListener {
                         override fun onDataChange(snapshot: DataSnapshot) {
-                            val name = snapshot.getValue(String::class.java)
+                            val name = snapshot.getValue(String::class.java)?.trim()
                             continuation.resume(
                                 when {
-                                    !name.isNullOrBlank() -> name
-                                    uid == me -> getUserName()   // tu propio nombre desde Auth
+                                    !name.isNullOrEmpty() -> name
+                                    uid == me -> myName
                                     else -> "Usuario"
                                 }
                             )
                         }
 
                         override fun onCancelled(error: DatabaseError) {
-                            continuation.resume(if (uid == me) getUserName() else "Usuario")
+                            continuation.resume(if (uid == me) myName else "Usuario")
                         }
                     })
             }
 
             result.add(CircleMember(userId = uid, displayName = displayName))
         }
+
         return result
     }
 
@@ -367,24 +383,14 @@ class CirclesRealtimeManager {
         }
     }
 
-    suspend fun blockUser(targetUid: String): Boolean {
-        val currentUid = getUserId() ?: return false
-
-        return suspendCancellableCoroutine { continuation ->
-            database.getReference("users/$currentUid/blocked/$targetUid")
-                .setValue(true)
-                .addOnSuccessListener { continuation.resume(true) }
-                .addOnFailureListener { continuation.resume(false) }
-        }
-    }
-
     suspend fun deleteCircle(circleId: String): Boolean {
         val currentUid = getUserId() ?: return false
         val info = getGroupInfo(circleId) ?: return false
         if (info.createdBy != currentUid) return false
 
-        val updates = mutableMapOf<String, Any?>()
-        updates["circles/$circleId"] = null
+        val updates = mutableMapOf<String, Any?>(
+            "circles/$circleId" to null
+        )
 
         if (info.joinCode.isNotBlank()) {
             updates["circleJoinCodes/${info.joinCode}"] = null
@@ -400,6 +406,131 @@ class CirclesRealtimeManager {
                 .addOnFailureListener { continuation.resume(false) }
         }
     }
+
+    // -------- BLOCKING --------
+
+    private suspend fun getDisplayName(uid: String): String {
+        return suspendCancellableCoroutine { continuation ->
+            database.getReference("users/$uid/profile/displayName")
+                .addListenerForSingleValueEvent(object : ValueEventListener {
+                    override fun onDataChange(snapshot: DataSnapshot) {
+                        val name = snapshot.getValue(String::class.java)
+                        continuation.resume(name?.takeIf { it.isNotBlank() } ?: "Usuario")
+                    }
+
+                    override fun onCancelled(error: DatabaseError) {
+                        continuation.resume("Usuario")
+                    }
+                })
+        }
+    }
+
+    suspend fun blockUser(targetUid: String): Boolean {
+        val currentUid = getUserId() ?: return false
+        return suspendCancellableCoroutine { continuation ->
+            database.getReference("users/$currentUid/blocked/$targetUid")
+                .setValue(true)
+                .addOnSuccessListener { continuation.resume(true) }
+                .addOnFailureListener { continuation.resume(false) }
+        }
+    }
+
+    suspend fun unblockUser(targetUid: String): Boolean {
+        val currentUid = getUserId() ?: return false
+        return suspendCancellableCoroutine { continuation ->
+            database.getReference("users/$currentUid/blocked/$targetUid")
+                .removeValue()
+                .addOnSuccessListener { continuation.resume(true) }
+                .addOnFailureListener { continuation.resume(false) }
+        }
+    }
+
+    suspend fun getBlockedUsers(): List<BlockedUser> {
+        val currentUid = getUserId() ?: return emptyList()
+
+        val blockedIds = suspendCancellableCoroutine<List<String>> { continuation ->
+            database.getReference("users/$currentUid/blocked")
+                .addListenerForSingleValueEvent(object : ValueEventListener {
+                    override fun onDataChange(snapshot: DataSnapshot) {
+                        continuation.resume(snapshot.children.mapNotNull { it.key })
+                    }
+
+                    override fun onCancelled(error: DatabaseError) {
+                        continuation.resume(emptyList())
+                    }
+                })
+        }
+
+        if (blockedIds.isEmpty()) return emptyList()
+
+        val result = mutableListOf<BlockedUser>()
+        for (uid in blockedIds) {
+            val name = getDisplayName(uid)
+
+            val photo = suspendCancellableCoroutine<String?> { continuation ->
+                database.getReference("users/$uid/profile/photoUrl")
+                    .addListenerForSingleValueEvent(object : ValueEventListener {
+                        override fun onDataChange(snapshot: DataSnapshot) {
+                            continuation.resume(snapshot.getValue(String::class.java))
+                        }
+
+                        override fun onCancelled(error: DatabaseError) {
+                            continuation.resume(null)
+                        }
+                    })
+            }
+
+            result.add(
+                BlockedUser(
+                    userId = uid,
+                    displayName = name,
+                    photoUrl = photo
+                )
+            )
+        }
+
+        return result
+    }
+
+    suspend fun blockUserWithPolicy(circleId: String, targetUid: String): BlockActionResult {
+        val blockerUid = getUserId() ?: return BlockActionResult(false, false, false)
+        val info = getGroupInfo(circleId) ?: return BlockActionResult(false, false, false)
+
+        val blockedOk = blockUser(targetUid)
+        if (!blockedOk) return BlockActionResult(false, false, false)
+
+        val blockerIsAdmin = info.createdBy == blockerUid
+
+        return if (blockerIsAdmin) {
+            if (targetUid == blockerUid) {
+                BlockActionResult(false, false, false)
+            } else {
+                val removed = removeMember(circleId, targetUid)
+                if (removed) {
+                    val targetName = getDisplayName(targetUid)
+                    sendSystemMessage(circleId, "$targetName ha abandonado el círculo")
+                }
+                BlockActionResult(
+                    success = removed,
+                    blockerLeftGroup = false,
+                    blockedUserRemoved = removed
+                )
+            }
+        } else {
+            val left = leaveCircle(circleId)
+            if (left) {
+                val blockerName = getDisplayName(blockerUid)
+                sendSystemMessage(circleId, "$blockerName ha abandonado el círculo")
+            }
+            BlockActionResult(
+                success = left,
+                blockerLeftGroup = left,
+                blockedUserRemoved = false
+            )
+        }
+    }
+
+    // -------- MESSAGES --------
 
     private suspend fun sendSystemMessage(circleId: String, text: String): Boolean {
         return suspendCancellableCoroutine { continuation ->
@@ -483,151 +614,5 @@ class CirclesRealtimeManager {
         database.getReference("circles/$circleId/messages")
             .orderByChild("timestamp")
             .removeEventListener(listener)
-    }
-
-    private suspend fun getDisplayName(uid: String): String {
-        return suspendCancellableCoroutine { continuation ->
-            database.getReference("users/$uid/profile/displayName")
-                .addListenerForSingleValueEvent(object : ValueEventListener {
-                    override fun onDataChange(snapshot: DataSnapshot) {
-                        val name = snapshot.getValue(String::class.java)
-                        continuation.resume(name?.takeIf { it.isNotBlank() } ?: "Usuario")
-                    }
-
-                    override fun onCancelled(error: DatabaseError) {
-                        continuation.resume("Usuario")
-                    }
-                })
-        }
-    }
-
-    private suspend fun sendSystemMessage(circleId: String, text: String): Boolean {
-        return suspendCancellableCoroutine { continuation ->
-            val messagesRef = database.getReference("circles/$circleId/messages")
-            val newMsgRef = messagesRef.push()
-            val messageId = newMsgRef.key ?: run {
-                continuation.resume(false)
-                return@suspendCancellableCoroutine
-            }
-
-            val messageMap = mapOf(
-                "id" to messageId,
-                "text" to text,
-                "senderId" to "system",
-                "senderName" to "system",
-                "timestamp" to System.currentTimeMillis()
-            )
-
-            newMsgRef.setValue(messageMap)
-                .addOnSuccessListener { continuation.resume(true) }
-                .addOnFailureListener { continuation.resume(false) }
-        }
-    }
-
-    suspend fun blockUser(targetUid: String): Boolean {
-        val currentUid = getUserId() ?: return false
-        return suspendCancellableCoroutine { continuation ->
-            database.getReference("users/$currentUid/blocked/$targetUid")
-                .setValue(true)
-                .addOnSuccessListener { continuation.resume(true) }
-                .addOnFailureListener { continuation.resume(false) }
-        }
-    }
-
-    suspend fun unblockUser(targetUid: String): Boolean {
-        val currentUid = getUserId() ?: return false
-        return suspendCancellableCoroutine { continuation ->
-            database.getReference("users/$currentUid/blocked/$targetUid")
-                .removeValue()
-                .addOnSuccessListener { continuation.resume(true) }
-                .addOnFailureListener { continuation.resume(false) }
-        }
-    }
-
-    suspend fun getBlockedUsers(): List<com.novikon.pace.models.BlockedUser> {
-        val currentUid = getUserId() ?: return emptyList()
-
-        val blockedIds = suspendCancellableCoroutine<List<String>> { continuation ->
-            database.getReference("users/$currentUid/blocked")
-                .addListenerForSingleValueEvent(object : ValueEventListener {
-                    override fun onDataChange(snapshot: DataSnapshot) {
-                        continuation.resume(snapshot.children.mapNotNull { it.key })
-                    }
-
-                    override fun onCancelled(error: DatabaseError) {
-                        continuation.resume(emptyList())
-                    }
-                })
-        }
-
-        if (blockedIds.isEmpty()) return emptyList()
-
-        val result = mutableListOf<com.novikon.pace.models.BlockedUser>()
-        for (uid in blockedIds) {
-            val name = getDisplayName(uid)
-            val photo = suspendCancellableCoroutine<String?> { continuation ->
-                database.getReference("users/$uid/profile/photoUrl")
-                    .addListenerForSingleValueEvent(object : ValueEventListener {
-                        override fun onDataChange(snapshot: DataSnapshot) {
-                            continuation.resume(snapshot.getValue(String::class.java))
-                        }
-
-                        override fun onCancelled(error: DatabaseError) {
-                            continuation.resume(null)
-                        }
-                    })
-            }
-
-            result.add(
-                com.novikon.pace.models.BlockedUser(
-                    userId = uid,
-                    displayName = name,
-                    photoUrl = photo
-                )
-            )
-        }
-
-        return result
-    }
-
-    suspend fun blockUserWithPolicy(circleId: String, targetUid: String): BlockActionResult {
-        val blockerUid = getUserId() ?: return BlockActionResult(false, false, false)
-        val info = getGroupInfo(circleId) ?: return BlockActionResult(false, false, false)
-
-        // 1) Guardar en lista de bloqueados del bloqueador
-        val blockedOk = blockUser(targetUid)
-        if (!blockedOk) return BlockActionResult(false, false, false)
-
-        val blockerIsAdmin = info.createdBy == blockerUid
-
-        return if (blockerIsAdmin) {
-            // Admin bloquea a otro -> expulsa al bloqueado del círculo
-            if (targetUid == blockerUid) {
-                BlockActionResult(false, false, false)
-            } else {
-                val removed = removeMember(circleId, targetUid)
-                if (removed) {
-                    val targetName = getDisplayName(targetUid)
-                    sendSystemMessage(circleId, "$targetName ha abandonado el círculo")
-                }
-                BlockActionResult(
-                    success = removed,
-                    blockerLeftGroup = false,
-                    blockedUserRemoved = removed
-                )
-            }
-        } else {
-            // No admin bloquea -> él mismo sale del círculo
-            val left = leaveCircle(circleId)
-            if (left) {
-                val blockerName = getDisplayName(blockerUid)
-                sendSystemMessage(circleId, "$blockerName ha abandonado el círculo")
-            }
-            BlockActionResult(
-                success = left,
-                blockerLeftGroup = left,
-                blockedUserRemoved = false
-            )
-        }
     }
 }
