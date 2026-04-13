@@ -5,10 +5,8 @@ import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import android.view.inputmethod.EditorInfo
-import android.widget.ArrayAdapter
 import android.widget.Button
 import android.widget.EditText
-import android.widget.ListView
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
@@ -76,10 +74,6 @@ class CircleChatActivity : AppCompatActivity() {
         return when (item.itemId) {
             R.id.action_group_info -> {
                 showGroupInfoDialog()
-                true
-            }
-            R.id.action_block_user -> {
-                showBlockUserDialog()
                 true
             }
             else -> super.onOptionsItemSelected(item)
@@ -158,7 +152,8 @@ class CircleChatActivity : AppCompatActivity() {
         lifecycleScope.launch {
             val info = circlesManager.getGroupInfo(circleId) ?: return@launch
             val members = circlesManager.getMemberDisplayNames(info.memberIds)
-            val isAdmin = circlesManager.getUserId() == info.createdBy
+            val myUid = circlesManager.getUserId()
+            val isAdmin = myUid == info.createdBy
 
             val view = layoutInflater.inflate(R.layout.dialog_group_info, null)
             val tvGroupName = view.findViewById<TextView>(R.id.tv_group_name)
@@ -168,7 +163,7 @@ class CircleChatActivity : AppCompatActivity() {
             val layoutAdminMax = view.findViewById<View>(R.id.layout_admin_max)
             val etNewMax = view.findViewById<EditText>(R.id.et_new_max)
             val btnSaveMax = view.findViewById<Button>(R.id.btn_save_max)
-            val lvMembers = view.findViewById<ListView>(R.id.lv_members)
+            val rvMembers = view.findViewById<RecyclerView>(R.id.rv_members)
             val btnLeaveGroup = view.findViewById<MaterialButton>(R.id.btn_leave_group)
 
             tvGroupName.text = info.name
@@ -184,11 +179,52 @@ class CircleChatActivity : AppCompatActivity() {
                 info.maxParticipants
             )
 
-            val memberNames = members.map { it.displayName }
-            lvMembers.adapter = ArrayAdapter(
-                this@CircleChatActivity,
-                android.R.layout.simple_list_item_1,
-                memberNames
+            rvMembers.layoutManager = LinearLayoutManager(this@CircleChatActivity)
+            rvMembers.adapter = GroupMembersAdapter(
+                currentUserId = myUid,
+                members = members,
+                onBlockClicked = { member ->
+                    AlertDialog.Builder(this@CircleChatActivity)
+                        .setTitle(getString(R.string.block_user))
+                        .setMessage(getString(R.string.block_user_confirm, member.displayName))
+                        .setPositiveButton(getString(R.string.yes)) { _, _ ->
+                            lifecycleScope.launch {
+                                val result = circlesManager.blockUserWithPolicy(circleId, member.userId)
+
+                                if (!result.success) {
+                                    Toast.makeText(
+                                        this@CircleChatActivity,
+                                        getString(R.string.block_user_error),
+                                        Toast.LENGTH_SHORT
+                                    ).show()
+                                    return@launch
+                                }
+
+                                if (result.blockerLeftGroup) {
+                                    Toast.makeText(
+                                        this@CircleChatActivity,
+                                        getString(R.string.block_and_left_group_success),
+                                        Toast.LENGTH_SHORT
+                                    ).show()
+                                    finish()
+                                } else if (result.blockedUserRemoved) {
+                                    Toast.makeText(
+                                        this@CircleChatActivity,
+                                        getString(R.string.block_and_remove_success),
+                                        Toast.LENGTH_SHORT
+                                    ).show()
+                                } else {
+                                    Toast.makeText(
+                                        this@CircleChatActivity,
+                                        getString(R.string.user_blocked),
+                                        Toast.LENGTH_SHORT
+                                    ).show()
+                                }
+                            }
+                        }
+                        .setNegativeButton(getString(R.string.cancel), null)
+                        .show()
+                }
             )
 
             if (isAdmin) {
@@ -228,29 +264,6 @@ class CircleChatActivity : AppCompatActivity() {
                         .setNegativeButton(getString(R.string.cancel), null)
                         .show()
                 }
-
-                lvMembers.setOnItemLongClickListener { _, _, position, _ ->
-                    val target = members[position]
-                    if (target.userId == info.createdBy) return@setOnItemLongClickListener true
-
-                    AlertDialog.Builder(this@CircleChatActivity)
-                        .setTitle(getString(R.string.remove_member))
-                        .setMessage(getString(R.string.remove_member_confirm, target.displayName))
-                        .setPositiveButton(getString(R.string.yes)) { _, _ ->
-                            lifecycleScope.launch {
-                                val ok = circlesManager.removeMember(circleId, target.userId)
-                                Toast.makeText(
-                                    this@CircleChatActivity,
-                                    if (ok) getString(R.string.member_removed) else getString(R.string.member_remove_error),
-                                    Toast.LENGTH_SHORT
-                                ).show()
-                            }
-                        }
-                        .setNegativeButton(getString(R.string.cancel), null)
-                        .show()
-
-                    true
-                }
             } else {
                 btnLeaveGroup.visibility = View.VISIBLE
                 btnLeaveGroup.setOnClickListener {
@@ -286,9 +299,9 @@ class CircleChatActivity : AppCompatActivity() {
     private fun showBlockUserDialog() {
         lifecycleScope.launch {
             val info = circlesManager.getGroupInfo(circleId) ?: return@launch
-            val me = circlesManager.getUserId()
+            val myUid = circlesManager.getUserId()
             val members = circlesManager.getMemberDisplayNames(info.memberIds)
-                .filter { it.userId != me }
+                .filter { it.userId != myUid }
 
             if (members.isEmpty()) {
                 Toast.makeText(
@@ -305,14 +318,46 @@ class CircleChatActivity : AppCompatActivity() {
                 .setTitle(getString(R.string.block_user))
                 .setItems(names) { _, which ->
                     val target = members[which]
-                    lifecycleScope.launch {
-                        val ok = circlesManager.blockUser(target.userId)
-                        Toast.makeText(
-                            this@CircleChatActivity,
-                            if (ok) getString(R.string.user_blocked) else getString(R.string.block_user_error),
-                            Toast.LENGTH_SHORT
-                        ).show()
-                    }
+                    AlertDialog.Builder(this@CircleChatActivity)
+                        .setTitle(getString(R.string.block_user))
+                        .setMessage(getString(R.string.block_user_confirm, target.displayName))
+                        .setPositiveButton(getString(R.string.yes)) { _, _ ->
+                            lifecycleScope.launch {
+                                val result = circlesManager.blockUserWithPolicy(circleId, target.userId)
+
+                                if (!result.success) {
+                                    Toast.makeText(
+                                        this@CircleChatActivity,
+                                        getString(R.string.block_user_error),
+                                        Toast.LENGTH_SHORT
+                                    ).show()
+                                    return@launch
+                                }
+
+                                if (result.blockerLeftGroup) {
+                                    Toast.makeText(
+                                        this@CircleChatActivity,
+                                        getString(R.string.block_and_left_group_success),
+                                        Toast.LENGTH_SHORT
+                                    ).show()
+                                    finish()
+                                } else if (result.blockedUserRemoved) {
+                                    Toast.makeText(
+                                        this@CircleChatActivity,
+                                        getString(R.string.block_and_remove_success),
+                                        Toast.LENGTH_SHORT
+                                    ).show()
+                                } else {
+                                    Toast.makeText(
+                                        this@CircleChatActivity,
+                                        getString(R.string.user_blocked),
+                                        Toast.LENGTH_SHORT
+                                    ).show()
+                                }
+                            }
+                        }
+                        .setNegativeButton(getString(R.string.cancel), null)
+                        .show()
                 }
                 .setNegativeButton(getString(R.string.cancel), null)
                 .show()
