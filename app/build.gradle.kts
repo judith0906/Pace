@@ -10,6 +10,7 @@ android {
 
     buildFeatures {
         viewBinding = true
+        buildConfig = true
     }
 
     defaultConfig {
@@ -20,6 +21,11 @@ android {
         versionName = "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+
+        buildConfigField("String", "SUPABASE_URL", "\"https://nveliyinwnrcagsykxtz.supabase.co\"")
+        buildConfigField("String", "SUPABASE_ANON_KEY", "\"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im52ZWxpeWlud25yY2Fnc3lreHR6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzYxNjg2MDcsImV4cCI6MjA5MTc0NDYwN30.xbn52nb0MS2OpGWbPnxjgG3KTxwEPwIQWsHNGtlHjAo\"")
+        buildConfigField("String", "SUPABASE_BUCKET", "\"chat-moments\"")
+
     }
 
     buildTypes {

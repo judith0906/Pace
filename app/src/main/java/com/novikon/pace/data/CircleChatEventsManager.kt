@@ -14,12 +14,16 @@ import com.novikon.pace.models.Message
 import kotlinx.coroutines.suspendCancellableCoroutine
 import java.io.ByteArrayOutputStream
 import kotlin.coroutines.resume
+import com.novikon.pace.BuildConfig
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
+import java.net.HttpURLConnection
+import java.net.URL
 
 class CircleChatEventsManager {
 
     private val database = FirebaseDatabase.getInstance()
     private val auth = FirebaseAuth.getInstance()
-    private val storage = FirebaseStorage.getInstance()
 
     fun getUserId(): String? = auth.currentUser?.uid
 
@@ -261,34 +265,18 @@ class CircleChatEventsManager {
     ): Boolean {
         val uid = getUserId() ?: return false
         val userName = getUserName()
-
         val bytes = ByteArrayOutputStream().use { stream ->
             bitmap.compress(Bitmap.CompressFormat.JPEG, 85, stream)
             stream.toByteArray()
         }
-
-        val filePath = "circles/$circleId/eventMoments/$eventId/${uid}_${System.currentTimeMillis()}.jpg"
-        val imageRef = storage.reference.child(filePath)
-
-        val downloadUrl = suspendCancellableCoroutine<String?> { cont ->
-            imageRef.putBytes(bytes)
-                .continueWithTask { task ->
-                    if (!task.isSuccessful) {
-                        task.exception?.let { throw it }
-                    }
-                    imageRef.downloadUrl
-                }
-                .addOnSuccessListener { uri -> cont.resume(uri.toString()) }
-                .addOnFailureListener { cont.resume(null) }
-        } ?: return false
-
+        val objectPath = "circles/${circleId}/events/${eventId}/${uid}_${System.currentTimeMillis()}.jpg"
+        val publicUrl = uploadToSupabase(bytes, objectPath) ?: return false
         return suspendCancellableCoroutine { cont ->
             val msgRef = database.getReference("circles/$circleId/messages").push()
             val msgId = msgRef.key ?: run {
                 cont.resume(false)
                 return@suspendCancellableCoroutine
             }
-
             val now = System.currentTimeMillis()
             val messageMap = mapOf(
                 "id" to msgId,
@@ -298,12 +286,41 @@ class CircleChatEventsManager {
                 "senderName" to userName,
                 "timestamp" to now,
                 "eventId" to eventId,
-                "photoUrl" to downloadUrl
+                "photoUrl" to publicUrl
             )
-
             msgRef.setValue(messageMap)
                 .addOnSuccessListener { cont.resume(true) }
                 .addOnFailureListener { cont.resume(false) }
+        }
+    }
+    private suspend fun uploadToSupabase(imageBytes: ByteArray, objectPath: String): String? {
+        return withContext(Dispatchers.IO) {
+            val baseUrl = BuildConfig.SUPABASE_URL.removeSuffix("/")
+            val bucket = BuildConfig.SUPABASE_BUCKET
+            val uploadUrl = "$baseUrl/storage/v1/object/$bucket/$objectPath"
+            val conn = (URL(uploadUrl).openConnection() as HttpURLConnection).apply {
+                requestMethod = "POST"
+                doOutput = true
+                setRequestProperty("apikey", BuildConfig.SUPABASE_ANON_KEY)
+                setRequestProperty("Authorization", "Bearer ${BuildConfig.SUPABASE_ANON_KEY}")
+                setRequestProperty("Content-Type", "image/jpeg")
+                setRequestProperty("x-upsert", "true")
+                connectTimeout = 15000
+                readTimeout = 20000
+            }
+            try {
+                conn.outputStream.use { it.write(imageBytes) }
+                val code = conn.responseCode
+                if (code in 200..299) {
+                    "$baseUrl/storage/v1/object/public/$bucket/$objectPath"
+                } else {
+                    null
+                }
+            } catch (_: Exception) {
+                null
+            } finally {
+                conn.disconnect()
+            }
         }
     }
 
