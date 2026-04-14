@@ -32,14 +32,15 @@
         android:layout_height="wrap_content"
         android:background="@color/background_card"
         android:elevation="4dp"
-        android:padding="8dp"
+        android:padding="10dp"
         app:layout_constraintBottom_toBottomOf="parent">
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btn_create_event"
+            style="@style/PaceChatPrimaryButton"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:text="Crear evento"
+            android:text="@string/chat_create_event"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toStartOf="@id/btn_send_message"
             app:layout_constraintTop_toTopOf="parent"
@@ -48,9 +49,10 @@
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btn_send_message"
+            style="@style/PaceChatSecondaryButton"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:text="Enviar mensaje"
+            android:text="@string/chat_send_message"
             app:layout_constraintStart_toEndOf="@id/btn_create_event"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent"

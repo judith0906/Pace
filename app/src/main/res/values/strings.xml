@@ -366,4 +366,6 @@
     <string name="event_started_success">Evento iniciado.</string>
     <string name="event_start_error">No se pudo iniciar el evento.</string>
     <string name="event_photo_send_error">No se pudo enviar la foto.</string>
+
+    <string name="event_capture_not_available">Ya no se pueden enviar fotos para este evento.</string>
 </resources>

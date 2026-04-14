@@ -63,6 +63,7 @@ class CircleChatActivity : AppCompatActivity() {
                 eventsManager.checkAndStartDueEvents(circleId)
             }
             eventStartHandler.postDelayed(this, 30_000L)
+            messagesAdapter.refreshTemporalStates()
         }
     }
 
@@ -302,6 +303,15 @@ class CircleChatActivity : AppCompatActivity() {
     }
 
     private fun onCaptureMomentClicked(message: Message) {
+        val now = System.currentTimeMillis()
+        val isAllowedUser = message.captureAllowedIds.contains(circlesManager.getUserId())
+        val stillInWindow = message.timestamp > 0L && now <= (message.timestamp + 60 * 60 * 1000L)
+
+        if (!isAllowedUser || !stillInWindow) {
+            Toast.makeText(this, getString(R.string.event_capture_not_available), Toast.LENGTH_SHORT).show()
+            return
+        }
+
         pendingCaptureMessage = message
         val cameraGranted = ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED
         if (cameraGranted) {

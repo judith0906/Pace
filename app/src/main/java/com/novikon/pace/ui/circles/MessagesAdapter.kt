@@ -32,6 +32,7 @@ class MessagesAdapter(
         private const val VIEW_TYPE_EVENT = 4
         private const val VIEW_TYPE_EVENT_START = 5
         private const val VIEW_TYPE_PHOTO = 6
+        private const val EVENT_CAPTURE_WINDOW_MS = 60 * 60 * 1000L // 1 hora
 
         private fun formatTime(timestamp: Long): String {
             if (timestamp == 0L) return ""
@@ -58,6 +59,10 @@ class MessagesAdapter(
         if (idx == -1) return
         messages[idx] = message
         notifyItemChanged(idx)
+    }
+
+    fun refreshTemporalStates() {
+        notifyDataSetChanged()
     }
 
     override fun getItemViewType(position: Int): Int {
@@ -154,15 +159,18 @@ class MessagesAdapter(
             val isCreator = message.eventCreatedBy == currentUserId
             val alreadyJoined = message.eventJoinedIds.contains(currentUserId)
             val alreadyDeclined = message.eventDeclinedIds.contains(currentUserId)
+            val eventStarted = message.eventScheduledAt > 0L && System.currentTimeMillis() >= message.eventScheduledAt
 
-            if (isCreator) {
+            if (isCreator || eventStarted) {
                 btnJoin.visibility = View.GONE
                 btnDecline.visibility = View.GONE
             } else {
                 btnJoin.visibility = View.VISIBLE
                 btnDecline.visibility = View.VISIBLE
+
                 btnJoin.isEnabled = !alreadyJoined
                 btnDecline.isEnabled = !alreadyDeclined
+
                 btnJoin.setOnClickListener { onJoinEvent(message) }
                 btnDecline.setOnClickListener { onDeclineEvent(message) }
             }
@@ -178,11 +186,18 @@ class MessagesAdapter(
         private val btnCapture: MaterialButton = itemView.findViewById(R.id.btn_capture_moment)
 
         fun bind(message: Message) {
-            tvText.text = message.text
-            val canCapture = message.captureAllowedIds.contains(currentUserId)
+            val now = System.currentTimeMillis()
+            val canCaptureByMember = message.captureAllowedIds.contains(currentUserId)
+            val withinCaptureWindow = message.timestamp > 0L && now <= (message.timestamp + EVENT_CAPTURE_WINDOW_MS)
+            val canCapture = canCaptureByMember && withinCaptureWindow
 
-            btnCapture.visibility = if (canCapture) View.VISIBLE else View.GONE
-            btnCapture.setOnClickListener { onCaptureMoment(message) }
+            btnCapture.visibility = View.VISIBLE
+            btnCapture.isEnabled = canCapture
+            btnCapture.alpha = if (canCapture) 1f else 0.45f
+
+            btnCapture.setOnClickListener {
+                if (canCapture) onCaptureMoment(message)
+            }
         }
     }
 

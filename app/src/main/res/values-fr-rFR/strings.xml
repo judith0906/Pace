@@ -368,4 +368,6 @@
     <string name="event_start_error">Impossible de démarrer l\'événement.</string>
     <string name="event_photo_send_error">Impossible d\'envoyer la photo.</string>
 
+    <string name="event_capture_not_available">Il n\'est plus possible d\'envoyer des photos pour cet événement.</string>
+
 </resources>
