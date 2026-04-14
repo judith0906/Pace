@@ -333,4 +333,35 @@
     <string name="circle_join_error_group_full_or_permissions">Impossible de rejoindre (groupe complet ou permissions manquantes)</string>
     <string name="error_code_6_digits">Saisissez 6 chiffres</string>
 
+    <!-- Événements du cercle -->
+    <string name="chat_create_event">Créer un événement</string>
+    <string name="chat_send_message">Envoyer un message</string>
+
+    <string name="event_dialog_title">Créer un événement</string>
+    <string name="event_select_habit">Habitude</string>
+    <string name="event_pick_day">Sélectionner le jour</string>
+    <string name="event_pick_time">Sélectionner l\'heure</string>
+    <string name="event_send">Envoyer</string>
+
+    <string name="event_no_habits">Aucune habitude n\'est configurée.</string>
+    <string name="event_select_habit_error">Sélectionnez une habitude.</string>
+    <string name="event_select_datetime_error">Sélectionnez la date et l\'heure.</string>
+    <string name="event_future_date_error">La date doit être dans le futur.</string>
+
+    <string name="event_created_success">Événement créé.</string>
+    <string name="event_created_error">Impossible de créer l\'événement.</string>
+
+    <string name="event_card_title">Événement : %1$s</string>
+    <string name="event_card_datetime">Date et heure : %1$s</string>
+    <string name="event_joined_label">Participe : %1$s</string>
+    <string name="event_declined_label">Refuse : %1$s</string>
+    <string name="event_none_placeholder">-</string>
+
+    <string name="event_join">Rejoindre</string>
+    <string name="event_decline">Refuser</string>
+    <string name="event_response_error">Impossible d\'enregistrer votre réponse.</string>
+
+    <string name="event_system_started">L\'événement a commencé : %1$s</string>
+    <string name="event_capture_moment">Capturer le moment</string>
+
 </resources>

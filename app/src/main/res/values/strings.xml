@@ -331,4 +331,35 @@
     <string name="cannot_join_blocked_user">No puedes unirte porque hay un bloqueo activo entre miembros</string>
     <string name="circle_join_error_group_full_or_permissions">No fue posible unirse (grupo lleno o sin permisos)</string>
     <string name="error_code_6_digits">Introduce 6 dígitos</string>
+
+    <!-- Eventos de círculo -->
+    <string name="chat_create_event">Crear evento</string>
+    <string name="chat_send_message">Enviar mensaje</string>
+
+    <string name="event_dialog_title">Crear evento</string>
+    <string name="event_select_habit">Hábito</string>
+    <string name="event_pick_day">Seleccionar día</string>
+    <string name="event_pick_time">Seleccionar hora</string>
+    <string name="event_send">Enviar</string>
+
+    <string name="event_no_habits">No tienes hábitos configurados.</string>
+    <string name="event_select_habit_error">Selecciona un hábito.</string>
+    <string name="event_select_datetime_error">Selecciona fecha y hora.</string>
+    <string name="event_future_date_error">La fecha debe ser futura.</string>
+
+    <string name="event_created_success">Evento creado.</string>
+    <string name="event_created_error">No se pudo crear el evento.</string>
+
+    <string name="event_card_title">Evento: %1$s</string>
+    <string name="event_card_datetime">Fecha y hora: %1$s</string>
+    <string name="event_joined_label">Van: %1$s</string>
+    <string name="event_declined_label">Declinan: %1$s</string>
+    <string name="event_none_placeholder">-</string>
+
+    <string name="event_join">Unirse</string>
+    <string name="event_decline">Declinar</string>
+    <string name="event_response_error">No se pudo registrar tu respuesta.</string>
+
+    <string name="event_system_started">Ha iniciado el evento: %1$s</string>
+    <string name="event_capture_moment">Capturar momento</string>
 </resources>
