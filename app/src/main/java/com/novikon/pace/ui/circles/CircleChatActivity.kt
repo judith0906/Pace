@@ -51,8 +51,8 @@ class CircleChatActivity : AppCompatActivity() {
     private lateinit var btnCreateEvent: MaterialButton
     private lateinit var btnSendMessage: MaterialButton
 
-    private val circlesManager = CirclesRealtimeManager()
-    private val eventsManager = CircleChatEventsManager()
+    private val circlesManager by lazy { CirclesRealtimeManager(this) }
+    private val eventsManager by lazy { CircleChatEventsManager(this) }
     private lateinit var messagesAdapter: MessagesAdapter
 
     private lateinit var circleId: String

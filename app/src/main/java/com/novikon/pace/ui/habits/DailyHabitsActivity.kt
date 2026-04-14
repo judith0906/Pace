@@ -2,6 +2,7 @@ package com.novikon.pace.ui.habits
 
 import android.content.Intent
 import android.os.Bundle
+import android.text.format.DateFormat
 import android.view.View
 import android.widget.ImageButton
 import android.widget.ProgressBar
@@ -97,7 +98,8 @@ class DailyHabitsActivity : AppCompatActivity() {
     // y guarda el formato de base de datos para los logs.
     private fun setupCurrentDate() {
         val calendar = Calendar.getInstance()
-        val displayFormat = SimpleDateFormat("EEEE, d 'de' MMMM", Locale.getDefault())
+        val displayPattern = DateFormat.getBestDateTimePattern(Locale.getDefault(), "EEEE d MMMM")
+        val displayFormat = SimpleDateFormat(displayPattern, Locale.getDefault())
         currentDateText.text = displayFormat.format(calendar.time)
 
         val dbFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())

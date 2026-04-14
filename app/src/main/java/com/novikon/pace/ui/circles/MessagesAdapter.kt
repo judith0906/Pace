@@ -169,12 +169,26 @@ class MessagesAdapter(
         private val btnDecline: MaterialButton = itemView.findViewById(R.id.btn_event_decline)
 
         fun bind(message: Message) {
-            tvTitle.text = "Evento: ${message.eventHabitName}"
-            tvSchedule.text = "Fecha y hora: ${formatDateTime(message.eventScheduledAt)}"
+            val context = itemView.context
+            tvTitle.text = context.getString(R.string.event_title_format, message.eventHabitName)
+            tvSchedule.text = context.getString(
+                R.string.event_datetime_format,
+                formatDateTime(message.eventScheduledAt)
+            )
 
-            val joined = if (message.eventJoinedNames.isEmpty()) "-" else message.eventJoinedNames.joinToString(", ")
-            val declined = if (message.eventDeclinedNames.isEmpty()) "-" else message.eventDeclinedNames.joinToString(", ")
-            tvParticipants.text = "Van: $joined\nDeclinan: $declined"
+            val joined = if (message.eventJoinedNames.isEmpty()) {
+                context.getString(R.string.event_none_placeholder)
+            } else {
+                message.eventJoinedNames.joinToString(", ")
+            }
+
+            val declined = if (message.eventDeclinedNames.isEmpty()) {
+                context.getString(R.string.event_none_placeholder)
+            } else {
+                message.eventDeclinedNames.joinToString(", ")
+            }
+
+            tvParticipants.text = context.getString(R.string.event_participants_format, joined, declined)
 
             val isCreator = message.eventCreatedBy == currentUserId
             val alreadyJoined = message.eventJoinedIds.contains(currentUserId)

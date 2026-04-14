@@ -1,6 +1,8 @@
 package com.novikon.pace.data
 
+import android.content.Context
 import android.graphics.Bitmap
+import android.util.Log
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.ChildEventListener
 import com.google.firebase.database.DataSnapshot
@@ -9,20 +11,20 @@ import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.MutableData
 import com.google.firebase.database.Transaction
 import com.google.firebase.database.ValueEventListener
-import com.google.firebase.storage.FirebaseStorage
-import com.novikon.pace.models.Message
-import kotlinx.coroutines.suspendCancellableCoroutine
-import java.io.ByteArrayOutputStream
-import kotlin.coroutines.resume
 import com.novikon.pace.BuildConfig
+import com.novikon.pace.R
+import com.novikon.pace.models.Message
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlinx.coroutines.withContext
+import java.io.ByteArrayOutputStream
 import java.net.HttpURLConnection
 import java.net.URL
-//Temporal
-import android.util.Log
+import kotlin.coroutines.resume
 
-class CircleChatEventsManager {
+class CircleChatEventsManager(
+    private val context: Context
+) {
 
     private val database = FirebaseDatabase.getInstance()
     private val auth = FirebaseAuth.getInstance()
@@ -32,7 +34,7 @@ class CircleChatEventsManager {
     private fun getUserName(): String {
         return auth.currentUser?.displayName
             ?: auth.currentUser?.email?.substringBefore("@")
-            ?: "Usuario"
+            ?: context.getString(R.string.default_user)
     }
 
     suspend fun createEvent(
@@ -74,7 +76,7 @@ class CircleChatEventsManager {
 
                 "circles/$circleId/messages/$messageId/id" to messageId,
                 "circles/$circleId/messages/$messageId/type" to "EVENT",
-                "circles/$circleId/messages/$messageId/text" to "Evento: $habitName",
+                "circles/$circleId/messages/$messageId/text" to context.getString(R.string.event_title_format, habitName),
                 "circles/$circleId/messages/$messageId/senderId" to uid,
                 "circles/$circleId/messages/$messageId/senderName" to userName,
                 "circles/$circleId/messages/$messageId/timestamp" to now,
@@ -232,7 +234,8 @@ class CircleChatEventsManager {
                     return
                 }
 
-                val habitName = eventSnapshot.child("habitName").getValue(String::class.java) ?: "Evento"
+                val habitName = eventSnapshot.child("habitName").getValue(String::class.java)
+                    ?: context.getString(R.string.event_default_name)
                 val joinedIds = eventSnapshot.child("joinedIds").children.mapNotNull { it.getValue(String::class.java) }
                 val now = System.currentTimeMillis()
 
@@ -245,7 +248,7 @@ class CircleChatEventsManager {
                 val messageMap = mapOf(
                     "id" to msgId,
                     "type" to "EVENT_START",
-                    "text" to "Ha iniciado el evento: $habitName",
+                    "text" to context.getString(R.string.event_system_started, habitName),
                     "senderId" to "system",
                     "senderName" to "system",
                     "timestamp" to now,
@@ -283,7 +286,7 @@ class CircleChatEventsManager {
             val messageMap = mapOf(
                 "id" to msgId,
                 "type" to "PHOTO",
-                "text" to "Foto",
+                "text" to context.getString(R.string.event_photo_label),
                 "senderId" to uid,
                 "senderName" to userName,
                 "timestamp" to now,
@@ -295,6 +298,7 @@ class CircleChatEventsManager {
                 .addOnFailureListener { cont.resume(false) }
         }
     }
+
     private suspend fun uploadToSupabase(imageBytes: ByteArray, objectPath: String): String? {
         return withContext(Dispatchers.IO) {
             val baseUrl = BuildConfig.SUPABASE_URL.removeSuffix("/")
@@ -319,7 +323,9 @@ class CircleChatEventsManager {
 
                 if (code in 200..299) {
                     "$baseUrl/storage/v1/object/public/$bucket/$objectPath"
-                } else null
+                } else {
+                    null
+                }
             } catch (e: Exception) {
                 Log.e("SupabaseUpload", "upload exception", e)
                 null

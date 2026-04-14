@@ -39,7 +39,7 @@ class AccountSettingsActivity : AppCompatActivity() {
     private lateinit var habitsManager: HabitsManager
     private lateinit var sessionManager: SessionManager
 
-    private val circlesManager by lazy { CirclesRealtimeManager() }
+    private val circlesManager by lazy { CirclesRealtimeManager(this) }
     private var blockedUsersDialog: AlertDialog? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -113,12 +113,14 @@ class AccountSettingsActivity : AppCompatActivity() {
         database.getReference("users/$userId/profile/displayName")
             .addValueEventListener(object : ValueEventListener {
                 override fun onDataChange(snapshot: DataSnapshot) {
-                    val name = snapshot.getValue(String::class.java) ?: user.displayName ?: "Usuario"
+                    val name = snapshot.getValue(String::class.java)
+                        ?: user.displayName
+                        ?: getString(R.string.default_user)
                     currentNameText.text = name
                 }
 
                 override fun onCancelled(error: DatabaseError) {
-                    currentNameText.text = user.displayName ?: "Usuario"
+                    currentNameText.text = user.displayName ?: getString(R.string.default_user)
                 }
             })
     }
@@ -191,7 +193,11 @@ class AccountSettingsActivity : AppCompatActivity() {
             .setTitle(title)
             .setItems(options) { _, which ->
                 val selected = options[which]
-                Toast.makeText(this, "Seleccionado: $selected", Toast.LENGTH_SHORT).show()
+                Toast.makeText(
+                    this,
+                    getString(R.string.privacy_selected_format, selected),
+                    Toast.LENGTH_SHORT
+                ).show()
             }
             .show()
     }

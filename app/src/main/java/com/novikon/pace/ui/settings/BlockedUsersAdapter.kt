@@ -30,7 +30,9 @@ class BlockedUsersAdapter(
 
     override fun onBindViewHolder(holder: BlockedUserViewHolder, position: Int) {
         val user = items[position]
-        holder.tvName.text = user.displayName.ifBlank { "Usuario" }
+        holder.tvName.text = user.displayName.ifBlank {
+            holder.itemView.context.getString(R.string.default_user)
+        }
 
         // Por ahora placeholder (si luego añades carga real de foto, va aquí)
         holder.ivProfile.setImageResource(R.drawable.ic_person)

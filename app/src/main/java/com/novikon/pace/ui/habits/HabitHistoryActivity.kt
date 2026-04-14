@@ -1,6 +1,7 @@
 package com.novikon.pace.ui.habits
 
 import android.os.Bundle
+import android.text.format.DateFormat
 import android.widget.ImageButton
 import android.widget.ProgressBar
 import android.widget.TextView
@@ -248,7 +249,8 @@ class HabitHistoryActivity : AppCompatActivity() {
 
         // Formatear la fecha para mostrarla de forma legible
         val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
-        val displayFormat = SimpleDateFormat("EEEE, d 'de' MMMM", Locale.getDefault())
+        val displayPattern = DateFormat.getBestDateTimePattern(Locale.getDefault(), "EEEE d MMMM")
+        val displayFormat = SimpleDateFormat(displayPattern, Locale.getDefault())
         val date = dateFormat.parse(day.date)
         dateText.text = date?.let { displayFormat.format(it) } ?: day.date
 

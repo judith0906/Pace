@@ -1,5 +1,6 @@
 package com.novikon.pace.data
 
+import android.content.Context
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.ChildEventListener
 import com.google.firebase.database.DataSnapshot
@@ -8,6 +9,7 @@ import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.MutableData
 import com.google.firebase.database.Transaction
 import com.google.firebase.database.ValueEventListener
+import com.novikon.pace.R
 import com.novikon.pace.models.BlockedUser
 import com.novikon.pace.models.Circle
 import com.novikon.pace.models.CircleMember
@@ -29,6 +31,7 @@ data class BlockActionResult(
     val blockerLeftGroup: Boolean,
     val blockedUserRemoved: Boolean
 )
+
 enum class JoinFailReason {
     INVALID_CODE,
     CODE_NOT_FOUND,
@@ -42,7 +45,9 @@ data class JoinResult(
     val reason: JoinFailReason? = null
 )
 
-class CirclesRealtimeManager {
+class CirclesRealtimeManager(
+    private val context: Context
+) {
 
     private val database = FirebaseDatabase.getInstance()
     private val auth = FirebaseAuth.getInstance()
@@ -51,7 +56,7 @@ class CirclesRealtimeManager {
 
     fun getUserName(): String = auth.currentUser?.displayName
         ?: auth.currentUser?.email?.substringBefore("@")
-        ?: "Usuario"
+        ?: context.getString(R.string.default_user)
 
     // -------------------- JOIN CODES --------------------
 
@@ -174,7 +179,10 @@ class CirclesRealtimeManager {
         val joined = addMemberToCircleTransactional(circleId, userId)
         if (!joined) return JoinResult(false, JoinFailReason.GROUP_FULL_OR_TRANSACTION_FAILED)
 
-        sendSystemMessage(circleId, "${getUserName()} se ha unido al círculo")
+        sendSystemMessage(
+            circleId,
+            context.getString(R.string.circles_system_joined, getUserName())
+        )
         return JoinResult(true, null)
     }
 
@@ -237,7 +245,10 @@ class CirclesRealtimeManager {
 
         // Mensaje ANTES de salir, para no perder permisos de escritura en messages
         val leaverName = getDisplayName(uid)
-        val systemOk = sendSystemMessage(circleId, "$leaverName ha abandonado el círculo")
+        val systemOk = sendSystemMessage(
+            circleId,
+            context.getString(R.string.circles_system_left, leaverName)
+        )
         if (!systemOk) return false
 
         return suspendCancellableCoroutine { cont ->
@@ -393,13 +404,15 @@ class CirclesRealtimeManager {
                                 when {
                                     !name.isNullOrEmpty() -> name
                                     uid == me -> myName
-                                    else -> "Usuario"
+                                    else -> context.getString(R.string.default_user)
                                 }
                             )
                         }
 
                         override fun onCancelled(error: DatabaseError) {
-                            cont.resume(if (uid == me) myName else "Usuario")
+                            cont.resume(
+                                if (uid == me) myName else context.getString(R.string.default_user)
+                            )
                         }
                     })
             }
@@ -416,11 +429,11 @@ class CirclesRealtimeManager {
                 .addListenerForSingleValueEvent(object : ValueEventListener {
                     override fun onDataChange(snapshot: DataSnapshot) {
                         val name = snapshot.getValue(String::class.java)
-                        cont.resume(name?.takeIf { it.isNotBlank() } ?: "Usuario")
+                        cont.resume(name?.takeIf { it.isNotBlank() } ?: context.getString(R.string.default_user))
                     }
 
                     override fun onCancelled(error: DatabaseError) {
-                        cont.resume("Usuario")
+                        cont.resume(context.getString(R.string.default_user))
                     }
                 })
         }
@@ -544,7 +557,10 @@ class CirclesRealtimeManager {
                 val removed = removeMember(circleId, targetUid)
                 if (removed) {
                     val targetName = getDisplayName(targetUid)
-                    sendSystemMessage(circleId, "$targetName ha abandonado el círculo")
+                    sendSystemMessage(
+                        circleId,
+                        context.getString(R.string.circles_system_left, targetName)
+                    )
                 }
                 BlockActionResult(
                     success = removed,

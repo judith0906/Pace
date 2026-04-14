@@ -22,7 +22,7 @@ class CirclesActivity : AppCompatActivity() {
     private lateinit var addButton: FloatingActionButton
     private lateinit var adapter: CirclesAdapter
 
-    private val circlesManager = CirclesRealtimeManager()
+    private val circlesManager by lazy { CirclesRealtimeManager(this) }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

@@ -1,15 +1,39 @@
 <resources>
+    <!-- ========================================================= -->
+    <!-- APP / COMUNES                                             -->
+    <!-- ========================================================= -->
     <string name="app_name">Pace</string>
+    <string name="error">Error: </string>
+    <string name="error_unknown">Unknown error</string>
+    <string name="yes">Yes</string>
+    <string name="cancel">Cancel</string>
+    <string name="save">Save</string>
+    <string name="close">Close</string>
+    <string name="later">Later</string>
+    <string name="coming_soon">Coming soon</string>
+    <string name="user_default">User</string>
+    <string name="default_user">User</string>
+    <string name="privacy_selected_format">Selected: %1$s</string>
 
-    <!-- Forgot password -->
+    <!-- ========================================================= -->
+    <!-- AUTENTICACION: RECUPERAR CONTRASEÑA                       -->
+    <!-- ========================================================= -->
     <string name="back">Back</string>
     <string name="title_frgt_psswd">Recover password</string>
     <string name="subtitle_frgt_psswd">Enter your email and we will send you instructions to reset your password</string>
     <string name="in_mail">Email</string>
     <string name="btn_link">Send link</string>
     <string name="txt_login">Back to login</string>
+    <string name="email_required">Email is required</string>
+    <string name="invalid_email">Invalid email</string>
+    <string name="sending">Sending...</string>
+    <string name="send_link">Send link</string>
+    <string name="password_reset_email_sent">A password reset email has been sent</string>
+    <string name="pswd_reset_email_sent">An email has been sent to reset your password.</string>
 
-    <!-- Log in -->
+    <!-- ========================================================= -->
+    <!-- AUTENTICACION: LOGIN                                      -->
+    <!-- ========================================================= -->
     <string name="title_login">Welcome to Pace</string>
     <string name="subtitle_login">Sign in to continue</string>
     <string name="in_psswd">Password</string>
@@ -18,8 +42,37 @@
     <string name="btn_google">Continue with Google</string>
     <string name="txt_q_regist">Don’t have an account?</string>
     <string name="txt_regist">Sign up</string>
+    <string name="welcome">Welcome</string>
+    <string name="welcome_user">Welcome %1$s</string>
+    <string name="password_required">Password is required</string>
+    <string name="password_too_short">The password must be at least 6 characters long</string>
+    <string name="error_google_token">Could not obtain Google token</string>
+    <string name="error_google_signin">Error signing in with Google</string>
+    <string name="error_firebase_auth">Firebase authentication failed</string>
 
-    <!-- Main -->
+    <!-- ========================================================= -->
+    <!-- AUTENTICACION: SIGN UP                                    -->
+    <!-- ========================================================= -->
+    <string name="title_signup">Create account</string>
+    <string name="subtitle_signup">Sign up to get started</string>
+    <string name="in_name">Full name</string>
+    <string name="in_conf_psswd">Confirm password</string>
+    <string name="btn_signup">Create account</string>
+    <string name="btn_google_signup">Sign up with Google</string>
+    <string name="txt_q_login">Already have an account?</string>
+    <string name="txt_log_in">Log in</string>
+    <string name="creating_account">Creating account...</string>
+    <string name="create_account">Create account</string>
+    <string name="account_created_success">Account created successfully</string>
+    <string name="name_required">Name is required</string>
+    <string name="name_too_short">Name must be at least 2 characters</string>
+    <string name="password_needs_number">Password must contain at least one number</string>
+    <string name="confirm_password_required">You must confirm your password</string>
+    <string name="passwords_do_not_match">Passwords do not match</string>
+
+    <!-- ========================================================= -->
+    <!-- PANTALLA PRINCIPAL / NAVEGACION                           -->
+    <!-- ========================================================= -->
     <string name="title_main">Welcome User</string>
     <string name="title_welcome">Welcome </string>
     <string name="title_hbts">Daily habits</string>
@@ -27,44 +80,54 @@
     <string name="btn_hbts">Access</string>
     <string name="title_cnx">My circles</string>
     <string name="btn_cnx">View all</string>
-    <string name="user_default">User</string>
     <string name="habits_history">Habits history</string>
     <string name="daily_habits">Daily habits</string>
     <string name="my_circles">My circles</string>
+    <string name="view_all_connections">View all connections</string>
     <string name="change_profile_photo">Change profile photo</string>
     <string name="change_password">Change password</string>
     <string name="account_settings">Account settings</string>
     <string name="logout_title">Log out</string>
     <string name="logout_message">Are you sure you want to log out?</string>
-    <string name="yes">Yes</string>
-    <string name="view_all_connections">View all connections</string>
-    <string name="default_user">User</string>
-    <string name="coming_soon">Coming soon</string>
     <string name="google_account_no_password">Cannot change the password of a Google account</string>
 
-    <!-- Settings -->
+    <!-- ========================================================= -->
+    <!-- MENUS LATERALES                                           -->
+    <!-- ========================================================= -->
+    <string name="header_grl">Your habit companion</string>
+    <string name="usr_foto">Change profile picture</string>
+    <string name="usr_psswd">Change password</string>
+    <string name="usr_other">Other account settings</string>
+    <string name="usr_logout">Log out</string>
+    <string name="grl_hbts">Habit history</string>
+    <string name="grl_hbts_d">Daily habits</string>
+    <string name="grl_cnx">My circles</string>
+    <string name="grl_stngs">Settings</string>
+
+    <!-- ========================================================= -->
+    <!-- AJUSTES: GENERAL                                          -->
+    <!-- ========================================================= -->
     <string name="title_stngs">Settings</string>
     <string name="title_gnrl">General</string>
     <string name="dark_mode">Dark mode</string>
     <string name="sub_dark_mode">Enable/disable dark mode</string>
     <string name="idiom">Language</string>
     <string name="sub_idiom">English</string>
+    <string name="select_language">Select language</string>
+    <string name="idm_chng">Language changed to </string>
+    <string name="dark_on">Dark mode enabled</string>
+    <string name="dark_off">Light mode enabled</string>
+
+    <!-- ========================================================= -->
+    <!-- AJUSTES: NOTIFICACIONES                                   -->
+    <!-- ========================================================= -->
     <string name="title_ntf">Notifications</string>
     <string name="remember">Reminders</string>
     <string name="sub_remember">Enable/disable reminders</string>
     <string name="time">Reminder time</string>
-    <string name="title_rithm">Personal rhythm</string>
-    <string name="days">Active days</string>
-    <string name="sub_days">Mon, Tue, Wed, Thu, Fri</string>
-    <string-array name="week_days_short">
-        <item>Mon</item>
-        <item>Tue</item>
-        <item>Wed</item>
-        <item>Thu</item>
-        <item>Fri</item>
-        <item>Sat</item>
-        <item>Sun</item>
-    </string-array>
+    <string name="rmb_on">Reminders enabled</string>
+    <string name="rmb_off">Reminders disabled</string>
+    <string name="hr_chng">Time updated: </string>
     <string name="notification_channel_name">Daily reminders</string>
     <string name="notification_channel_description">Notifications to remind you to log your habits</string>
     <string name="notification_title">Time to log your day!</string>
@@ -77,26 +140,37 @@
     <string name="alarm_permission_message">For reminders, Pace needs permission for exact alarms. Do you want to enable it?</string>
     <string name="activate">Activate</string>
 
+    <!-- ========================================================= -->
+    <!-- AJUSTES: RITMO PERSONAL                                   -->
+    <!-- ========================================================= -->
+    <string name="title_rithm">Personal rhythm</string>
+    <string name="days">Active days</string>
+    <string name="sub_days">Mon, Tue, Wed, Thu, Fri</string>
+    <string name="active_days_title">Active days</string>
+    <string name="day_chng">Active days updated</string>
+    <string name="no_days_selected">No days selected</string>
+    <string-array name="week_days_short">
+        <item>Mon</item>
+        <item>Tue</item>
+        <item>Wed</item>
+        <item>Thu</item>
+        <item>Fri</item>
+        <item>Sat</item>
+        <item>Sun</item>
+    </string-array>
 
-    <!-- Sign up -->
-    <string name="title_signup">Create account</string>
-    <string name="subtitle_signup">Sign up to get started</string>
-    <string name="in_name">Full name</string>
-    <string name="in_conf_psswd">Confirm password</string>
-    <string name="btn_signup">Create account</string>
-    <string name="btn_google_signup">Sign up with Google</string>
-    <string name="txt_q_login">Already have an account?</string>
-    <string name="txt_log_in">Log in</string>
+    <!-- ========================================================= -->
+    <!-- HABITOS: FRANJAS HORARIAS                                 -->
+    <!-- ========================================================= -->
+    <string name="time_morning">🌅 Morning</string>
+    <string name="time_afternoon">☀️ Afternoon</string>
+    <string name="time_evening">🌙 Evening</string>
+    <string name="time_all_day">📅 All day</string>
+    <string name="time_of_day_title">When will you do %s?</string>
 
-    <!--- Daily habits -->
-    <string name="change_date">Change date</string>
-    <string name="rest_day_title">Rest day</string>
-    <string name="rest_day_message">Enjoy your day off. You deserve it!</string>
-    <string name="daily_progress">Daily progress</string>
-    <string name="not_done">Not done</string>
-    <string name="done">✓ Done</string>
-
-    <!-- Habit selection -->
+    <!-- ========================================================= -->
+    <!-- HABITOS: SELECCION                                        -->
+    <!-- ========================================================= -->
     <string name="select_your_habits">Select your habits</string>
     <string name="select_habits_subtitle">Choose the habits you want to track daily</string>
     <string name="category_physical">🏃 Physical</string>
@@ -110,30 +184,39 @@
     <string name="custom_habits_message">Create your own habits according to your needs</string>
     <string name="add_custom_habit">+ Add habit</string>
     <string name="selected_habits_count">%d habits selected</string>
-    <string name="later">Later</string>
     <string name="save_habits">Save</string>
     <string name="habit_name">Habit name</string>
     <string name="select_emoji">Select an emoji</string>
     <string name="duration_optional">Duration (optional)</string>
     <string name="edit_habits">Edit habits</string>
-    <string name="no_habits_configured">No habits configured</string>
-    <string name="configure_habits_message">Configure your habits to start tracking them</string>
-    <string name="configure_habits">Configure habits</string>
-    <string name="daily_habits_preview">Today\'s habits</string>
-    <string name="more_habits">more habits</string>
     <string name="custom_duration">Custom</string>
     <string name="habit_added">Habit added</string>
     <string name="habit_name_required">Name is required</string>
     <string name="select_at_least_one">Select at least one habit</string>
     <string name="habits_saved">Habits saved</string>
     <string name="habits_saved_locally">Habits saved locally</string>
-    <string name="time_of_day_title">When will you do %s?</string>
 
-    <!-- Historial de hábitos -->
+    <!-- ========================================================= -->
+    <!-- HABITOS: DIA ACTUAL / PREVIEW                             -->
+    <!-- ========================================================= -->
+    <string name="change_date">Change date</string>
+    <string name="rest_day_title">Rest day</string>
+    <string name="rest_day_message">Enjoy your day off. You deserve it!</string>
+    <string name="daily_progress">Daily progress</string>
+    <string name="not_done">Not done</string>
+    <string name="done">✓ Done</string>
+    <string name="no_habits_configured">No habits configured</string>
+    <string name="configure_habits_message">Configure your habits to start tracking them</string>
+    <string name="configure_habits">Configure habits</string>
+    <string name="daily_habits_preview">Today\'s habits</string>
+    <string name="more_habits">more habits</string>
+
+    <!-- ========================================================= -->
+    <!-- HABITOS: HISTORIAL                                        -->
+    <!-- ========================================================= -->
     <string name="habit_history">Habit history</string>
     <string name="previous_month">Previous month</string>
     <string name="next_month">Next month</string>
-    <string name="close">Close</string>
     <string name="day_monday_short">M</string>
     <string name="day_tuesday_short">T</string>
     <string name="day_wednesday_short">W</string>
@@ -142,13 +225,16 @@
     <string name="day_saturday_short">S</string>
     <string name="day_sunday_short">S</string>
 
-    <!-- Account Settings -->
+    <!-- ========================================================= -->
+    <!-- AJUSTES DE CUENTA                                         -->
+    <!-- ========================================================= -->
     <string name="profile_section">Profile</string>
     <string name="security_section">Security</string>
     <string name="privacy_section">Privacy</string>
     <string name="data_account_section">Data and Account</string>
-
     <string name="change_name">Change name</string>
+    <string name="new_name">New name</string>
+    <string name="name_changed_success">Name changed successfully</string>
     <string name="timezone">Time zone</string>
     <string name="timezone_changed">Updated time zone</string>
     <string name="timezone_reset_device">Device time zone restored</string>
@@ -159,103 +245,31 @@
     <string name="block_users">Block users</string>
     <string name="download_my_data">Download my data</string>
     <string name="delete_account">Delete account</string>
-
     <string name="current_password">Current password</string>
     <string name="new_password">New password</string>
     <string name="confirm_new_password">Confirm new password</string>
     <string name="password_changed_success">Password changed successfully</string>
     <string name="password_mismatch">Passwords do not match</string>
     <string name="current_password_incorrect">Current password is incorrect</string>
-
     <string name="change_profile_photo_title">Change profile photo</string>
     <string name="take_photo">Take photo</string>
     <string name="choose_from_gallery">Choose from gallery</string>
     <string name="camera_permission_needed">Camera permission is needed</string>
     <string name="gallery_permission_needed">Gallery access permission is needed</string>
-
-    <string name="new_name">New name</string>
-    <string name="name_changed_success">Name changed successfully</string>
-
     <string name="everyone">Everyone</string>
     <string name="friends_only">Friends only</string>
     <string name="nobody">Nobody</string>
-
     <string name="delete_account_title">Delete account?</string>
     <string name="delete_account_message">This action is irreversible. All your data will be permanently deleted.</string>
     <string name="delete_account_confirm">Delete permanently</string>
     <string name="account_deleted">Account deleted</string>
-
     <string name="sign_out_all_title">Sign out on all devices?</string>
     <string name="sign_out_all_message">You will be signed out on all devices where you have logged in.</string>
     <string name="signed_out_all">Signed out on all devices</string>
 
-    <!-- Menus -->
-    <string name="header_grl">Your habit companion</string>
-    <string name="usr_foto">Change profile picture</string>
-    <string name="usr_psswd">Change password</string>
-    <string name="usr_other">Other account settings</string>
-    <string name="usr_logout">Log out</string>
-    <string name="grl_hbts">Habit history</string>
-    <string name="grl_hbts_d">Daily habits</string>
-    <string name="grl_cnx">My circles</string>
-    <string name="grl_stngs">Settings</string>
-
-    <!--- Settings Toasts -->
-    <string name="dark_on">Dark mode enabled</string>
-    <string name="dark_off">Light mode enabled</string>
-    <string name="rmb_on">Reminders enabled</string>
-    <string name="rmb_off">Reminders disabled</string>
-    <string name="idm_chng">Language changed to </string>
-    <string name="hr_chng">Time updated: </string>
-    <string name="day_chng">Active days updated</string>
-    <string name="no_days_selected">No days selected</string>
-
-    <!--- Settings Dialogs -->
-    <string name="select_language">Select language</string>
-    <string name="cancel">Cancel</string>
-    <string name="active_days_title">Active days</string>
-    <string name="save">Save</string>
-
-    <!--- SignUp Toasts -->
-    <string name="creating_account">Creating account...</string>
-    <string name="create_account">Create account</string>
-    <string name="error">Error: </string>
-    <string name="pswd_reset_email_sent">An email has been sent to reset your password.</string>
-    <string name="account_created_success">Account created successfully</string>
-    <string name="name_required">Name is required</string>
-    <string name="name_too_short">Name must be at least 2 characters</string>
-    <string name="password_needs_number">Password must contain at least one number</string>
-    <string name="confirm_password_required">You must confirm your password</string>
-    <string name="passwords_do_not_match">Passwords do not match</string>
-
-    <!--- Login Toasts -->
-    <string name="welcome">Welcome</string>
-    <string name="welcome_user">Welcome %1$s</string>
-
-    <!--- ForgotPassword Toasts -->
-    <string name="email_required">Email is required</string>
-    <string name="invalid_email">Invalid email</string>
-    <string name="sending">Sending...</string>
-    <string name="send_link">Send link</string>
-    <string name="password_reset_email_sent">A password reset email has been sent</string>
-
-    <!--- LoginValidator Toasts -->
-    <string name="password_required">Password is required</string>
-    <string name="password_too_short">The password must be at least 6 characters long</string>
-
-    <!--- LoginAuthManager Toasts -->
-    <string name="error_unknown">Unknown error</string>
-    <string name="error_google_token">Could not obtain Google token</string>
-    <string name="error_google_signin">Error signing in with Google</string>
-    <string name="error_firebase_auth">Firebase authentication failed</string>
-
-    <!--- DailyHabit Day Time -->
-    <string name="time_morning">🌅 Morning</string>
-    <string name="time_afternoon">☀️ Afternoon</string>
-    <string name="time_evening">🌙 Evening</string>
-    <string name="time_all_day">📅 All day</string>
-
-    <!-- Active Devices -->
+    <!-- ========================================================= -->
+    <!-- DISPOSITIVOS ACTIVOS                                      -->
+    <!-- ========================================================= -->
     <string name="active_devices_title">Active Devices</string>
     <string name="active_devices_empty">No other active devices</string>
     <string name="active_devices_this_device">This Device</string>
@@ -266,7 +280,9 @@
     <string name="active_devices_last_active">Last accessed: %s</string>
     <string name="active_devices_loading">Loading devices…</string>
 
-    <!-- Circulos -->
+    <!-- ========================================================= -->
+    <!-- CIRCULOS: GENERAL                                         -->
+    <!-- ========================================================= -->
     <string name="no_messages_yet">No messages yet</string>
     <string name="dialog_title_group">New circle</string>
     <string name="tab_join">Join</string>
@@ -294,17 +310,6 @@
     <string name="group_max_members">Max participants</string>
     <string name="group_max_updated">Maximum updated</string>
     <string name="group_max_update_error">Could not update maximum</string>
-
-    <string name="block_user">Block user</string>
-    <string name="block_user_error">Could not block user</string>
-    <string name="no_users_to_block">No users to block</string>
-    <string name="user_blocked">User blocked</string>
-
-    <string name="remove_member">Remove member</string>
-    <string name="remove_member_confirm">Remove %1$s from the group?</string>
-    <string name="member_removed">Member removed</string>
-    <string name="member_remove_error">Could not remove member</string>
-
     <string name="error_circle_code_required">Enter the invite code</string>
     <string name="delete_group">Delete circle</string>
     <string name="delete_group_confirm">This action will delete the circle for all members. Do you want to continue?</string>
@@ -316,57 +321,75 @@
     <string name="leave_group_confirm">Are you sure you want to leave the group?</string>
     <string name="group_left">You left the group</string>
     <string name="group_left_error">Could not leave the group</string>
-
-    <string name="unblock_user">Unblock</string>
-    <string name="unblock_user_confirm">Do you want to unblock %1$s?</string>
-    <string name="user_unblocked">User unblocked</string>
-    <string name="unblock_user_error">Could not unblock user</string>
-    <string name="no_blocked_users">You have no blocked users</string>
-
-    <string name="block_user_confirm">Do you want to block %1$s?</string>
-    <string name="block_and_left_group_success">User blocked. You left the circle.</string>
-    <string name="block_and_remove_success">User blocked and removed from the circle.</string>
-
     <string name="circle_code_not_found">No circle found with that code</string>
     <string name="circle_not_found">Circle not found</string>
     <string name="cannot_join_blocked_user">You cannot join because there is an active block between members</string>
     <string name="circle_join_error_group_full_or_permissions">Could not join (group is full or missing permissions)</string>
     <string name="error_code_6_digits">Enter 6 digits</string>
 
-    <!-- Circle events -->
+    <!-- ========================================================= -->
+    <!-- CIRCULOS: BLOQUEOS / MODERACION                           -->
+    <!-- ========================================================= -->
+    <string name="block_user">Block user</string>
+    <string name="block_user_error">Could not block user</string>
+    <string name="no_users_to_block">No users to block</string>
+    <string name="user_blocked">User blocked</string>
+    <string name="remove_member">Remove member</string>
+    <string name="remove_member_confirm">Remove %1$s from the group?</string>
+    <string name="member_removed">Member removed</string>
+    <string name="member_remove_error">Could not remove member</string>
+    <string name="unblock_user">Unblock</string>
+    <string name="unblock_user_confirm">Do you want to unblock %1$s?</string>
+    <string name="user_unblocked">User unblocked</string>
+    <string name="unblock_user_error">Could not unblock user</string>
+    <string name="no_blocked_users">You have no blocked users</string>
+    <string name="block_user_confirm">Do you want to block %1$s?</string>
+    <string name="block_and_left_group_success">User blocked. You left the circle.</string>
+    <string name="block_and_remove_success">User blocked and removed from the circle.</string>
+
+    <!-- ========================================================= -->
+    <!-- CIRCULOS: MENSAJES DE SISTEMA                             -->
+    <!-- ========================================================= -->
+    <string name="circles_system_joined">%1$s joined the circle</string>
+    <string name="circles_system_left">%1$s left the circle</string>
+
+    <!-- ========================================================= -->
+    <!-- CIRCULOS: EVENTOS                                         -->
+    <!-- ========================================================= -->
     <string name="chat_create_event">Create event</string>
     <string name="chat_send_message">Send message</string>
-
     <string name="event_dialog_title">Create event</string>
     <string name="event_select_habit">Habit</string>
     <string name="event_pick_day">Select day</string>
     <string name="event_pick_time">Select time</string>
     <string name="event_send">Send</string>
-
     <string name="event_no_habits">You have no habits configured.</string>
     <string name="event_select_habit_error">Select a habit.</string>
     <string name="event_select_datetime_error">Select date and time.</string>
     <string name="event_future_date_error">The date must be in the future.</string>
-
     <string name="event_created_success">Event created.</string>
     <string name="event_created_error">Could not create the event.</string>
-
     <string name="event_card_title">Event: %1$s</string>
     <string name="event_card_datetime">Date and time: %1$s</string>
     <string name="event_joined_label">Going: %1$s</string>
     <string name="event_declined_label">Declined: %1$s</string>
     <string name="event_none_placeholder">-</string>
-
     <string name="event_join">Join</string>
     <string name="event_decline">Decline</string>
     <string name="event_response_error">Could not save your response.</string>
-
     <string name="event_system_started">The event has started: %1$s</string>
     <string name="event_capture_moment">Capture moment</string>
-
     <string name="event_started_success">Event started.</string>
     <string name="event_start_error">Could not start the event.</string>
     <string name="event_photo_send_error">Could not send the photo.</string>
-
     <string name="event_capture_not_available">You can no longer send photos for this event.</string>
+
+    <!-- ========================================================= -->
+    <!-- CIRCULOS: FORMATOS DINAMICOS NUEVOS                       -->
+    <!-- ========================================================= -->
+    <string name="event_title_format">Event: %1$s</string>
+    <string name="event_datetime_format">Date and time: %1$s</string>
+    <string name="event_participants_format">Going: %1$s\nDeclined: %2$s</string>
+    <string name="event_default_name">Event</string>
+    <string name="event_photo_label">Photo</string>
 </resources>
