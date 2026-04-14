@@ -57,7 +57,7 @@
     <string name="passwords_do_not_match">Les mots de passe ne correspondent pas</string>
     <string name="password_required">Un mot de passe est requis.</string>
     <string name="password_too_short">Le mot de passe doit comporter au moins 6 caractères.</string>
-    <string name="email_required">L'email est requis</string>
+    <string name="email_required">L\'email est requis</string>
     <string name="invalid_email">Email invalide</string>
     <string name="sending">Envoi en cours...</string>
     <string name="send_link">Envoyer le lien</string>
@@ -65,9 +65,9 @@
     <string name="pswd_reset_email_sent">Un courriel a été envoyé pour réinitialiser votre mot de passe.</string>
     <string name="welcome">Bienvenue</string>
     <string name="welcome_user">Bienvenue %1$s</string>
-    <string name="error_google_token">Impossible d'obtenir le token Google</string>
+    <string name="error_google_token">Impossible d\'obtenir le token Google</string>
     <string name="error_google_signin">Erreur lors de la connexion avec Google</string>
-    <string name="error_firebase_auth">Échec de l'authentification Firebase</string>
+    <string name="error_firebase_auth">Échec de l\'authentification Firebase</string>
 
     <!-- ========================================================= -->
     <!-- MAIN / MENÚS                                              -->
@@ -123,15 +123,15 @@
     </string-array>
 
     <string name="notification_channel_name">Rappels quotidiens</string>
-    <string name="notification_channel_description">Notifications pour vous rappeler d'enregistrer vos habitudes</string>
-    <string name="notification_title">Il est temps d'enregistrer votre journée!</string>
-    <string name="notification_message">Ouvrez Pace et partagez ce que vous avez fait aujourd'hui</string>
-    <string name="notification_permission_denied">Impossible d'activer les rappels sans autorisation de notification</string>
+    <string name="notification_channel_description">Notifications pour vous rappeler d\'enregistrer vos habitudes</string>
+    <string name="notification_title">Il est temps d\'enregistrer votre journée!</string>
+    <string name="notification_message">Ouvrez Pace et partagez ce que vous avez fait aujourd\'hui</string>
+    <string name="notification_permission_denied">Impossible d\'activer les rappels sans autorisation de notification</string>
     <string name="notification_permission_title">Autorisation de notification</string>
-    <string name="notification_permission_message">Pace a besoin d'autorisation pour vous envoyer des rappels quotidiens. Voulez-vous accorder l'autorisation?</string>
-    <string name="grant_permission">Accorder l'autorisation</string>
+    <string name="notification_permission_message">Pace a besoin d\'autorisation pour vous envoyer des rappels quotidiens. Voulez-vous accorder l'autorisation?</string>
+    <string name="grant_permission">Accorder l\'autorisation</string>
     <string name="alarm_permission_title">Autorisation nécessaire</string>
-    <string name="alarm_permission_message">Pour les rappels, Pace a besoin d'autorisation pour les alarmes exactes. Voulez-vous l'activer?</string>
+    <string name="alarm_permission_message">Pour les rappels, Pace a besoin d\'autorisation pour les alarmes exactes. Voulez-vous l'activer?</string>
     <string name="activate">Activer</string>
 
     <!-- Toasts ajustes -->
@@ -173,14 +173,14 @@
     <string name="selected_habits_count">%d habitudes sélectionnées</string>
     <string name="later">Plus tard</string>
     <string name="save_habits">Enregistrer</string>
-    <string name="habit_name">Nom de l'habitude</string>
+    <string name="habit_name">Nom de l\'habitude</string>
     <string name="select_emoji">Sélectionnez un emoji</string>
     <string name="duration_optional">Durée (optionnel)</string>
     <string name="edit_habits">Modifier les habitudes</string>
     <string name="no_habits_configured">Aucune habitude configurée</string>
     <string name="configure_habits_message">Configurez vos habitudes pour commencer à les suivre</string>
     <string name="configure_habits">Configurer les habitudes</string>
-    <string name="daily_habits_preview">Habitudes d'aujourd'hui</string>
+    <string name="daily_habits_preview">Habitudes d\'aujourd'hui</string>
     <string name="more_habits">habitudes de plus</string>
     <string name="custom_duration">Personnalisé</string>
     <string name="habit_added">Habitude ajoutée</string>
@@ -216,7 +216,7 @@
     <string name="account_settings">Paramètres du compte</string>
     <string name="logout_title">Se déconnecter</string>
     <string name="logout_message">Êtes-vous sûr de vouloir vous déconnecter?</string>
-    <string name="google_account_no_password">Impossible de changer le mot de passe d'un compte Google</string>
+    <string name="google_account_no_password">Impossible de changer le mot de passe d\'un compte Google</string>
 
     <string name="profile_section">Profil</string>
     <string name="security_section">Sécurité</string>
@@ -226,7 +226,7 @@
     <string name="change_name">Changer de nom</string>
     <string name="timezone">Fuseau horaire</string>
     <string name="timezone_changed">Fuseau horaire mis à jour</string>
-    <string name="timezone_reset_device">Fuseau horaire de l'appareil rétabli</string>
+    <string name="timezone_reset_device">Fuseau horaire de l\'appareil rétabli</string>
     <string name="sign_out_all_devices">Se déconnecter sur tous les appareils</string>
     <string name="view_active_devices">Voir les appareils actifs</string>
     <string name="who_can_invite_circles">Qui peut vous inviter aux cercles</string>
@@ -245,8 +245,8 @@
     <string name="change_profile_photo_title">Changer la photo de profil</string>
     <string name="take_photo">Prendre une photo</string>
     <string name="choose_from_gallery">Choisir dans la galerie</string>
-    <string name="camera_permission_needed">L'autorisation de la caméra est nécessaire</string>
-    <string name="gallery_permission_needed">L'autorisation d'accès à la galerie est nécessaire</string>
+    <string name="camera_permission_needed">L\'autorisation de la caméra est nécessaire</string>
+    <string name="gallery_permission_needed">L\'autorisation d\'accès à la galerie est nécessaire</string>
 
     <string name="new_name">Nouveau nom</string>
     <string name="name_changed_success">Nom changé avec succès</string>
@@ -280,7 +280,7 @@
     <!-- ========================================================= -->
     <!-- CÍRCULOS / CHAT                                           -->
     <!-- ========================================================= -->
-    <string name="no_messages_yet">Aucun message pour l'instant</string>
+    <string name="no_messages_yet">Aucun message pour l\'instant</string>
     <string name="dialog_title_group">Nouveau cercle</string>
     <string name="tab_join">Rejoindre</string>
     <string name="tab_create">Nouveau</string>
@@ -290,7 +290,7 @@
     <string name="btn_create">Créer</string>
     <string name="add_circle">Ajouter un cercle</string>
     <string name="members_count_format">%1$d membres</string>
-    <string name="error_circle_id_required">Saisir l'ID du cercle</string>
+    <string name="error_circle_id_required">Saisir l\'ID du cercle</string>
     <string name="hint_join_circle_id">ID du cercle</string>
     <string name="circle_create_error">Impossible de créer le cercle</string>
     <string name="circle_created">Cercle créé</string>
@@ -299,7 +299,7 @@
     <string name="chat_hint_message">Écrire un message...</string>
     <string name="send_message">Envoyer le message</string>
     <string name="error_group_name_required">Saisissez un nom de groupe</string>
-    <string name="chat_send_error">Erreur lors de l'envoi du message. Réessayez.</string>
+    <string name="chat_send_error">Erreur lors de l\'envoi du message. Réessayez.</string>
     <string name="group_info">Infos du groupe</string>
     <string name="group_join_code_label">Code d’invitation</string>
     <string name="group_members_label">Membres</string>
@@ -359,16 +359,16 @@
     <string name="event_dialog_title">Créer un événement</string>
     <string name="event_select_habit">Habitude</string>
     <string name="event_pick_day">Sélectionner le jour</string>
-    <string name="event_pick_time">Sélectionner l'heure</string>
+    <string name="event_pick_time">Sélectionner l\'heure</string>
     <string name="event_send">Envoyer</string>
 
-    <string name="event_no_habits">Aucune habitude n'est configurée.</string>
+    <string name="event_no_habits">Aucune habitude n\'est configurée.</string>
     <string name="event_select_habit_error">Sélectionnez une habitude.</string>
-    <string name="event_select_datetime_error">Sélectionnez la date et l'heure.</string>
+    <string name="event_select_datetime_error">Sélectionnez la date et l\'heure.</string>
     <string name="event_future_date_error">La date doit être dans le futur.</string>
 
     <string name="event_created_success">Événement créé.</string>
-    <string name="event_created_error">Impossible de créer l'événement.</string>
+    <string name="event_created_error">Impossible de créer l\'événement.</string>
 
     <string name="event_card_title">Événement : %1$s</string>
     <string name="event_card_datetime">Date et heure : %1$s</string>
@@ -378,16 +378,16 @@
 
     <string name="event_join">Rejoindre</string>
     <string name="event_decline">Refuser</string>
-    <string name="event_response_error">Impossible d'enregistrer votre réponse.</string>
+    <string name="event_response_error">Impossible d\'enregistrer votre réponse.</string>
 
-    <string name="event_system_started">L'événement a commencé : %1$s</string>
+    <string name="event_system_started">L\'événement a commencé : %1$s</string>
     <string name="event_capture_moment">Capturer le moment</string>
 
     <string name="event_started_success">Événement démarré.</string>
-    <string name="event_start_error">Impossible de démarrer l'événement.</string>
-    <string name="event_photo_send_error">Impossible d'envoyer la photo.</string>
+    <string name="event_start_error">Impossible de démarrer l\'événement.</string>
+    <string name="event_photo_send_error">Impossible d\'envoyer la photo.</string>
 
-    <string name="event_capture_not_available">Il n'est plus possible d'envoyer des photos pour cet événement.</string>
+    <string name="event_capture_not_available">Il n\'est plus possible d\'envoyer des photos pour cet événement.</string>
 
     <!-- Textos dinámicos nuevos para adapters/managers -->
     <string name="event_title_format">Événement : %1$s</string>
