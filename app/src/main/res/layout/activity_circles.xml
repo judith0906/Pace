@@ -36,7 +36,7 @@
             android:id="@+id/tv_title"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:text="Círculos"
+            android:text="@string/my_circles"
             android:textSize="24sp"
             android:textStyle="bold"
             android:textColor="@color/text_primary"

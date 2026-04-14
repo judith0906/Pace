@@ -47,7 +47,7 @@
     <string name="txt_log_in">Se connecter</string>
 
     <!-- Toasts y validaciones auth -->
-    <string name="creating_account">Création du compte...</string>
+    <string name="creating_account">Création du compte…</string>
     <string name="create_account">Créer un compte</string>
     <string name="account_created_success">Compte créé avec succès</string>
     <string name="name_required">Le nom est requis</string>
@@ -59,7 +59,7 @@
     <string name="password_too_short">Le mot de passe doit comporter au moins 6 caractères.</string>
     <string name="email_required">L\'email est requis</string>
     <string name="invalid_email">Email invalide</string>
-    <string name="sending">Envoi en cours...</string>
+    <string name="sending">Envoi en cours…</string>
     <string name="send_link">Envoyer le lien</string>
     <string name="password_reset_email_sent">Un e-mail de réinitialisation du mot de passe a été envoyé</string>
     <string name="pswd_reset_email_sent">Un courriel a été envoyé pour réinitialiser votre mot de passe.</string>
@@ -128,10 +128,10 @@
     <string name="notification_message">Ouvrez Pace et partagez ce que vous avez fait aujourd\'hui</string>
     <string name="notification_permission_denied">Impossible d\'activer les rappels sans autorisation de notification</string>
     <string name="notification_permission_title">Autorisation de notification</string>
-    <string name="notification_permission_message">Pace a besoin d\'autorisation pour vous envoyer des rappels quotidiens. Voulez-vous accorder l'autorisation?</string>
+    <string name="notification_permission_message">Pace a besoin d\'autorisation pour vous envoyer des rappels quotidiens. Voulez-vous accorder l\'autorisation?</string>
     <string name="grant_permission">Accorder l\'autorisation</string>
     <string name="alarm_permission_title">Autorisation nécessaire</string>
-    <string name="alarm_permission_message">Pour les rappels, Pace a besoin d\'autorisation pour les alarmes exactes. Voulez-vous l'activer?</string>
+    <string name="alarm_permission_message">Pour les rappels, Pace a besoin d\'autorisation pour les alarmes exactes. Voulez-vous l\'activer?</string>
     <string name="activate">Activer</string>
 
     <!-- Toasts ajustes -->
@@ -180,7 +180,7 @@
     <string name="no_habits_configured">Aucune habitude configurée</string>
     <string name="configure_habits_message">Configurez vos habitudes pour commencer à les suivre</string>
     <string name="configure_habits">Configurer les habitudes</string>
-    <string name="daily_habits_preview">Habitudes d\'aujourd'hui</string>
+    <string name="daily_habits_preview">Habitudes d\'aujourd\'hui</string>
     <string name="more_habits">habitudes de plus</string>
     <string name="custom_duration">Personnalisé</string>
     <string name="habit_added">Habitude ajoutée</string>
@@ -296,7 +296,7 @@
     <string name="circle_created">Cercle créé</string>
     <string name="circle_join_error">Impossible de rejoindre le cercle</string>
     <string name="circle_joined">Vous avez rejoint le cercle</string>
-    <string name="chat_hint_message">Écrire un message...</string>
+    <string name="chat_hint_message">Écrire un message…</string>
     <string name="send_message">Envoyer le message</string>
     <string name="error_group_name_required">Saisissez un nom de groupe</string>
     <string name="chat_send_error">Erreur lors de l\'envoi du message. Réessayez.</string>

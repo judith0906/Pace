@@ -9,7 +9,7 @@
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Hábito"
+        android:text="@string/event_select_habit"
         android:textStyle="bold"
         android:layout_marginBottom="6dp" />
 
@@ -24,7 +24,7 @@
         style="@style/PaceChatPrimaryButton"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Seleccionar día" />
+        android:text="@string/event_pick_day" />
 
     <TextView
         android:id="@+id/tv_selected_date"
@@ -39,7 +39,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         style="@style/PaceChatSecondaryButton"
-        android:text="Seleccionar hora" />
+        android:text="@string/event_pick_time" />
 
     <TextView
         android:id="@+id/tv_selected_time"

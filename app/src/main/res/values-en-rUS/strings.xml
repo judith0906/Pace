@@ -26,7 +26,7 @@
     <string name="txt_login">Back to login</string>
     <string name="email_required">Email is required</string>
     <string name="invalid_email">Invalid email</string>
-    <string name="sending">Sending...</string>
+    <string name="sending">Sending…</string>
     <string name="send_link">Send link</string>
     <string name="password_reset_email_sent">A password reset email has been sent</string>
     <string name="pswd_reset_email_sent">An email has been sent to reset your password.</string>
@@ -61,7 +61,7 @@
     <string name="btn_google_signup">Sign up with Google</string>
     <string name="txt_q_login">Already have an account?</string>
     <string name="txt_log_in">Log in</string>
-    <string name="creating_account">Creating account...</string>
+    <string name="creating_account">Creating account…</string>
     <string name="create_account">Create account</string>
     <string name="account_created_success">Account created successfully</string>
     <string name="name_required">Name is required</string>
@@ -299,7 +299,7 @@
     <string name="circle_created">Circle created</string>
     <string name="circle_join_error">Could not join circle</string>
     <string name="circle_joined">You have joined circle</string>
-    <string name="chat_hint_message">Write a message...</string>
+    <string name="chat_hint_message">Write a message…</string>
     <string name="send_message">Send message</string>
     <string name="error_group_name_required">Enter a group name</string>
     <string name="chat_send_error">Error sending message. Please try again.</string>
