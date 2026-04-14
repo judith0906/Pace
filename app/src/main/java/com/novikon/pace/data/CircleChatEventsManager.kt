@@ -19,6 +19,8 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.net.HttpURLConnection
 import java.net.URL
+//Temporal
+import android.util.Log
 
 class CircleChatEventsManager {
 
@@ -298,25 +300,28 @@ class CircleChatEventsManager {
             val baseUrl = BuildConfig.SUPABASE_URL.removeSuffix("/")
             val bucket = BuildConfig.SUPABASE_BUCKET
             val uploadUrl = "$baseUrl/storage/v1/object/$bucket/$objectPath"
+
+            Log.d("SupabaseUpload", "URL=$uploadUrl")
+
             val conn = (URL(uploadUrl).openConnection() as HttpURLConnection).apply {
                 requestMethod = "POST"
                 doOutput = true
                 setRequestProperty("apikey", BuildConfig.SUPABASE_ANON_KEY)
                 setRequestProperty("Authorization", "Bearer ${BuildConfig.SUPABASE_ANON_KEY}")
                 setRequestProperty("Content-Type", "image/jpeg")
-                setRequestProperty("x-upsert", "true")
-                connectTimeout = 15000
-                readTimeout = 20000
             }
+
             try {
                 conn.outputStream.use { it.write(imageBytes) }
                 val code = conn.responseCode
+                val errorBody = conn.errorStream?.bufferedReader()?.readText()
+                Log.d("SupabaseUpload", "code=$code errorBody=$errorBody")
+
                 if (code in 200..299) {
                     "$baseUrl/storage/v1/object/public/$bucket/$objectPath"
-                } else {
-                    null
-                }
-            } catch (_: Exception) {
+                } else null
+            } catch (e: Exception) {
+                Log.e("SupabaseUpload", "upload exception", e)
                 null
             } finally {
                 conn.disconnect()
