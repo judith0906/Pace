@@ -21,6 +21,7 @@
 
     <com.google.android.material.button.MaterialButton
         android:id="@+id/btn_pick_date"
+        style="@style/PaceChatPrimaryButton"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Seleccionar día" />
@@ -37,6 +38,7 @@
         android:id="@+id/btn_pick_time"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        style="@style/PaceChatSecondaryButton"
         android:text="Seleccionar hora" />
 
     <TextView

@@ -32,6 +32,7 @@ class MessagesAdapter(
         private const val VIEW_TYPE_EVENT = 4
         private const val VIEW_TYPE_EVENT_START = 5
         private const val VIEW_TYPE_PHOTO = 6
+
         private const val EVENT_CAPTURE_WINDOW_MS = 60 * 60 * 1000L // 1 hora
 
         private fun formatTime(timestamp: Long): String {
@@ -83,12 +84,31 @@ class MessagesAdapter(
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
         val inflater = LayoutInflater.from(parent.context)
         return when (viewType) {
-            VIEW_TYPE_SENT -> SentMessageViewHolder(inflater.inflate(R.layout.item_message_sent, parent, false))
-            VIEW_TYPE_RECEIVED -> ReceivedMessageViewHolder(inflater.inflate(R.layout.item_message_received, parent, false))
-            VIEW_TYPE_EVENT -> EventMessageViewHolder(inflater.inflate(R.layout.item_message_event, parent, false), currentUserId, onJoinEvent, onDeclineEvent)
-            VIEW_TYPE_EVENT_START -> EventStartViewHolder(inflater.inflate(R.layout.item_message_event_start, parent, false), currentUserId, onCaptureMoment)
-            VIEW_TYPE_PHOTO -> PhotoMessageViewHolder(inflater.inflate(R.layout.item_message_photo, parent, false), ioExecutor, mainHandler)
-            else -> SystemMessageViewHolder(inflater.inflate(R.layout.item_message_system, parent, false))
+            VIEW_TYPE_SENT -> SentMessageViewHolder(
+                inflater.inflate(R.layout.item_message_sent, parent, false)
+            )
+            VIEW_TYPE_RECEIVED -> ReceivedMessageViewHolder(
+                inflater.inflate(R.layout.item_message_received, parent, false)
+            )
+            VIEW_TYPE_EVENT -> EventMessageViewHolder(
+                inflater.inflate(R.layout.item_message_event, parent, false),
+                currentUserId,
+                onJoinEvent,
+                onDeclineEvent
+            )
+            VIEW_TYPE_EVENT_START -> EventStartViewHolder(
+                inflater.inflate(R.layout.item_message_event_start, parent, false),
+                currentUserId,
+                onCaptureMoment
+            )
+            VIEW_TYPE_PHOTO -> PhotoMessageViewHolder(
+                inflater.inflate(R.layout.item_message_photo, parent, false),
+                ioExecutor,
+                mainHandler
+            )
+            else -> SystemMessageViewHolder(
+                inflater.inflate(R.layout.item_message_system, parent, false)
+            )
         }
     }
 
@@ -186,6 +206,8 @@ class MessagesAdapter(
         private val btnCapture: MaterialButton = itemView.findViewById(R.id.btn_capture_moment)
 
         fun bind(message: Message) {
+            tvText.text = message.text
+
             val now = System.currentTimeMillis()
             val canCaptureByMember = message.captureAllowedIds.contains(currentUserId)
             val withinCaptureWindow = message.timestamp > 0L && now <= (message.timestamp + EVENT_CAPTURE_WINDOW_MS)
