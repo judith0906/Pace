@@ -18,5 +18,16 @@ data class Message(
     val text: String = "",
     val senderId: String = "",
     val senderName: String = "",
-    val timestamp: Long = 0L
+    val timestamp: Long = 0L,
+    // "TEXT", "SYSTEM", "EVENT"
+    val type: String = "TEXT",
+    // Solo para EVENT
+    val eventId: String = "",
+    val eventHabitName: String = "",
+    val eventScheduledAt: Long = 0L,
+    val eventCreatedBy: String = "",
+    val eventJoinedIds: List<String> = emptyList(),
+    val eventJoinedNames: List<String> = emptyList(),
+    val eventDeclinedIds: List<String> = emptyList(),
+    val eventDeclinedNames: List<String> = emptyList()
 )

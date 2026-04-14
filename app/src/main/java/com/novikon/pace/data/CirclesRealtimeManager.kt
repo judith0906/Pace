@@ -578,6 +578,7 @@ class CirclesRealtimeManager {
                 "text" to text,
                 "senderId" to "system",
                 "senderName" to "system",
+                "type" to "SYSTEM",
                 "timestamp" to System.currentTimeMillis()
             )
 
@@ -604,6 +605,7 @@ class CirclesRealtimeManager {
                 "text" to text,
                 "senderId" to userId,
                 "senderName" to userName,
+                "type" to "TEXT",
                 "timestamp" to System.currentTimeMillis()
             )
 

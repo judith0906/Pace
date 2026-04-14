@@ -35,43 +35,23 @@
         android:padding="8dp"
         app:layout_constraintBottom_toBottomOf="parent">
 
-        <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/til_message"
-            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btn_create_event"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:hint="@string/chat_hint_message"
-            app:boxCornerRadiusBottomEnd="24dp"
-            app:boxCornerRadiusBottomStart="24dp"
-            app:boxCornerRadiusTopEnd="24dp"
-            app:boxCornerRadiusTopStart="24dp"
-            app:boxStrokeColor="@color/border_color"
+            android:text="Crear evento"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toStartOf="@id/btn_send"
+            app:layout_constraintEnd_toStartOf="@id/btn_send_message"
             app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintBottom_toBottomOf="parent">
+            app:layout_constraintBottom_toBottomOf="parent"
+            android:layout_marginEnd="8dp"/>
 
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/et_message"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:imeOptions="actionSend"
-                android:inputType="textMultiLine|textCapSentences"
-                android:maxLines="4"
-                android:textColor="@color/text_primary"
-                android:textSize="16sp"/>
-
-        </com.google.android.material.textfield.TextInputLayout>
-
-        <ImageButton
-            android:id="@+id/btn_send"
-            android:layout_width="48dp"
-            android:layout_height="48dp"
-            android:layout_marginStart="8dp"
-            android:background="@drawable/bg_send_button"
-            android:contentDescription="@string/send_message"
-            android:src="@drawable/ic_send"
-            app:tint="@color/text_primary"
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btn_send_message"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="Enviar mensaje"
+            app:layout_constraintStart_toEndOf="@id/btn_create_event"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintBottom_toBottomOf="parent"/>
