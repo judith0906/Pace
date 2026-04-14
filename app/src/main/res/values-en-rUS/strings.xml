@@ -363,4 +363,8 @@
 
     <string name="event_system_started">The event has started: %1$s</string>
     <string name="event_capture_moment">Capture moment</string>
+
+    <string name="event_started_success">Event started.</string>
+    <string name="event_start_error">Could not start the event.</string>
+    <string name="event_photo_send_error">Could not send the photo.</string>
 </resources>

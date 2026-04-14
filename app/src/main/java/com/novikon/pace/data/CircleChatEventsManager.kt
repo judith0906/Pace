@@ -1,18 +1,25 @@
 package com.novikon.pace.data
 
+import android.graphics.Bitmap
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.ChildEventListener
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.database.MutableData
+import com.google.firebase.database.Transaction
+import com.google.firebase.database.ValueEventListener
+import com.google.firebase.storage.FirebaseStorage
 import com.novikon.pace.models.Message
 import kotlinx.coroutines.suspendCancellableCoroutine
+import java.io.ByteArrayOutputStream
 import kotlin.coroutines.resume
 
 class CircleChatEventsManager {
 
     private val database = FirebaseDatabase.getInstance()
     private val auth = FirebaseAuth.getInstance()
+    private val storage = FirebaseStorage.getInstance()
 
     fun getUserId(): String? = auth.currentUser?.uid
 
@@ -53,6 +60,7 @@ class CircleChatEventsManager {
                 "circles/$circleId/events/$eventId/createdBy" to uid,
                 "circles/$circleId/events/$eventId/createdByName" to userName,
                 "circles/$circleId/events/$eventId/createdAt" to now,
+                "circles/$circleId/events/$eventId/started" to false,
                 "circles/$circleId/events/$eventId/joinedIds" to listOf(uid),
                 "circles/$circleId/events/$eventId/joinedNames" to listOf(userName),
                 "circles/$circleId/events/$eventId/declinedIds" to emptyList<String>(),
@@ -91,9 +99,8 @@ class CircleChatEventsManager {
 
         return suspendCancellableCoroutine { cont ->
             val eventRef = database.getReference("circles/$circleId/events/$eventId")
-            val messageRef = database.getReference("circles/$circleId/messages/$messageId")
 
-            eventRef.addListenerForSingleValueEvent(object : com.google.firebase.database.ValueEventListener {
+            eventRef.addListenerForSingleValueEvent(object : ValueEventListener {
                 override fun onDataChange(snapshot: DataSnapshot) {
                     if (!snapshot.exists()) {
                         cont.resume(false)
@@ -142,6 +149,164 @@ class CircleChatEventsManager {
         }
     }
 
+    suspend fun checkAndStartDueEvents(circleId: String): Boolean {
+        val now = System.currentTimeMillis()
+
+        return suspendCancellableCoroutine { cont ->
+            database.getReference("circles/$circleId/events")
+                .orderByChild("scheduledAt")
+                .endAt(now.toDouble())
+                .addListenerForSingleValueEvent(object : ValueEventListener {
+                    override fun onDataChange(snapshot: DataSnapshot) {
+                        val dueEvents = snapshot.children.toList()
+                        if (dueEvents.isEmpty()) {
+                            cont.resume(true)
+                            return
+                        }
+
+                        processDueEventsSequentially(circleId, dueEvents, 0) {
+                            cont.resume(true)
+                        }
+                    }
+
+                    override fun onCancelled(error: DatabaseError) {
+                        cont.resume(false)
+                    }
+                })
+        }
+    }
+
+    private fun processDueEventsSequentially(
+        circleId: String,
+        events: List<DataSnapshot>,
+        index: Int,
+        onDone: () -> Unit
+    ) {
+        if (index >= events.size) {
+            onDone()
+            return
+        }
+
+        val eventSnapshot = events[index]
+        val eventId = eventSnapshot.key ?: run {
+            processDueEventsSequentially(circleId, events, index + 1, onDone)
+            return
+        }
+
+        val started = eventSnapshot.child("started").getValue(Boolean::class.java) ?: false
+        if (started) {
+            processDueEventsSequentially(circleId, events, index + 1, onDone)
+            return
+        }
+
+        markEventStartedAndSendSystemMessage(circleId, eventId, eventSnapshot) {
+            processDueEventsSequentially(circleId, events, index + 1, onDone)
+        }
+    }
+
+    private fun markEventStartedAndSendSystemMessage(
+        circleId: String,
+        eventId: String,
+        eventSnapshot: DataSnapshot,
+        onDone: () -> Unit
+    ) {
+        val startedRef = database.getReference("circles/$circleId/events/$eventId/started")
+
+        startedRef.runTransaction(object : Transaction.Handler {
+            override fun doTransaction(currentData: MutableData): Transaction.Result {
+                val current = currentData.getValue(Boolean::class.java) ?: false
+                if (current) return Transaction.abort()
+                currentData.value = true
+                return Transaction.success(currentData)
+            }
+
+            override fun onComplete(error: DatabaseError?, committed: Boolean, currentData: DataSnapshot?) {
+                if (error != null || !committed) {
+                    onDone()
+                    return
+                }
+
+                val habitName = eventSnapshot.child("habitName").getValue(String::class.java) ?: "Evento"
+                val joinedIds = eventSnapshot.child("joinedIds").children.mapNotNull { it.getValue(String::class.java) }
+                val now = System.currentTimeMillis()
+
+                val msgRef = database.getReference("circles/$circleId/messages").push()
+                val msgId = msgRef.key ?: run {
+                    onDone()
+                    return
+                }
+
+                val messageMap = mapOf(
+                    "id" to msgId,
+                    "type" to "EVENT_START",
+                    "text" to "Ha iniciado el evento: $habitName",
+                    "senderId" to "system",
+                    "senderName" to "system",
+                    "timestamp" to now,
+                    "eventId" to eventId,
+                    "eventHabitName" to habitName,
+                    "captureAllowedIds" to joinedIds
+                )
+
+                msgRef.setValue(messageMap)
+                    .addOnCompleteListener { onDone() }
+            }
+        })
+    }
+
+    suspend fun sendPhotoMoment(
+        circleId: String,
+        eventId: String,
+        bitmap: Bitmap
+    ): Boolean {
+        val uid = getUserId() ?: return false
+        val userName = getUserName()
+
+        val bytes = ByteArrayOutputStream().use { stream ->
+            bitmap.compress(Bitmap.CompressFormat.JPEG, 85, stream)
+            stream.toByteArray()
+        }
+
+        val filePath = "circles/$circleId/eventMoments/$eventId/${uid}_${System.currentTimeMillis()}.jpg"
+        val imageRef = storage.reference.child(filePath)
+
+        val downloadUrl = suspendCancellableCoroutine<String?> { cont ->
+            imageRef.putBytes(bytes)
+                .continueWithTask { task ->
+                    if (!task.isSuccessful) {
+                        task.exception?.let { throw it }
+                    }
+                    imageRef.downloadUrl
+                }
+                .addOnSuccessListener { uri -> cont.resume(uri.toString()) }
+                .addOnFailureListener { cont.resume(null) }
+        } ?: return false
+
+        return suspendCancellableCoroutine { cont ->
+            val msgRef = database.getReference("circles/$circleId/messages").push()
+            val msgId = msgRef.key ?: run {
+                cont.resume(false)
+                return@suspendCancellableCoroutine
+            }
+
+            val now = System.currentTimeMillis()
+            val messageMap = mapOf(
+                "id" to msgId,
+                "type" to "PHOTO",
+                "text" to "Foto",
+                "senderId" to uid,
+                "senderName" to userName,
+                "timestamp" to now,
+                "eventId" to eventId,
+                "photoUrl" to downloadUrl
+            )
+
+            msgRef.setValue(messageMap)
+                .addOnSuccessListener { cont.resume(true) }
+                .addOnFailureListener { cont.resume(false) }
+        }
+    }
+
     fun observeMessages(
         circleId: String,
         onMessageAdded: (Message) -> Unit,
@@ -162,7 +327,9 @@ class CircleChatEventsManager {
                 eventJoinedIds = snapshot.child("eventJoinedIds").children.mapNotNull { it.getValue(String::class.java) },
                 eventJoinedNames = snapshot.child("eventJoinedNames").children.mapNotNull { it.getValue(String::class.java) },
                 eventDeclinedIds = snapshot.child("eventDeclinedIds").children.mapNotNull { it.getValue(String::class.java) },
-                eventDeclinedNames = snapshot.child("eventDeclinedNames").children.mapNotNull { it.getValue(String::class.java) }
+                eventDeclinedNames = snapshot.child("eventDeclinedNames").children.mapNotNull { it.getValue(String::class.java) },
+                captureAllowedIds = snapshot.child("captureAllowedIds").children.mapNotNull { it.getValue(String::class.java) },
+                photoUrl = snapshot.child("photoUrl").getValue(String::class.java) ?: ""
             )
         }
 
