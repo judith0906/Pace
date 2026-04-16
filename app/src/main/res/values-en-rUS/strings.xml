@@ -194,6 +194,61 @@
     <string name="physical9">Riding a bicycle</string>
     <string name="physical10">Dance</string>
 
+    <!-- Habitos a seleccionar: mentales -->
+    <string name="mental1">Meditate</string>
+    <string name="mental2">Read a book</string>
+    <string name="mental3">Learn something new</string>
+    <string name="mental4">Practice a language</string>
+    <string name="mental5">Solve puzzles or sudoku</string>
+    <string name="mental6">Write in a journal</string>
+    <string name="mental7">Listen to an educational podcast</string>
+    <string name="mental8">Practice mindfulness</string>
+    <string name="mental9">Watch a documentary</string>
+    <string name="mental10">Play an instrument</string>
+
+    <!-- Habitos a seleccionar: estudiar -->
+    <string name="study1">Study or review</string>
+    <string name="study2">Do practice exercises</string>
+    <string name="study5">Review flashcards</string>
+    <string name="study6">Make summaries</string>
+    <string name="study8">Attend class or tutoring</string>
+    <string name="study9">Research an unfamiliar topic</string>
+    <string name="study10">Prepare for an exam</string>
+
+    <!-- Habitos a seleccionar: rutina -->
+    <string name="routine1">Make the bed</string>
+    <string name="routine2">Morning shower</string>
+    <string name="routine3">Have a healthy breakfast</string>
+    <string name="routine4">Prepare meals</string>
+    <string name="routine5">Clean or tidy up</string>
+    <string name="routine6">Plan the day</string>
+    <string name="routine7">Check emails</string>
+    <string name="routine8">Cook dinner</string>
+    <string name="routine9">Night routine</string>
+    <string name="routine10">Sleep 8 hours</string>
+    <string name="routine11">Self-care</string>
+    <string name="routine12">Water plants</string>
+
+    <!-- Habitos a seleccionar: eliminar -->
+    <string name="bad1">Do not smoke</string>
+    <string name="bad2">Do not consume alcohol</string>
+    <string name="bad3">Do not eat junk food</string>
+    <string name="bad4">Limit social media use</string>
+    <string name="bad6">Do not stay up late</string>
+    <string name="bad7">Avoid caffeine in the afternoon</string>
+    <string name="bad8">Do not snack between meals</string>
+    <string name="bad9">Reduce sugar intake</string>
+    <string name="bad11">Avoid screens before sleep</string>
+    <string name="bad12">Do not skip meals</string>
+
+    <!-- Habitos a seleccionar: bienestar -->
+    <string name="wellbeing2">Call loved ones</string>
+    <string name="wellbeing3">Quality time with yourself</string>
+    <string name="wellbeing6">Disconnect from work</string>
+    <string name="wellbeing7">Do something you enjoy</string>
+    <string name="wellbeing9">Connect with nature</string>
+    <string name="wellbeing10">Self-care session</string>
+
     <!-- ========================================================= -->
     <!-- HABITOS: DIA ACTUAL / PREVIEW                             -->
     <!-- ========================================================= -->

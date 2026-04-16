@@ -19,11 +19,11 @@ object HabitsRepository {
     // en una sola lista. Se usa para buscar hábitos por id.
     fun getAllPredefinedHabits(context: Context): List<Habit> {
         return getPhysicalHabits(context) +
-                getMentalHabits() +
-                getStudyHabits() +
-                getRoutineHabits() +
-                getBadHabitsToEliminate() +
-                getWellbeingHabits()
+                getMentalHabits(context) +
+                getStudyHabits(context) +
+                getRoutineHabits(context) +
+                getBadHabitsToEliminate(context) +
+                getWellbeingHabits(context)
     }
 
     // ── HÁBITOS POR CATEGORÍA ─────────────────────────────────────────────────
@@ -43,73 +43,73 @@ object HabitsRepository {
         )
     }
 
-    private fun getMentalHabits(): List<Habit> {
+    private fun getMentalHabits(context: Context): List<Habit> {
         return listOf(
-            Habit("mental_1", "Meditar", "🧘‍♂️", "10-20 min", HabitCategory.MENTAL, TimeOfDay.ALL_DAY),
-            Habit("mental_2", "Leer un libro", "📚", "30 min", HabitCategory.MENTAL, TimeOfDay.ALL_DAY),
-            Habit("mental_3", "Aprender algo nuevo", "🎓", "30 min", HabitCategory.MENTAL, TimeOfDay.ALL_DAY),
-            Habit("mental_4", "Practicar un idioma", "🗣️", "20 min", HabitCategory.MENTAL, TimeOfDay.ALL_DAY),
-            Habit("mental_5", "Resolver puzzles/sudoku", "🧩", "15 min", HabitCategory.MENTAL, TimeOfDay.ALL_DAY),
-            Habit("mental_6", "Escribir en diario", "📝", "15 min", HabitCategory.MENTAL, TimeOfDay.EVENING),
-            Habit("mental_7", "Escuchar podcast educativo", "🎧", "30 min", HabitCategory.MENTAL, TimeOfDay.ALL_DAY),
-            Habit("mental_8", "Practicar mindfulness", "🌸", "10 min", HabitCategory.MENTAL, TimeOfDay.MORNING),
-            Habit("mental_9", "Ver documental", "🎬", "45 min", HabitCategory.MENTAL, TimeOfDay.EVENING),
-            Habit("mental_10", "Tocar un instrumento", "🎸", "30 min", HabitCategory.MENTAL, TimeOfDay.ALL_DAY)
+            Habit("mental_1", context.getString(R.string.mental1), "🧘‍♂️", "10-20 min", HabitCategory.MENTAL, TimeOfDay.ALL_DAY),
+            Habit("mental_2", context.getString(R.string.mental2), "📚", "30 min", HabitCategory.MENTAL, TimeOfDay.ALL_DAY),
+            Habit("mental_3", context.getString(R.string.mental3), "🎓", "30 min", HabitCategory.MENTAL, TimeOfDay.ALL_DAY),
+            Habit("mental_4", context.getString(R.string.mental4), "🗣️", "20 min", HabitCategory.MENTAL, TimeOfDay.ALL_DAY),
+            Habit("mental_5", context.getString(R.string.mental5), "🧩", "15 min", HabitCategory.MENTAL, TimeOfDay.ALL_DAY),
+            Habit("mental_6", context.getString(R.string.mental6), "📝", "15 min", HabitCategory.MENTAL, TimeOfDay.EVENING),
+            Habit("mental_7", context.getString(R.string.mental7), "🎧", "30 min", HabitCategory.MENTAL, TimeOfDay.ALL_DAY),
+            Habit("mental_8", context.getString(R.string.mental8), "🌸", "10 min", HabitCategory.MENTAL, TimeOfDay.MORNING),
+            Habit("mental_9", context.getString(R.string.mental9), "🎬", "45 min", HabitCategory.MENTAL, TimeOfDay.EVENING),
+            Habit("mental_10", context.getString(R.string.mental10), "🎸", "30 min", HabitCategory.MENTAL, TimeOfDay.ALL_DAY)
         )
     }
 
-    private fun getStudyHabits(): List<Habit> {
+    private fun getStudyHabits(context: Context): List<Habit> {
         return listOf(
-            Habit("study_1", "Estudiar/repasar", "📖", "60 min", HabitCategory.STUDY, TimeOfDay.ALL_DAY),
-            Habit("study_2", "Hacer ejercicios prácticos", "✍️", "45 min", HabitCategory.STUDY, TimeOfDay.ALL_DAY),
-            Habit("study_5", "Repasar flashcards", "🗂️", "20 min", HabitCategory.STUDY, TimeOfDay.ALL_DAY),
-            Habit("study_6", "Hacer resúmenes", "📄", "45 min", HabitCategory.STUDY, TimeOfDay.ALL_DAY),
-            Habit("study_8", "Asistir a clase/tutoría", "👨‍🏫", "Según horario", HabitCategory.STUDY, TimeOfDay.ALL_DAY),
-            Habit("study_9", "Investigar sobre algún tema del que no sabes", "🔍", "45 min", HabitCategory.STUDY, TimeOfDay.ALL_DAY),
-            Habit("study_10", "Preparar examen", "📝", "90 min", HabitCategory.STUDY, TimeOfDay.ALL_DAY)
+            Habit("study_1", context.getString(R.string.study1), "📖", "60 min", HabitCategory.STUDY, TimeOfDay.ALL_DAY),
+            Habit("study_2", context.getString(R.string.study2), "✍️", "45 min", HabitCategory.STUDY, TimeOfDay.ALL_DAY),
+            Habit("study_5", context.getString(R.string.study5), "🗂️", "20 min", HabitCategory.STUDY, TimeOfDay.ALL_DAY),
+            Habit("study_6", context.getString(R.string.study6), "📄", "45 min", HabitCategory.STUDY, TimeOfDay.ALL_DAY),
+            Habit("study_8", context.getString(R.string.study8), "👨‍🏫", "Según horario", HabitCategory.STUDY, TimeOfDay.ALL_DAY),
+            Habit("study_9", context.getString(R.string.study9), "🔍", "45 min", HabitCategory.STUDY, TimeOfDay.ALL_DAY),
+            Habit("study_10", context.getString(R.string.study10), "📝", "90 min", HabitCategory.STUDY, TimeOfDay.ALL_DAY)
         )
     }
 
-    private fun getRoutineHabits(): List<Habit> {
+    private fun getRoutineHabits(context: Context): List<Habit> {
         return listOf(
-            Habit("routine_1", "Hacer la cama", "🛏️", "5 min", HabitCategory.ROUTINE, TimeOfDay.MORNING),
-            Habit("routine_2", "Ducha matutina", "🚿", "15 min", HabitCategory.ROUTINE, TimeOfDay.MORNING),
-            Habit("routine_3", "Desayunar saludable", "🍳", "20 min", HabitCategory.ROUTINE, TimeOfDay.MORNING),
-            Habit("routine_4", "Preparar comida", "🥗", "30 min", HabitCategory.ROUTINE, TimeOfDay.MORNING),
-            Habit("routine_5", "Limpiar/ordenar", "🧹", "20 min", HabitCategory.ROUTINE, TimeOfDay.ALL_DAY),
-            Habit("routine_6", "Planificar el día", "📅", "10 min", HabitCategory.ROUTINE, TimeOfDay.MORNING),
-            Habit("routine_7", "Revisar emails", "📧", "15 min", HabitCategory.ROUTINE, TimeOfDay.ALL_DAY),
-            Habit("routine_8", "Cocinar cena", "👨‍🍳", "40 min", HabitCategory.ROUTINE, TimeOfDay.EVENING),
-            Habit("routine_9", "Rutina nocturna", "🌙", "30 min", HabitCategory.ROUTINE, TimeOfDay.EVENING),
-            Habit("routine_10", "Dormir 8 horas", "😴", "8 horas", HabitCategory.ROUTINE, TimeOfDay.EVENING),
-            Habit("routine_11", "Cuidado personal", "💆", "20 min", HabitCategory.ROUTINE, TimeOfDay.ALL_DAY),
-            Habit("routine_12", "Regar plantas", "🪴", "10 min", HabitCategory.ROUTINE, TimeOfDay.ALL_DAY)
+            Habit("routine_1", context.getString(R.string.routine1), "🛏️", "5 min", HabitCategory.ROUTINE, TimeOfDay.MORNING),
+            Habit("routine_2", context.getString(R.string.routine2), "🚿", "15 min", HabitCategory.ROUTINE, TimeOfDay.MORNING),
+            Habit("routine_3", context.getString(R.string.routine3), "🍳", "20 min", HabitCategory.ROUTINE, TimeOfDay.MORNING),
+            Habit("routine_4", context.getString(R.string.routine4), "🥗", "30 min", HabitCategory.ROUTINE, TimeOfDay.MORNING),
+            Habit("routine_5", context.getString(R.string.routine5), "🧹", "20 min", HabitCategory.ROUTINE, TimeOfDay.ALL_DAY),
+            Habit("routine_6", context.getString(R.string.routine6), "📅", "10 min", HabitCategory.ROUTINE, TimeOfDay.MORNING),
+            Habit("routine_7", context.getString(R.string.routine7), "📧", "15 min", HabitCategory.ROUTINE, TimeOfDay.ALL_DAY),
+            Habit("routine_8", context.getString(R.string.routine8), "👨‍🍳", "40 min", HabitCategory.ROUTINE, TimeOfDay.EVENING),
+            Habit("routine_9", context.getString(R.string.routine9), "🌙", "30 min", HabitCategory.ROUTINE, TimeOfDay.EVENING),
+            Habit("routine_10", context.getString(R.string.routine10), "😴", "8 horas", HabitCategory.ROUTINE, TimeOfDay.EVENING),
+            Habit("routine_11", context.getString(R.string.routine11), "💆", "20 min", HabitCategory.ROUTINE, TimeOfDay.ALL_DAY),
+            Habit("routine_12", context.getString(R.string.routine12), "🪴", "10 min", HabitCategory.ROUTINE, TimeOfDay.ALL_DAY)
         )
     }
 
-    private fun getBadHabitsToEliminate(): List<Habit> {
+    private fun getBadHabitsToEliminate(context: Context): List<Habit> {
         return listOf(
-            Habit("bad_1", "No fumar", "🚭", "Todo el día", HabitCategory.BAD_HABITS, TimeOfDay.ALL_DAY),
-            Habit("bad_2", "No consumir alcohol", "🍺", "Todo el día", HabitCategory.BAD_HABITS, TimeOfDay.ALL_DAY),
-            Habit("bad_3", "No comer comida basura", "🍟", "Todo el día", HabitCategory.BAD_HABITS, TimeOfDay.ALL_DAY),
-            Habit("bad_4", "Limitar redes sociales", "📱", "Máx 30 min", HabitCategory.BAD_HABITS, TimeOfDay.ALL_DAY),
-            Habit("bad_6", "No trasnochar", "🌃", "Antes 23:00", HabitCategory.BAD_HABITS, TimeOfDay.EVENING),
-            Habit("bad_7", "Evitar cafeína tarde", "☕", "Después 16:00", HabitCategory.BAD_HABITS, TimeOfDay.AFTERNOON),
-            Habit("bad_8", "No picar entre comidas", "🍪", "Todo el día", HabitCategory.BAD_HABITS, TimeOfDay.ALL_DAY),
-            Habit("bad_9", "Reducir azúcar", "🍭", "Todo el día", HabitCategory.BAD_HABITS, TimeOfDay.ALL_DAY),
-            Habit("bad_11", "Evitar pantallas antes dormir", "📵", "1h antes", HabitCategory.BAD_HABITS, TimeOfDay.EVENING),
-            Habit("bad_12", "No saltarse comidas", "🍽️", "Todo el día", HabitCategory.BAD_HABITS, TimeOfDay.ALL_DAY)
+            Habit("bad_1", context.getString(R.string.bad1), "🚭", "Todo el día", HabitCategory.BAD_HABITS, TimeOfDay.ALL_DAY),
+            Habit("bad_2", context.getString(R.string.bad2), "🍺", "Todo el día", HabitCategory.BAD_HABITS, TimeOfDay.ALL_DAY),
+            Habit("bad_3", context.getString(R.string.bad3), "🍟", "Todo el día", HabitCategory.BAD_HABITS, TimeOfDay.ALL_DAY),
+            Habit("bad_4", context.getString(R.string.bad4), "📱", "Máx 30 min", HabitCategory.BAD_HABITS, TimeOfDay.ALL_DAY),
+            Habit("bad_6", context.getString(R.string.bad6), "🌃", "Antes 23:00", HabitCategory.BAD_HABITS, TimeOfDay.EVENING),
+            Habit("bad_7", context.getString(R.string.bad7), "☕", "Después 16:00", HabitCategory.BAD_HABITS, TimeOfDay.AFTERNOON),
+            Habit("bad_8", context.getString(R.string.bad8), "🍪", "Todo el día", HabitCategory.BAD_HABITS, TimeOfDay.ALL_DAY),
+            Habit("bad_9", context.getString(R.string.bad9), "🍭", "Todo el día", HabitCategory.BAD_HABITS, TimeOfDay.ALL_DAY),
+            Habit("bad_11", context.getString(R.string.bad11), "📵", "1h antes", HabitCategory.BAD_HABITS, TimeOfDay.EVENING),
+            Habit("bad_12", context.getString(R.string.bad12), "🍽️", "Todo el día", HabitCategory.BAD_HABITS, TimeOfDay.ALL_DAY)
         )
     }
 
-    private fun getWellbeingHabits(): List<Habit> {
+    private fun getWellbeingHabits(context: Context): List<Habit> {
         return listOf(
-            Habit("wellbeing_2", "Llamar a seres queridos", "📞", "20 min", HabitCategory.WELLBEING, TimeOfDay.ALL_DAY),
-            Habit("wellbeing_3", "Tiempo de calidad contigo", "🫂", "30 min", HabitCategory.WELLBEING, TimeOfDay.ALL_DAY),
-            Habit("wellbeing_6", "Desconectar del trabajo", "🔌", "Después horario", HabitCategory.WELLBEING, TimeOfDay.ALL_DAY),
-            Habit("wellbeing_7", "Hacer algo que disfrutes", "🎨", "30 min", HabitCategory.WELLBEING, TimeOfDay.ALL_DAY),
-            Habit("wellbeing_9", "Contacto con naturaleza", "🌳", "30 min", HabitCategory.WELLBEING, TimeOfDay.ALL_DAY),
-            Habit("wellbeing_10", "Sesión de autocuidado", "🛁", "45 min", HabitCategory.WELLBEING, TimeOfDay.ALL_DAY)
+            Habit("wellbeing_2", context.getString(R.string.wellbeing2), "📞", "20 min", HabitCategory.WELLBEING, TimeOfDay.ALL_DAY),
+            Habit("wellbeing_3", context.getString(R.string.wellbeing3), "🫂", "30 min", HabitCategory.WELLBEING, TimeOfDay.ALL_DAY),
+            Habit("wellbeing_6", context.getString(R.string.wellbeing6), "🔌", "Después horario", HabitCategory.WELLBEING, TimeOfDay.ALL_DAY),
+            Habit("wellbeing_7", context.getString(R.string.wellbeing7), "🎨", "30 min", HabitCategory.WELLBEING, TimeOfDay.ALL_DAY),
+            Habit("wellbeing_9", context.getString(R.string.wellbeing9), "🌳", "30 min", HabitCategory.WELLBEING, TimeOfDay.ALL_DAY),
+            Habit("wellbeing_10", context.getString(R.string.wellbeing10), "🛁", "45 min", HabitCategory.WELLBEING, TimeOfDay.ALL_DAY)
         )
     }
 }

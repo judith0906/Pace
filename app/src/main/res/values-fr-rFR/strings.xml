@@ -188,6 +188,61 @@
     <string name="physical9">Faire du vélo</string>
     <string name="physical10">Danser</string>
 
+    <!-- Habitos a seleccionar: mentales -->
+    <string name="mental1">Méditer</string>
+    <string name="mental2">Lire un livre</string>
+    <string name="mental3">Apprendre quelque chose de nouveau</string>
+    <string name="mental4">Pratiquer une langue</string>
+    <string name="mental5">Résoudre des puzzles ou sudoku</string>
+    <string name="mental6">Écrire dans un journal</string>
+    <string name="mental7">Écouter un podcast éducatif</string>
+    <string name="mental8">Pratiquer la pleine conscience</string>
+    <string name="mental9">Regarder un documentaire</string>
+    <string name="mental10">Jouer d’un instrument</string>
+
+    <!-- Habitos a seleccionar: estudiar -->
+    <string name="study1">Étudier ou réviser</string>
+    <string name="study2">Faire des exercices pratiques</string>
+    <string name="study5">Réviser des flashcards</string>
+    <string name="study6">Faire des résumés</string>
+    <string name="study8">Assister à un cours ou tutorat</string>
+    <string name="study9">Rechercher un sujet inconnu</string>
+    <string name="study10">Préparer un examen</string>
+
+    <!-- Habitos a seleccionar: rutina -->
+    <string name="routine1">Faire le lit</string>
+    <string name="routine2">Douche matinale</string>
+    <string name="routine3">Prendre un petit-déjeuner sain</string>
+    <string name="routine4">Préparer les repas</string>
+    <string name="routine5">Nettoyer ou ranger</string>
+    <string name="routine6">Planifier la journée</string>
+    <string name="routine7">Vérifier les e-mails</string>
+    <string name="routine8">Cuisiner le dîner</string>
+    <string name="routine9">Routine du soir</string>
+    <string name="routine10">Dormir 8 heures</string>
+    <string name="routine11">Prendre soin de soi</string>
+    <string name="routine12">Arroser les plantes</string>
+
+    <!-- Habitos a seleccionar: eliminar -->
+    <string name="bad1">Ne pas fumer</string>
+    <string name="bad2">Ne pas consommer d’alcool</string>
+    <string name="bad3">Ne pas manger de malbouffe</string>
+    <string name="bad4">Limiter les réseaux sociaux</string>
+    <string name="bad6">Ne pas veiller tard</string>
+    <string name="bad7">Éviter la caféine l’après-midi</string>
+    <string name="bad8">Ne pas grignoter entre les repas</string>
+    <string name="bad9">Réduire le sucre</string>
+    <string name="bad11">Éviter les écrans avant de dormir</string>
+    <string name="bad12">Ne pas sauter de repas</string>
+
+    <!-- Habitos a seleccionar: bienestar -->
+    <string name="wellbeing2">Appeler ses proches</string>
+    <string name="wellbeing3">Temps de qualité avec soi-même</string>
+    <string name="wellbeing6">Déconnecter du travail</string>
+    <string name="wellbeing7">Faire quelque chose que vous aimez</string>
+    <string name="wellbeing9">Contact avec la nature</string>
+    <string name="wellbeing10">Séance de soins personnels</string>
+
     <!-- Franja horaria -->
     <string name="time_morning">🌅 Matin</string>
     <string name="time_afternoon">☀️ Après-midi</string>
