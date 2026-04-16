@@ -163,16 +163,13 @@
 
                             <com.google.android.material.button.MaterialButton
                                 android:id="@+id/accessHabitsButton"
+                                style="@style/PaceChatPrimaryButton"
+
                                 android:layout_width="wrap_content"
-                                android:layout_height="42dp"
+                                android:layout_height="wrap_content"
                                 android:text="@string/btn_hbts"
-                                android:textSize="14sp"
-                                android:textStyle="bold"
-                                android:textColor="@color/white"
-                                android:letterSpacing="0.02"
-                                android:layout_gravity="end"
-                                app:cornerRadius="10dp"
-                                app:backgroundTint="@color/accent_primary" />
+
+                                android:layout_gravity="end"/>
 
                         </FrameLayout>
 
@@ -218,19 +215,14 @@
                         <!-- Botón "Ver todas" (solo visible si hay más de 5) -->
                         <com.google.android.material.button.MaterialButton
                             android:id="@+id/viewAllGroupsButton"
+                            style="@style/PaceChatSecondaryButton"
+
                             android:layout_width="wrap_content"
-                            android:layout_height="42dp"
+                            android:layout_height="wrap_content"
                             android:text="@string/btn_cnx"
-                            android:textSize="14sp"
-                            android:textStyle="bold"
-                            android:textColor="@color/text_primary"
-                            android:letterSpacing="0.01"
+
                             android:layout_gravity="center_horizontal"
-                            android:visibility="gone"
-                            app:cornerRadius="10dp"
-                            app:strokeWidth="1.5dp"
-                            app:strokeColor="@color/border_color"
-                            app:backgroundTint="@color/accent_secondary" />
+                            android:visibility="gone"/>
 
                     </LinearLayout>
 

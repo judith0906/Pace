@@ -14,6 +14,7 @@
     <color name="text_primary">#FFFFFF</color>            <!-- Texto principal blanco -->
     <color name="text_secondary">#B0B0B0</color>          <!-- Texto secundario gris claro -->
     <color name="text_tertiary">#757575</color>           <!-- Texto terciario gris medio -->
+    <color name="text_button">#495057</color>
 
     <!-- Acentos -->
     <color name="accent_primary">#E0E0E0</color>          <!-- Acentos claros -->
