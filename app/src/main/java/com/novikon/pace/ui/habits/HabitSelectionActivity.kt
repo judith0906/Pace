@@ -89,7 +89,7 @@ class HabitSelectionActivity : AppCompatActivity() {
     // Carga los hábitos predefinidos y los personalizados,
     // y marca como seleccionados los que el usuario ya tenía guardados.
     private suspend fun loadHabits() {
-        allHabits.addAll(HabitsRepository.getAllPredefinedHabits())
+        allHabits.addAll(HabitsRepository.getAllPredefinedHabits(this))
 
         val savedHabits = habitsManager.getSelectedHabitsAsync()
         savedHabits.forEach { savedHabit ->

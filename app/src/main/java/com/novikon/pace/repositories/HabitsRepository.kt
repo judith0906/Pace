@@ -1,5 +1,8 @@
 package com.novikon.pace.repositories
 
+import android.content.Context
+import android.provider.Settings.Global.getString
+import com.novikon.pace.R
 import com.novikon.pace.models.Habit
 import com.novikon.pace.models.HabitCategory
 import com.novikon.pace.models.TimeOfDay
@@ -14,8 +17,8 @@ object HabitsRepository {
 
     // Devuelve todos los hábitos predefinidos de todas las categorías
     // en una sola lista. Se usa para buscar hábitos por id.
-    fun getAllPredefinedHabits(): List<Habit> {
-        return getPhysicalHabits() +
+    fun getAllPredefinedHabits(context: Context): List<Habit> {
+        return getPhysicalHabits(context) +
                 getMentalHabits() +
                 getStudyHabits() +
                 getRoutineHabits() +
@@ -25,18 +28,18 @@ object HabitsRepository {
 
     // ── HÁBITOS POR CATEGORÍA ─────────────────────────────────────────────────
 
-    private fun getPhysicalHabits(): List<Habit> {
+    private fun getPhysicalHabits(context: Context): List<Habit> {
         return listOf(
-            Habit("physical_1", "Hacer ejercicio", "💪", "30-60 min", HabitCategory.PHYSICAL, TimeOfDay.ALL_DAY),
-            Habit("physical_2", "Salir a correr", "🏃", "30 min", HabitCategory.PHYSICAL, TimeOfDay.ALL_DAY),
-            Habit("physical_3", "Ir al gimnasio", "🏋️", "60 min", HabitCategory.PHYSICAL, TimeOfDay.ALL_DAY),
-            Habit("physical_4", "Hacer yoga", "🧘", "30 min", HabitCategory.PHYSICAL, TimeOfDay.ALL_DAY),
-            Habit("physical_5", "Estiramientos", "🤸", "15 min", HabitCategory.PHYSICAL, TimeOfDay.ALL_DAY),
-            Habit("physical_6", "Caminar 10,000 pasos", "🚶", "Todo el día", HabitCategory.PHYSICAL, TimeOfDay.ALL_DAY),
-            Habit("physical_7", "Beber 2L de agua", "💧", "Todo el día", HabitCategory.PHYSICAL, TimeOfDay.ALL_DAY),
-            Habit("physical_8", "Nadar", "🏊", "45 min", HabitCategory.PHYSICAL, TimeOfDay.ALL_DAY),
-            Habit("physical_9", "Andar en bicicleta", "🚴", "30 min", HabitCategory.PHYSICAL, TimeOfDay.ALL_DAY),
-            Habit("physical_10", "Bailar", "💃", "30 min", HabitCategory.PHYSICAL, TimeOfDay.ALL_DAY)
+            Habit("physical_1", context.getString(R.string.physical1), "💪", "30-60 min", HabitCategory.PHYSICAL, TimeOfDay.ALL_DAY),
+            Habit("physical_2", context.getString(R.string.physical2), "🏃", "30 min", HabitCategory.PHYSICAL, TimeOfDay.ALL_DAY),
+            Habit("physical_3", context.getString(R.string.physical3), "🏋️", "60 min", HabitCategory.PHYSICAL, TimeOfDay.ALL_DAY),
+            Habit("physical_4", context.getString(R.string.physical4), "🧘", "30 min", HabitCategory.PHYSICAL, TimeOfDay.ALL_DAY),
+            Habit("physical_5", context.getString(R.string.physical5), "🤸", "15 min", HabitCategory.PHYSICAL, TimeOfDay.ALL_DAY),
+            Habit("physical_6", context.getString(R.string.physical6), "🚶", "Todo el día", HabitCategory.PHYSICAL, TimeOfDay.ALL_DAY),
+            Habit("physical_7", context.getString(R.string.physical7), "💧", "Todo el día", HabitCategory.PHYSICAL, TimeOfDay.ALL_DAY),
+            Habit("physical_8", context.getString(R.string.physical8), "🏊", "45 min", HabitCategory.PHYSICAL, TimeOfDay.ALL_DAY),
+            Habit("physical_9", context.getString(R.string.physical9), "🚴", "30 min", HabitCategory.PHYSICAL, TimeOfDay.ALL_DAY),
+            Habit("physical_10", context.getString(R.string.physical10), "💃", "30 min", HabitCategory.PHYSICAL, TimeOfDay.ALL_DAY)
         )
     }
 

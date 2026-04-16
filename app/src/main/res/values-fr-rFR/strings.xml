@@ -176,6 +176,18 @@
     <string name="habits_saved_locally">Habitudes sauvegardées localement</string>
     <string name="time_of_day_title">Quand est-ce que tu feras %s ?</string>
 
+    <!-- Habitos a seleccionar: fisicos -->
+    <string name="physical1">Faire de l\'exercice</string>
+    <string name="physical2">Aller courir</string>
+    <string name="physical3">Aller à la salle de sport</string>
+    <string name="physical4">Faire du yoga</string>
+    <string name="physical5">S\'étirer</string>
+    <string name="physical6">Marcher 10 000 pas</string>
+    <string name="physical7">Boire 2 litres d\'eau</string>
+    <string name="physical8">Nager</string>
+    <string name="physical9">Faire du vélo</string>
+    <string name="physical10">Danser</string>
+
     <!-- Franja horaria -->
     <string name="time_morning">🌅 Matin</string>
     <string name="time_afternoon">☀️ Après-midi</string>
