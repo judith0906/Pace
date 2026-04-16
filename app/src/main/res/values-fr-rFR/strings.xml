@@ -13,7 +13,6 @@
     <string name="error_unknown">Erreur inconnue</string>
     <string name="coming_soon">Fonctionnalité bientôt disponible</string>
     <string name="default_user">Utilisateur</string>
-    <string name="user_default">Utilisateur</string>
     <string name="privacy_selected_format">Sélectionné : %1$s</string>
 
     <!-- ========================================================= -->
@@ -23,7 +22,6 @@
     <string name="title_frgt_psswd">Récupérer le mot de passe</string>
     <string name="subtitle_frgt_psswd">Entrez votre e-mail et nous vous enverrons des instructions pour réinitialiser votre mot de passe</string>
     <string name="in_mail">E-mail</string>
-    <string name="btn_link">Envoyer le lien</string>
     <string name="txt_login">Retour à la connexion</string>
 
     <!-- Login -->
@@ -37,11 +35,9 @@
     <string name="txt_regist">S’inscrire</string>
 
     <!-- Registro -->
-    <string name="title_signup">Créer un compte</string>
     <string name="subtitle_signup">Inscrivez-vous pour commencer</string>
     <string name="in_name">Nom complet</string>
     <string name="in_conf_psswd">Confirmer le mot de passe</string>
-    <string name="btn_signup">Créer un compte</string>
     <string name="btn_google_signup">S’inscrire avec Google</string>
     <string name="txt_q_login">Vous avez déjà un compte ?</string>
     <string name="txt_log_in">Se connecter</string>
@@ -74,10 +70,8 @@
     <!-- ========================================================= -->
     <string name="title_main">Bienvenue Utilisateur</string>
     <string name="title_welcome">Bienvenue </string>
-    <string name="title_hbts">Habitudes quotidiennes</string>
     <string name="preview_hbts">📊 Aperçu des habitudes</string>
     <string name="btn_hbts">Accéder</string>
-    <string name="title_cnx">Mes cercles</string>
     <string name="btn_cnx">Voir tout</string>
     <string name="habits_history">Historique des habitudes</string>
     <string name="daily_habits">Habitudes quotidiennes</string>
@@ -87,13 +81,7 @@
     <!-- Menús laterales -->
     <string name="header_grl">Votre compagnon d’habitudes</string>
     <string name="usr_foto">Changer la photo de profil</string>
-    <string name="usr_psswd">Changer le mot de passe</string>
     <string name="usr_other">Autres paramètres du compte</string>
-    <string name="usr_logout">Se déconnecter</string>
-    <string name="grl_hbts">Historique des habitudes</string>
-    <string name="grl_hbts_d">Habitudes quotidiennes</string>
-    <string name="grl_cnx">Mes cercles</string>
-    <string name="grl_stngs">Paramètres</string>
 
     <!-- ========================================================= -->
     <!-- AJUSTES GENERALES / NOTIFICACIONES                        -->
@@ -109,7 +97,6 @@
     <string name="sub_remember">Activer/désactiver les rappels</string>
     <string name="time">Heure du rappel</string>
     <string name="title_rithm">Rythme personnel</string>
-    <string name="days">Jours actifs</string>
     <string name="sub_days">Lun, Mar, Mer, Jeu, Ven</string>
 
     <string-array name="week_days_short">
@@ -172,7 +159,6 @@
     <string name="add_custom_habit">+ Ajouter habitude</string>
     <string name="selected_habits_count">%d habitudes sélectionnées</string>
     <string name="later">Plus tard</string>
-    <string name="save_habits">Enregistrer</string>
     <string name="habit_name">Nom de l\'habitude</string>
     <string name="select_emoji">Sélectionnez un emoji</string>
     <string name="duration_optional">Durée (optionnel)</string>
@@ -197,7 +183,6 @@
     <string name="time_all_day">📅 Toute la journée</string>
 
     <!-- Historial -->
-    <string name="habit_history">Historique des habitudes</string>
     <string name="previous_month">Mois précédent</string>
     <string name="next_month">Mois suivant</string>
     <string name="day_monday_short">L</string>

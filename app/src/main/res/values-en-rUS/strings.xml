@@ -11,7 +11,6 @@
     <string name="close">Close</string>
     <string name="later">Later</string>
     <string name="coming_soon">Coming soon</string>
-    <string name="user_default">User</string>
     <string name="default_user">User</string>
     <string name="privacy_selected_format">Selected: %1$s</string>
 
@@ -22,7 +21,6 @@
     <string name="title_frgt_psswd">Recover password</string>
     <string name="subtitle_frgt_psswd">Enter your email and we will send you instructions to reset your password</string>
     <string name="in_mail">Email</string>
-    <string name="btn_link">Send link</string>
     <string name="txt_login">Back to login</string>
     <string name="email_required">Email is required</string>
     <string name="invalid_email">Invalid email</string>
@@ -53,11 +51,9 @@
     <!-- ========================================================= -->
     <!-- AUTENTICACION: SIGN UP                                    -->
     <!-- ========================================================= -->
-    <string name="title_signup">Create account</string>
     <string name="subtitle_signup">Sign up to get started</string>
     <string name="in_name">Full name</string>
     <string name="in_conf_psswd">Confirm password</string>
-    <string name="btn_signup">Create account</string>
     <string name="btn_google_signup">Sign up with Google</string>
     <string name="txt_q_login">Already have an account?</string>
     <string name="txt_log_in">Log in</string>
@@ -75,10 +71,8 @@
     <!-- ========================================================= -->
     <string name="title_main">Welcome User</string>
     <string name="title_welcome">Welcome </string>
-    <string name="title_hbts">Daily habits</string>
     <string name="preview_hbts">📊 Habit preview</string>
     <string name="btn_hbts">Access</string>
-    <string name="title_cnx">My circles</string>
     <string name="btn_cnx">View all</string>
     <string name="habits_history">Habits history</string>
     <string name="daily_habits">Daily habits</string>
@@ -96,13 +90,7 @@
     <!-- ========================================================= -->
     <string name="header_grl">Your habit companion</string>
     <string name="usr_foto">Change profile picture</string>
-    <string name="usr_psswd">Change password</string>
     <string name="usr_other">Other account settings</string>
-    <string name="usr_logout">Log out</string>
-    <string name="grl_hbts">Habit history</string>
-    <string name="grl_hbts_d">Daily habits</string>
-    <string name="grl_cnx">My circles</string>
-    <string name="grl_stngs">Settings</string>
 
     <!-- ========================================================= -->
     <!-- AJUSTES: GENERAL                                          -->
@@ -144,7 +132,6 @@
     <!-- AJUSTES: RITMO PERSONAL                                   -->
     <!-- ========================================================= -->
     <string name="title_rithm">Personal rhythm</string>
-    <string name="days">Active days</string>
     <string name="sub_days">Mon, Tue, Wed, Thu, Fri</string>
     <string name="active_days_title">Active days</string>
     <string name="day_chng">Active days updated</string>
@@ -184,7 +171,6 @@
     <string name="custom_habits_message">Create your own habits according to your needs</string>
     <string name="add_custom_habit">+ Add habit</string>
     <string name="selected_habits_count">%d habits selected</string>
-    <string name="save_habits">Save</string>
     <string name="habit_name">Habit name</string>
     <string name="select_emoji">Select an emoji</string>
     <string name="duration_optional">Duration (optional)</string>
@@ -214,7 +200,6 @@
     <!-- ========================================================= -->
     <!-- HABITOS: HISTORIAL                                        -->
     <!-- ========================================================= -->
-    <string name="habit_history">Habit history</string>
     <string name="previous_month">Previous month</string>
     <string name="next_month">Next month</string>
     <string name="day_monday_short">M</string>

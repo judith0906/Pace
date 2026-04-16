@@ -215,7 +215,7 @@
                 android:layout_marginStart="8dp"
                 android:layout_weight="1"
                 android:backgroundTint="@color/accent_primary"
-                android:text="@string/save_habits"
+                android:text="@string/save"
                 android:textColor="@color/white"
                 app:cornerRadius="8dp" />
 

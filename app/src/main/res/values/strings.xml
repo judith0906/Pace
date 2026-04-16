@@ -11,7 +11,6 @@
     <string name="close">Cerrar</string>
     <string name="later">Más tarde</string>
     <string name="coming_soon">Funcionalidad próximamente</string>
-    <string name="user_default">Usuario</string>
     <string name="default_user">Usuario</string>
     <string name="privacy_selected_format">Seleccionado: %1$s</string>
 
@@ -22,11 +21,10 @@
     <string name="title_frgt_psswd">Recuperar contraseña</string>
     <string name="subtitle_frgt_psswd">Ingresa tu correo electrónico y te enviaremos instrucciones para restablecer tu contraseña</string>
     <string name="in_mail">Correo electrónico</string>
-    <string name="btn_link">Enviar enlace</string>
     <string name="txt_login">Volver al inicio de sesión</string>
     <string name="email_required">El email es requerido</string>
     <string name="invalid_email">Email inválido</string>
-    <string name="sending">Enviando...</string>
+    <string name="sending">Enviando…</string>
     <string name="send_link">Enviar enlace</string>
     <string name="password_reset_email_sent">Se ha enviado un correo para restablecer tu contraseña</string>
     <string name="pswd_reset_email_sent">Se ha enviado un correo para restablecer tu contraseña</string>
@@ -53,11 +51,9 @@
     <!-- ========================================================= -->
     <!-- AUTENTICACION: SIGN UP                                    -->
     <!-- ========================================================= -->
-    <string name="title_signup">Crear cuenta</string>
     <string name="subtitle_signup">Regístrate para comenzar</string>
     <string name="in_name">Nombre completo</string>
     <string name="in_conf_psswd">Confirmar contraseña</string>
-    <string name="btn_signup">Crear cuenta</string>
     <string name="btn_google_signup">Registrarse con Google</string>
     <string name="txt_q_login">¿Ya tienes cuenta?</string>
     <string name="txt_log_in">Inicia sesión</string>
@@ -75,15 +71,13 @@
     <!-- ========================================================= -->
     <string name="title_main">Bienvenido/a Usuario</string>
     <string name="title_welcome">Bienvenido/a </string>
-    <string name="title_hbts">Hábitos diarios</string>
     <string name="preview_hbts">📊 Vista previa de hábitos</string>
     <string name="btn_hbts">Acceder</string>
-    <string name="title_cnx">Mis circulos</string>
     <string name="btn_cnx">Ver todas</string>
     <string name="habits_history">Historial de hábitos</string>
     <string name="daily_habits">Hábitos diarios</string>
     <string name="my_circles">Mis círculos</string>
-    <string name="view_all_connections">Ver todas las conexiones</string>
+    <string name="view_all_connections">Ver todos los circulos</string>
     <string name="change_profile_photo">Cambiar foto de perfil</string>
     <string name="change_password">Cambiar contraseña</string>
     <string name="account_settings">Ajustes de cuenta</string>
@@ -96,13 +90,7 @@
     <!-- ========================================================= -->
     <string name="header_grl">Tu compañero de hábitos</string>
     <string name="usr_foto">Cambiar foto de perfil</string>
-    <string name="usr_psswd">Cambiar contraseña</string>
     <string name="usr_other">Otros ajustes de cuenta</string>
-    <string name="usr_logout">Cerrar sesión</string>
-    <string name="grl_hbts">Historial de hábitos</string>
-    <string name="grl_hbts_d">Hábitos diarios</string>
-    <string name="grl_cnx">Mis circulos</string>
-    <string name="grl_stngs">Ajustes</string>
 
     <!-- ========================================================= -->
     <!-- AJUSTES: GENERAL                                          -->
@@ -144,7 +132,6 @@
     <!-- AJUSTES: RITMO PERSONAL                                   -->
     <!-- ========================================================= -->
     <string name="title_rithm">Ritmo personal</string>
-    <string name="days">Días activos</string>
     <string name="sub_days">Lun, Mar, Mié, Jue, Vie</string>
     <string name="active_days_title">Días activos</string>
     <string name="day_chng">Días activos actualizados</string>
@@ -184,7 +171,6 @@
     <string name="custom_habits_message">Crea tus propios hábitos según tus necesidades</string>
     <string name="add_custom_habit">+ Añadir hábito</string>
     <string name="selected_habits_count">%d hábitos seleccionados</string>
-    <string name="save_habits">Guardar</string>
     <string name="habit_name">Nombre del hábito</string>
     <string name="select_emoji">Selecciona un emoji</string>
     <string name="duration_optional">Duración (opcional)</string>
@@ -214,7 +200,6 @@
     <!-- ========================================================= -->
     <!-- HABITOS: HISTORIAL                                        -->
     <!-- ========================================================= -->
-    <string name="habit_history">Historial de hábitos</string>
     <string name="previous_month">Mes anterior</string>
     <string name="next_month">Mes siguiente</string>
     <string name="day_monday_short">L</string>
