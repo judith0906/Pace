@@ -22,6 +22,8 @@
     <color name="border_color">#3A3A3A</color>            <!-- Bordes sutiles -->
     <color name="icon_color">#9E9E9E</color>              <!-- Iconos grises -->
 
+    <color name="event_habit_beige">#5A4B3B</color>
+
     <!-- Colores especiales -->
     <color name="error_red">#EF5350</color>
 </resources>

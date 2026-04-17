@@ -28,6 +28,7 @@ data class Message(
     val eventHabitName: String = "",
     val eventScheduledAt: Long = 0L,
     val eventCreatedBy: String = "",
+    val eventTimeZoneId: String = "",
     val eventJoinedIds: List<String> = emptyList(),
     val eventJoinedNames: List<String> = emptyList(),
     val eventDeclinedIds: List<String> = emptyList(),

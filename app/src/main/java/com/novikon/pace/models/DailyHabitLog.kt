@@ -11,8 +11,16 @@ package com.novikon.pace.models
 // DailyHabitsActivity (para saber qué hábitos están hechos hoy)
 // y HabitHistoryActivity (para calcular el estado de cada día).
 data class DailyHabitLog(
-    val habitId: String,                            // id del hábito registrado
-    val date: String,                               // fecha en formato "yyyy-MM-dd" (ej: "2024-03-16")
-    val isDone: Boolean,                            // true si se completó, false si no
-    val timestamp: Long = System.currentTimeMillis() // momento exacto del registro en milisegundos
+    val habitId: String,
+    val date: String,
+    val isDone: Boolean,
+    val timestamp: Long = System.currentTimeMillis(),
+    // NUEVO: origen del log
+    val source: String = "MANUAL", // MANUAL | EVENT_JOIN
+    val eventId: String = "",
+    // Metadatos para mostrar en historial
+    val habitName: String = "",
+    val habitEmoji: String = "",
+    val habitDuration: String = "",
+    val isEventHabit: Boolean = false
 )

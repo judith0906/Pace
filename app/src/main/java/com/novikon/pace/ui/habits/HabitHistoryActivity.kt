@@ -26,6 +26,9 @@ import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Date
 import java.util.Locale
+import com.novikon.pace.models.DailyHabitLog
+import com.novikon.pace.models.HabitCategory
+import com.novikon.pace.models.TimeOfDay
 
 class HabitHistoryActivity : AppCompatActivity() {
 
@@ -207,26 +210,23 @@ class HabitHistoryActivity : AppCompatActivity() {
         isRestDay: Boolean,
         isBeforeInstall: Boolean
     ): DayStatus {
-        // Días anteriores a la instalación → sin datos
         if (isBeforeInstall) return DayStatus.NO_DATA
 
-        // Días de descanso → estado especial
-        if (isRestDay) return DayStatus.REST_DAY
-
-        // Días futuros → sin datos
         val today = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(Date())
         if (date > today) return DayStatus.NO_DATA
 
-        // Sin hábitos configurados → sin datos
-        if (cachedHabits.isEmpty()) return DayStatus.NO_DATA
+        val eventHabits = buildEventHabitsForDate(date)
+
+        // Si es descanso y no hay evento unido ese día, sigue siendo descanso
+        if (isRestDay && eventHabits.isEmpty()) return DayStatus.REST_DAY
+
+        val dayHabits = (cachedHabits + eventHabits).distinctBy { it.id }
+        if (dayHabits.isEmpty()) return DayStatus.NO_DATA
 
         val logs = habitsManager.getHabitLogsForDate(date)
+        val doneIds = logs.filter { it.isDone }.map { it.habitId }.toSet()
 
-        // Sin registros pero había hábitos → incompleto
-        if (logs.isEmpty()) return DayStatus.INCOMPLETE
-
-        // Comparar hábitos completados con el total
-        return if (logs.count { it.isDone } == cachedHabits.size) {
+        return if (dayHabits.all { doneIds.contains(it.id) }) {
             DayStatus.COMPLETED
         } else {
             DayStatus.INCOMPLETE
@@ -255,21 +255,43 @@ class HabitHistoryActivity : AppCompatActivity() {
         dateText.text = date?.let { displayFormat.format(it) } ?: day.date
 
         // Calcular el progreso del día
+        val eventHabits = buildEventHabitsForDate(day.date)
+        val dayHabits = (cachedHabits + eventHabits).distinctBy { it.id }
+
         val logs = habitsManager.getHabitLogsForDate(day.date)
         val habitStatusMap = logs.associate { it.habitId to it.isDone }
-        val completedHabits = logs.count { it.isDone }
-        val totalHabits = cachedHabits.size
+
+        val completedHabits = dayHabits.count { habitStatusMap[it.id] == true }
+        val totalHabits = dayHabits.size
 
         progressText.text = "$completedHabits/$totalHabits"
         progressBar.progress = if (totalHabits > 0) (completedHabits * 100) / totalHabits else 0
 
         habitsRecyclerView.layoutManager = LinearLayoutManager(this)
-        habitsRecyclerView.adapter = DayDetailAdapter(cachedHabits, habitStatusMap)
-
+        habitsRecyclerView.adapter = DayDetailAdapter(dayHabits, habitStatusMap)
         closeButton.setOnClickListener {
             dialog.dismiss()
         }
 
         dialog.show()
+    }
+
+    private fun getEventLogsForDate(date: String): List<DailyHabitLog> {
+        return habitsManager.getHabitLogsForDate(date)
+            .filter { it.source == "EVENT_JOIN" && it.isEventHabit }
+    }
+
+    private fun buildEventHabitsForDate(date: String): List<Habit> {
+        return getEventLogsForDate(date).map { log ->
+            Habit(
+                id = log.habitId,
+                name = log.habitName.ifBlank { getString(R.string.event_default_name) },
+                emoji = log.habitEmoji.ifBlank { "📅" },
+                duration = log.habitDuration.ifBlank { "Evento" },
+                category = HabitCategory.MENTAL,
+                timeOfDay = TimeOfDay.ALL_DAY,
+                isCustom = true
+            )
+        }
     }
 }

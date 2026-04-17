@@ -40,7 +40,8 @@ class CircleChatEventsManager(
     suspend fun createEvent(
         circleId: String,
         habitName: String,
-        scheduledAtMillis: Long
+        scheduledAtMillis: Long,
+        eventTimeZoneId: String
     ): Boolean {
         val uid = getUserId() ?: return false
         val userName = getUserName()
@@ -73,7 +74,9 @@ class CircleChatEventsManager(
                 "circles/$circleId/events/$eventId/joinedNames" to listOf(userName),
                 "circles/$circleId/events/$eventId/declinedIds" to emptyList<String>(),
                 "circles/$circleId/events/$eventId/declinedNames" to emptyList<String>(),
+                "circles/$circleId/events/$eventId/timeZoneId" to eventTimeZoneId,
 
+                "circles/$circleId/messages/$messageId/eventTimeZoneId" to eventTimeZoneId,
                 "circles/$circleId/messages/$messageId/id" to messageId,
                 "circles/$circleId/messages/$messageId/type" to "EVENT",
                 "circles/$circleId/messages/$messageId/text" to context.getString(R.string.event_title_format, habitName),
@@ -352,6 +355,7 @@ class CircleChatEventsManager(
                 eventHabitName = snapshot.child("eventHabitName").getValue(String::class.java) ?: "",
                 eventScheduledAt = snapshot.child("eventScheduledAt").getValue(Long::class.java) ?: 0L,
                 eventCreatedBy = snapshot.child("eventCreatedBy").getValue(String::class.java) ?: "",
+                eventTimeZoneId = snapshot.child("eventTimeZoneId").getValue(String::class.java) ?: "",
                 eventJoinedIds = snapshot.child("eventJoinedIds").children.mapNotNull { it.getValue(String::class.java) },
                 eventJoinedNames = snapshot.child("eventJoinedNames").children.mapNotNull { it.getValue(String::class.java) },
                 eventDeclinedIds = snapshot.child("eventDeclinedIds").children.mapNotNull { it.getValue(String::class.java) },

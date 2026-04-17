@@ -117,17 +117,19 @@ class HabitsManager(context: Context) {
     // Es suspend para que la Activity use lifecycleScope — sin CoroutineScope huérfanos.
     // Devuelve true si Firebase confirmó el guardado, false si hubo error.
     suspend fun logHabit(habitId: String, date: String, isDone: Boolean): Boolean {
-        val log = DailyHabitLog(habitId, date, isDone)
-
-        // Actualizar caché local — eliminar el registro anterior del mismo
-        // hábito en el mismo día (si existe) y añadir el nuevo
-        val logs = getHabitLogs().toMutableList()
-        logs.removeAll { it.habitId == habitId && it.date == date }
-        logs.add(log)
-        prefs.edit { putString(KEY_HABIT_LOGS, gson.toJson(logs)) }
-
-        // Guardar en Firebase
-        return databaseManager.saveHabitLog(log)
+        val log = DailyHabitLog(
+            habitId = habitId,
+            date = date,
+            isDone = isDone,
+            timestamp = System.currentTimeMillis(),
+            source = "MANUAL",
+            eventId = "",
+            habitName = "",
+            habitEmoji = "",
+            habitDuration = "",
+            isEventHabit = false
+        )
+        return logHabit(log)
     }
 
     // Devuelve todos los registros del caché local.
@@ -183,6 +185,63 @@ class HabitsManager(context: Context) {
         } catch (e: Exception) {
             prefs.getBoolean(KEY_HABITS_CONFIGURED, false)
         }
+    }
+
+    private fun saveLogToLocalCache(log: DailyHabitLog) {
+        val logs = getHabitLogs().toMutableList()
+        logs.removeAll { it.habitId == log.habitId && it.date == log.date }
+        logs.add(log)
+        prefs.edit { putString(KEY_HABIT_LOGS, gson.toJson(logs)) }
+    }
+
+    suspend fun logHabit(log: DailyHabitLog): Boolean {
+        saveLogToLocalCache(log)
+        return databaseManager.saveHabitLog(log)
+    }
+
+    suspend fun logJoinedEventToHistory(
+        eventId: String,
+        habitLabel: String,
+        scheduledAtMillis: Long,
+        eventTimeZoneId: String
+    ): Boolean {
+        val tzId = if (eventTimeZoneId.isBlank()) {
+            java.util.TimeZone.getDefault().id
+        } else {
+            eventTimeZoneId
+        }
+
+        val dateFormat = java.text.SimpleDateFormat("yyyy-MM-dd", java.util.Locale.getDefault()).apply {
+            timeZone = java.util.TimeZone.getTimeZone(tzId)
+        }
+        val eventDate = dateFormat.format(java.util.Date(scheduledAtMillis))
+
+        // Parse simple: "💪 Hacer ejercicio" -> emoji + nombre
+        val trimmed = habitLabel.trim()
+        val firstSpace = trimmed.indexOf(' ')
+        val emoji = if (firstSpace > 0) trimmed.substring(0, firstSpace) else "📅"
+        val name = if (firstSpace > 0 && firstSpace + 1 < trimmed.length) {
+            trimmed.substring(firstSpace + 1)
+        } else {
+            trimmed.ifBlank { "Evento" }
+        }
+
+        val eventHabitId = "event_join_$eventId"
+
+        val log = DailyHabitLog(
+            habitId = eventHabitId,
+            date = eventDate,
+            isDone = true,
+            timestamp = System.currentTimeMillis(),
+            source = "EVENT_JOIN",
+            eventId = eventId,
+            habitName = name,
+            habitEmoji = emoji,
+            habitDuration = "Evento",
+            isEventHabit = true
+        )
+
+        return logHabit(log)
     }
 
     // Elimina todos los datos locales del usuario.

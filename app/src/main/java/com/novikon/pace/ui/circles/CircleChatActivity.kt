@@ -277,7 +277,8 @@ class CircleChatActivity : AppCompatActivity() {
                     val habitName = "${habits[index].emoji} ${habits[index].name}"
 
                     lifecycleScope.launch {
-                        val ok = eventsManager.createEvent(circleId, habitName, scheduledAt)
+                        val tzId = java.util.TimeZone.getDefault().id
+                        val ok = eventsManager.createEvent(circleId, habitName, scheduledAt, tzId)
                         Toast.makeText(
                             this@CircleChatActivity,
                             if (ok) getString(R.string.event_created_success) else getString(R.string.event_created_error),
@@ -300,8 +301,21 @@ class CircleChatActivity : AppCompatActivity() {
                 eventId = message.eventId,
                 join = join
             )
+
             if (!ok) {
                 Toast.makeText(this@CircleChatActivity, getString(R.string.event_response_error), Toast.LENGTH_SHORT).show()
+                return@launch
+            }
+
+            // Si se une a un evento que no es suyo, registrarlo en historial
+            val myUid = circlesManager.getUserId()
+            if (join && message.eventCreatedBy != myUid) {
+                HabitsManager(this@CircleChatActivity).logJoinedEventToHistory(
+                    eventId = message.eventId,
+                    habitLabel = message.eventHabitName,
+                    scheduledAtMillis = message.eventScheduledAt,
+                    eventTimeZoneId = message.eventTimeZoneId
+                )
             }
         }
     }

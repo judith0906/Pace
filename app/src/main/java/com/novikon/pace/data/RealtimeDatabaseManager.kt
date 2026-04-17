@@ -140,7 +140,14 @@ class RealtimeDatabaseManager {
                 "habitId" to log.habitId,
                 "date" to log.date,
                 "isDone" to log.isDone,
-                "timestamp" to log.timestamp
+                "timestamp" to log.timestamp,
+
+                "source" to log.source,
+                "eventId" to log.eventId,
+                "habitName" to log.habitName,
+                "habitEmoji" to log.habitEmoji,
+                "habitDuration" to log.habitDuration,
+                "isEventHabit" to log.isEventHabit
             )
 
             database.getReference("users/$userId/habit_logs/$logId")
@@ -172,7 +179,14 @@ class RealtimeDatabaseManager {
                                     habitId = logSnapshot.child("habitId").getValue(String::class.java) ?: "",
                                     date = logSnapshot.child("date").getValue(String::class.java) ?: "",
                                     isDone = logSnapshot.child("isDone").getValue(Boolean::class.java) ?: false,
-                                    timestamp = logSnapshot.child("timestamp").getValue(Long::class.java) ?: 0L
+                                    timestamp = logSnapshot.child("timestamp").getValue(Long::class.java) ?: 0L,
+
+                                    source = logSnapshot.child("source").getValue(String::class.java) ?: "MANUAL",
+                                    eventId = logSnapshot.child("eventId").getValue(String::class.java) ?: "",
+                                    habitName = logSnapshot.child("habitName").getValue(String::class.java) ?: "",
+                                    habitEmoji = logSnapshot.child("habitEmoji").getValue(String::class.java) ?: "",
+                                    habitDuration = logSnapshot.child("habitDuration").getValue(String::class.java) ?: "",
+                                    isEventHabit = logSnapshot.child("isEventHabit").getValue(Boolean::class.java) ?: false
                                 )
                                 logs.add(log)
                             } catch (e: Exception) {
