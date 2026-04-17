@@ -8,6 +8,7 @@ import com.google.gson.reflect.TypeToken
 import com.novikon.pace.constants.PrefsConstants
 import com.novikon.pace.models.DailyHabitLog
 import com.novikon.pace.models.Habit
+import kotlin.coroutines.resume
 
 // Clase intermediaria entre la UI y Firebase.
 // La UI nunca habla directamente con Firebase — siempre pasa por aquí.
@@ -242,6 +243,57 @@ class HabitsManager(context: Context) {
         )
 
         return logHabit(log)
+    }
+
+    private fun removeLogFromLocalCache(habitId: String, date: String? = null) {
+        val logs = getHabitLogs().toMutableList()
+        if (date == null) {
+            logs.removeAll { it.habitId == habitId }
+        } else {
+            logs.removeAll { it.habitId == habitId && it.date == date }
+        }
+        prefs.edit { putString(KEY_HABIT_LOGS, gson.toJson(logs)) }
+    }
+
+    suspend fun removeJoinedEventFromHistory(eventId: String): Boolean {
+        val eventHabitId = "event_join_$eventId"
+
+        // 1) quitar de caché local
+        removeLogFromLocalCache(eventHabitId, null)
+
+        // 2) quitar de Firebase
+        val userId = databaseManager.getUserId() ?: return false
+        val logRef = com.google.firebase.database.FirebaseDatabase.getInstance()
+            .getReference("users/$userId/habit_logs")
+
+        return kotlinx.coroutines.suspendCancellableCoroutine { cont ->
+            logRef.orderByChild("habitId").equalTo(eventHabitId)
+                .addListenerForSingleValueEvent(object : com.google.firebase.database.ValueEventListener {
+                    override fun onDataChange(snapshot: com.google.firebase.database.DataSnapshot) {
+                        if (!snapshot.exists()) {
+                            cont.resume(true)
+                            return
+                        }
+
+                        val updates = mutableMapOf<String, Any?>()
+                        snapshot.children.forEach { child ->
+                            child.key?.let { key ->
+                                updates["users/$userId/habit_logs/$key"] = null
+                            }
+                        }
+
+                        com.google.firebase.database.FirebaseDatabase.getInstance()
+                            .reference
+                            .updateChildren(updates)
+                            .addOnSuccessListener { cont.resume(true) }
+                            .addOnFailureListener { cont.resume(false) }
+                    }
+
+                    override fun onCancelled(error: com.google.firebase.database.DatabaseError) {
+                        cont.resume(false)
+                    }
+                })
+        }
     }
 
     // Elimina todos los datos locales del usuario.

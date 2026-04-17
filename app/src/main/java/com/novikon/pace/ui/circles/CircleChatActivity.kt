@@ -307,15 +307,22 @@ class CircleChatActivity : AppCompatActivity() {
                 return@launch
             }
 
-            // Si se une a un evento que no es suyo, registrarlo en historial
             val myUid = circlesManager.getUserId()
-            if (join && message.eventCreatedBy != myUid) {
-                HabitsManager(this@CircleChatActivity).logJoinedEventToHistory(
+            val isForeignEvent = message.eventCreatedBy != myUid
+            if (!isForeignEvent) return@launch
+
+            val habitsManager = HabitsManager(this@CircleChatActivity)
+
+            if (join) {
+                habitsManager.logJoinedEventToHistory(
                     eventId = message.eventId,
                     habitLabel = message.eventHabitName,
                     scheduledAtMillis = message.eventScheduledAt,
                     eventTimeZoneId = message.eventTimeZoneId
                 )
+            } else {
+                // NUEVO: si cambia a declinar, quitar del historial
+                habitsManager.removeJoinedEventFromHistory(message.eventId)
             }
         }
     }
