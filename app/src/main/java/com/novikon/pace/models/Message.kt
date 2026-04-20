@@ -19,11 +19,8 @@ data class Message(
     val senderId: String = "",
     val senderName: String = "",
     val timestamp: Long = 0L,
-
-    // "TEXT", "SYSTEM", "EVENT"
     val type: String = "TEXT",
 
-    // Solo para EVENT
     val eventId: String = "",
     val eventHabitName: String = "",
     val eventScheduledAt: Long = 0L,
@@ -34,8 +31,9 @@ data class Message(
     val eventDeclinedIds: List<String> = emptyList(),
     val eventDeclinedNames: List<String> = emptyList(),
 
-    // EVENT_START
     val captureAllowedIds: List<String> = emptyList(),
-    // PHOTO
-    val photoUrl: String = ""
+    val photoUrl: String = "",
+
+    val messageTemplateKey: String = "",
+    val messageTemplateParams: List<String> = emptyList()
 )

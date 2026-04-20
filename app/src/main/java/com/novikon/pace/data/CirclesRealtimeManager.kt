@@ -179,10 +179,13 @@ class CirclesRealtimeManager(
         val joined = addMemberToCircleTransactional(circleId, userId)
         if (!joined) return JoinResult(false, JoinFailReason.GROUP_FULL_OR_TRANSACTION_FAILED)
 
-        sendSystemMessage(
-            circleId,
-            context.getString(R.string.circles_system_joined, getUserName())
+        sendSystemTemplateMessage(
+            circleId = circleId,
+            templateKey = "circles_system_joined",
+            templateParams = listOf(getUserName()),
+            fallbackText = context.getString(R.string.circles_system_joined, getUserName())
         )
+
         return JoinResult(true, null)
     }
 
@@ -245,9 +248,11 @@ class CirclesRealtimeManager(
 
         // Mensaje ANTES de salir, para no perder permisos de escritura en messages
         val leaverName = getDisplayName(uid)
-        val systemOk = sendSystemMessage(
-            circleId,
-            context.getString(R.string.circles_system_left, leaverName)
+        val systemOk = sendSystemTemplateMessage(
+            circleId = circleId,
+            templateKey = "circles_system_left",
+            templateParams = listOf(leaverName),
+            fallbackText = context.getString(R.string.circles_system_left, leaverName)
         )
         if (!systemOk) return false
 
@@ -557,9 +562,11 @@ class CirclesRealtimeManager(
                 val removed = removeMember(circleId, targetUid)
                 if (removed) {
                     val targetName = getDisplayName(targetUid)
-                    sendSystemMessage(
-                        circleId,
-                        context.getString(R.string.circles_system_left, targetName)
+                    sendSystemTemplateMessage(
+                        circleId = circleId,
+                        templateKey = "circles_system_left",
+                        templateParams = listOf(targetName),
+                        fallbackText = context.getString(R.string.circles_system_left, targetName)
                     )
                 }
                 BlockActionResult(
@@ -580,7 +587,12 @@ class CirclesRealtimeManager(
 
     // -------------------- MESSAGES --------------------
 
-    private suspend fun sendSystemMessage(circleId: String, text: String): Boolean {
+    private suspend fun sendSystemTemplateMessage(
+        circleId: String,
+        templateKey: String,
+        templateParams: List<String> = emptyList(),
+        fallbackText: String
+    ): Boolean {
         return suspendCancellableCoroutine { cont ->
             val messagesRef = database.getReference("circles/$circleId/messages")
             val newMsgRef = messagesRef.push()
@@ -591,7 +603,9 @@ class CirclesRealtimeManager(
 
             val messageMap = mapOf(
                 "id" to messageId,
-                "text" to text,
+                "text" to fallbackText,
+                "messageTemplateKey" to templateKey,
+                "messageTemplateParams" to templateParams,
                 "senderId" to "system",
                 "senderName" to "system",
                 "type" to "SYSTEM",
@@ -658,6 +672,40 @@ class CirclesRealtimeManager(
             .addChildEventListener(listener)
 
         return listener
+    }
+
+    suspend fun sendTemplateMessage(
+        circleId: String,
+        messageTemplateKey: String,
+        messageTemplateParams: List<String> = emptyList(),
+        fallbackText: String = ""
+    ): Boolean {
+        val userId = getUserId() ?: return false
+        val userName = getUserName()
+
+        return suspendCancellableCoroutine { cont ->
+            val messagesRef = database.getReference("circles/$circleId/messages")
+            val newMsgRef = messagesRef.push()
+            val messageId = newMsgRef.key ?: run {
+                cont.resume(false)
+                return@suspendCancellableCoroutine
+            }
+
+            val messageMap = mapOf(
+                "id" to messageId,
+                "text" to fallbackText, // compatibilidad / fallback
+                "messageTemplateKey" to messageTemplateKey,
+                "messageTemplateParams" to messageTemplateParams,
+                "senderId" to userId,
+                "senderName" to userName,
+                "type" to "TEXT",
+                "timestamp" to System.currentTimeMillis()
+            )
+
+            newMsgRef.setValue(messageMap)
+                .addOnSuccessListener { cont.resume(true) }
+                .addOnFailureListener { cont.resume(false) }
+        }
     }
 
     fun removeMessagesListener(circleId: String, listener: ChildEventListener) {

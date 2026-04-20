@@ -1,5 +1,6 @@
 package com.novikon.pace.ui.circles
 
+import android.content.Context
 import android.graphics.BitmapFactory
 import android.os.Handler
 import android.os.Looper
@@ -33,7 +34,7 @@ class MessagesAdapter(
         private const val VIEW_TYPE_EVENT_START = 5
         private const val VIEW_TYPE_PHOTO = 6
 
-        private const val EVENT_CAPTURE_WINDOW_MS = 60 * 60 * 1000L // 1 hora
+        private const val EVENT_CAPTURE_WINDOW_MS = 60 * 60 * 1000L
 
         private fun formatTime(timestamp: Long): String {
             if (timestamp == 0L) return ""
@@ -43,6 +44,22 @@ class MessagesAdapter(
         private fun formatDateTime(timestamp: Long): String {
             if (timestamp == 0L) return "-"
             return SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.getDefault()).format(Date(timestamp))
+        }
+
+        private fun resolveTemplateText(message: Message, context: Context): String {
+            val key = message.messageTemplateKey
+            if (key.isBlank()) return message.text
+
+            val resId = context.resources.getIdentifier(key, "string", context.packageName)
+            if (resId == 0) return message.text
+
+            return runCatching {
+                if (message.messageTemplateParams.isEmpty()) {
+                    context.getString(resId)
+                } else {
+                    context.getString(resId, *message.messageTemplateParams.toTypedArray())
+                }
+            }.getOrElse { message.text }
         }
     }
 
@@ -131,7 +148,7 @@ class MessagesAdapter(
         private val tvTime: TextView = itemView.findViewById(R.id.tv_message_time)
 
         fun bind(message: Message) {
-            tvText.text = message.text
+            tvText.text = resolveTemplateText(message, itemView.context)
             tvTime.text = formatTime(message.timestamp)
         }
     }
@@ -143,7 +160,7 @@ class MessagesAdapter(
 
         fun bind(message: Message) {
             tvSenderName.text = message.senderName
-            tvText.text = message.text
+            tvText.text = resolveTemplateText(message, itemView.context)
             tvTime.text = formatTime(message.timestamp)
         }
     }
@@ -152,7 +169,7 @@ class MessagesAdapter(
         private val tvSystemMessage: TextView = itemView.findViewById(R.id.tv_system_message)
 
         fun bind(message: Message) {
-            tvSystemMessage.text = message.text
+            tvSystemMessage.text = resolveTemplateText(message, itemView.context)
         }
     }
 
@@ -220,7 +237,7 @@ class MessagesAdapter(
         private val btnCapture: MaterialButton = itemView.findViewById(R.id.btn_capture_moment)
 
         fun bind(message: Message) {
-            tvText.text = message.text
+            tvText.text = resolveTemplateText(message, itemView.context)
 
             val now = System.currentTimeMillis()
             val canCaptureByMember = message.captureAllowedIds.contains(currentUserId)

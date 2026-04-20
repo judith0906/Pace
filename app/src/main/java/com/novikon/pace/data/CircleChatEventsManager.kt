@@ -251,7 +251,9 @@ class CircleChatEventsManager(
                 val messageMap = mapOf(
                     "id" to msgId,
                     "type" to "EVENT_START",
-                    "text" to context.getString(R.string.event_system_started, habitName),
+                    "text" to context.getString(R.string.event_system_started, habitName), // fallback
+                    "messageTemplateKey" to "event_system_started",
+                    "messageTemplateParams" to listOf(habitName),
                     "senderId" to "system",
                     "senderName" to "system",
                     "timestamp" to now,
@@ -361,7 +363,11 @@ class CircleChatEventsManager(
                 eventDeclinedIds = snapshot.child("eventDeclinedIds").children.mapNotNull { it.getValue(String::class.java) },
                 eventDeclinedNames = snapshot.child("eventDeclinedNames").children.mapNotNull { it.getValue(String::class.java) },
                 captureAllowedIds = snapshot.child("captureAllowedIds").children.mapNotNull { it.getValue(String::class.java) },
-                photoUrl = snapshot.child("photoUrl").getValue(String::class.java) ?: ""
+                photoUrl = snapshot.child("photoUrl").getValue(String::class.java) ?: "",
+                messageTemplateKey = snapshot.child("messageTemplateKey").getValue(String::class.java) ?: "",
+                messageTemplateParams = snapshot.child("messageTemplateParams")
+                    .children
+                    .mapNotNull { it.getValue(String::class.java) }
             )
         }
 

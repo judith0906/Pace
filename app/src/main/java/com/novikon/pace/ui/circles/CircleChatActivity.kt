@@ -46,7 +46,7 @@ class CircleChatActivity : AppCompatActivity() {
     private data class PredefinedSection(
         val title: String,
         val emoji: String,
-        val messages: List<String>
+        val messages: List<PredefinedMessageOption>
     )
 
     companion object {
@@ -187,54 +187,54 @@ class CircleChatActivity : AppCompatActivity() {
                 title = getString(R.string.msg_section_congratulations),
                 emoji = "🎉",
                 messages = listOf(
-                    getString(R.string.msg_congrats_1),
-                    getString(R.string.msg_congrats_2),
-                    getString(R.string.msg_congrats_3)
+                    PredefinedMessageOption("msg_congrats_1", getString(R.string.msg_congrats_1)),
+                    PredefinedMessageOption("msg_congrats_2", getString(R.string.msg_congrats_2)),
+                    PredefinedMessageOption("msg_congrats_3", getString(R.string.msg_congrats_3))
                 )
             ),
             PredefinedSection(
                 title = getString(R.string.msg_section_amazement),
                 emoji = "😮",
                 messages = listOf(
-                    getString(R.string.msg_amazement_1),
-                    getString(R.string.msg_amazement_2),
-                    getString(R.string.msg_amazement_3)
+                    PredefinedMessageOption("msg_amazement_1", getString(R.string.msg_amazement_1)),
+                    PredefinedMessageOption("msg_amazement_2", getString(R.string.msg_amazement_2)),
+                    PredefinedMessageOption("msg_amazement_3", getString(R.string.msg_amazement_3))
                 )
             ),
             PredefinedSection(
                 title = getString(R.string.msg_section_admiration),
                 emoji = "👏",
                 messages = listOf(
-                    getString(R.string.msg_admiration_1),
-                    getString(R.string.msg_admiration_2),
-                    getString(R.string.msg_admiration_3)
+                    PredefinedMessageOption("msg_admiration_1", getString(R.string.msg_admiration_1)),
+                    PredefinedMessageOption("msg_admiration_2", getString(R.string.msg_admiration_2)),
+                    PredefinedMessageOption("msg_admiration_3", getString(R.string.msg_admiration_3))
                 )
             ),
             PredefinedSection(
                 title = getString(R.string.msg_section_motivation),
                 emoji = "💪",
                 messages = listOf(
-                    getString(R.string.msg_motivation_1),
-                    getString(R.string.msg_motivation_2),
-                    getString(R.string.msg_motivation_3)
+                    PredefinedMessageOption("msg_motivation_1", getString(R.string.msg_motivation_1)),
+                    PredefinedMessageOption("msg_motivation_2", getString(R.string.msg_motivation_2)),
+                    PredefinedMessageOption("msg_motivation_3", getString(R.string.msg_motivation_3))
                 )
             ),
             PredefinedSection(
                 title = getString(R.string.msg_section_happiness),
                 emoji = "😊",
                 messages = listOf(
-                    getString(R.string.msg_happiness_1),
-                    getString(R.string.msg_happiness_2),
-                    getString(R.string.msg_happiness_3)
+                    PredefinedMessageOption("msg_happiness_1", getString(R.string.msg_happiness_1)),
+                    PredefinedMessageOption("msg_happiness_2", getString(R.string.msg_happiness_2)),
+                    PredefinedMessageOption("msg_happiness_3", getString(R.string.msg_happiness_3))
                 )
             ),
             PredefinedSection(
                 title = getString(R.string.msg_section_achievement),
                 emoji = "🏆",
                 messages = listOf(
-                    getString(R.string.msg_achievement_1),
-                    getString(R.string.msg_achievement_2),
-                    getString(R.string.msg_achievement_3)
+                    PredefinedMessageOption("msg_achievement_1", getString(R.string.msg_achievement_1)),
+                    PredefinedMessageOption("msg_achievement_2", getString(R.string.msg_achievement_2)),
+                    PredefinedMessageOption("msg_achievement_3", getString(R.string.msg_achievement_3))
                 )
             )
         )
@@ -249,9 +249,14 @@ class CircleChatActivity : AppCompatActivity() {
         val rvOptions = dialogView.findViewById<RecyclerView>(R.id.rv_predefined_messages)
         val btnClose = dialogView.findViewById<com.google.android.material.button.MaterialButton>(R.id.btn_close_dialog)
 
-        val adapter = PredefinedMessagesAdapter { selectedText ->
+        val adapter = PredefinedMessagesAdapter { selected ->
             lifecycleScope.launch {
-                val success = circlesManager.sendMessage(circleId, selectedText)
+                val success = circlesManager.sendTemplateMessage(
+                    circleId = circleId,
+                    messageTemplateKey = selected.templateKey,
+                    messageTemplateParams = emptyList(),
+                    fallbackText = selected.fallbackText
+                )
                 if (!success) {
                     Toast.makeText(
                         this@CircleChatActivity,

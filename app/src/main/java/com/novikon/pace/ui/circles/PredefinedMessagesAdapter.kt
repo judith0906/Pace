@@ -8,14 +8,19 @@ import androidx.cardview.widget.CardView
 import androidx.recyclerview.widget.RecyclerView
 import com.novikon.pace.R
 
+data class PredefinedMessageOption(
+    val templateKey: String,
+    val fallbackText: String
+)
+
 class PredefinedMessagesAdapter(
-    private val onClick: (String) -> Unit
+    private val onClick: (PredefinedMessageOption) -> Unit
 ) : RecyclerView.Adapter<PredefinedMessagesAdapter.OptionViewHolder>() {
 
-    private val items = mutableListOf<String>()
+    private val items = mutableListOf<PredefinedMessageOption>()
     private var sectionEmoji: String = "✨"
 
-    fun submitData(emoji: String, messages: List<String>) {
+    fun submitData(emoji: String, messages: List<PredefinedMessageOption>) {
         sectionEmoji = emoji
         items.clear()
         items.addAll(messages)
@@ -29,8 +34,7 @@ class PredefinedMessagesAdapter(
     }
 
     override fun onBindViewHolder(holder: OptionViewHolder, position: Int) {
-        val text = items[position]
-        holder.bind(text, sectionEmoji, onClick)
+        holder.bind(items[position], sectionEmoji, onClick)
     }
 
     override fun getItemCount(): Int = items.size
@@ -40,10 +44,14 @@ class PredefinedMessagesAdapter(
         private val tvEmoji: TextView = itemView.findViewById(R.id.tv_option_emoji)
         private val tvText: TextView = itemView.findViewById(R.id.tv_option_text)
 
-        fun bind(text: String, emoji: String, onClick: (String) -> Unit) {
+        fun bind(
+            option: PredefinedMessageOption,
+            emoji: String,
+            onClick: (PredefinedMessageOption) -> Unit
+        ) {
             tvEmoji.text = emoji
-            tvText.text = text
-            card.setOnClickListener { onClick(text) }
+            tvText.text = option.fallbackText
+            card.setOnClickListener { onClick(option) }
         }
     }
 }
