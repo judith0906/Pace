@@ -11,6 +11,7 @@ import android.os.Looper
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
+import android.view.WindowManager
 import android.widget.Button
 import android.widget.EditText
 import android.widget.ImageView
@@ -26,6 +27,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.button.MaterialButton
+import com.google.android.material.chip.Chip
 import com.google.firebase.database.ChildEventListener
 import com.novikon.pace.R
 import com.novikon.pace.data.CircleChatEventsManager
@@ -40,6 +42,12 @@ import java.util.Calendar
 import java.util.Locale
 
 class CircleChatActivity : AppCompatActivity() {
+
+    private data class PredefinedSection(
+        val title: String,
+        val emoji: String,
+        val messages: List<String>
+    )
 
     companion object {
         const val EXTRA_CIRCLE_ID = "extra_circle_id"
@@ -173,76 +181,129 @@ class CircleChatActivity : AppCompatActivity() {
         )
     }
 
-    private fun getPredefinedMessagesBySection(): LinkedHashMap<String, List<String>> {
-        return linkedMapOf(
-            getString(R.string.msg_section_congratulations) to listOf(
-                getString(R.string.msg_congrats_1),
-                getString(R.string.msg_congrats_2),
-                getString(R.string.msg_congrats_3)
+    private fun getPredefinedSections(): List<PredefinedSection> {
+        return listOf(
+            PredefinedSection(
+                title = getString(R.string.msg_section_congratulations),
+                emoji = "🎉",
+                messages = listOf(
+                    getString(R.string.msg_congrats_1),
+                    getString(R.string.msg_congrats_2),
+                    getString(R.string.msg_congrats_3)
+                )
             ),
-            getString(R.string.msg_section_amazement) to listOf(
-                getString(R.string.msg_amazement_1),
-                getString(R.string.msg_amazement_2),
-                getString(R.string.msg_amazement_3)
+            PredefinedSection(
+                title = getString(R.string.msg_section_amazement),
+                emoji = "😮",
+                messages = listOf(
+                    getString(R.string.msg_amazement_1),
+                    getString(R.string.msg_amazement_2),
+                    getString(R.string.msg_amazement_3)
+                )
             ),
-            getString(R.string.msg_section_admiration) to listOf(
-                getString(R.string.msg_admiration_1),
-                getString(R.string.msg_admiration_2),
-                getString(R.string.msg_admiration_3)
+            PredefinedSection(
+                title = getString(R.string.msg_section_admiration),
+                emoji = "👏",
+                messages = listOf(
+                    getString(R.string.msg_admiration_1),
+                    getString(R.string.msg_admiration_2),
+                    getString(R.string.msg_admiration_3)
+                )
             ),
-            getString(R.string.msg_section_motivation) to listOf(
-                getString(R.string.msg_motivation_1),
-                getString(R.string.msg_motivation_2),
-                getString(R.string.msg_motivation_3)
+            PredefinedSection(
+                title = getString(R.string.msg_section_motivation),
+                emoji = "💪",
+                messages = listOf(
+                    getString(R.string.msg_motivation_1),
+                    getString(R.string.msg_motivation_2),
+                    getString(R.string.msg_motivation_3)
+                )
             ),
-            getString(R.string.msg_section_happiness) to listOf(
-                getString(R.string.msg_happiness_1),
-                getString(R.string.msg_happiness_2),
-                getString(R.string.msg_happiness_3)
+            PredefinedSection(
+                title = getString(R.string.msg_section_happiness),
+                emoji = "😊",
+                messages = listOf(
+                    getString(R.string.msg_happiness_1),
+                    getString(R.string.msg_happiness_2),
+                    getString(R.string.msg_happiness_3)
+                )
             ),
-            getString(R.string.msg_section_achievement) to listOf(
-                getString(R.string.msg_achievement_1),
-                getString(R.string.msg_achievement_2),
-                getString(R.string.msg_achievement_3)
+            PredefinedSection(
+                title = getString(R.string.msg_section_achievement),
+                emoji = "🏆",
+                messages = listOf(
+                    getString(R.string.msg_achievement_1),
+                    getString(R.string.msg_achievement_2),
+                    getString(R.string.msg_achievement_3)
+                )
             )
         )
     }
 
-    private fun showPredefinedMessageOptions(sectionTitle: String, options: List<String>) {
-        if (options.isEmpty()) return
+    private fun showSendMessageDialog() {
+        val sections = getPredefinedSections()
+        if (sections.isEmpty()) return
 
-        AlertDialog.Builder(this)
-            .setTitle(sectionTitle)
-            .setItems(options.toTypedArray()) { _, which ->
-                val selectedText = options[which]
-                lifecycleScope.launch {
-                    val success = circlesManager.sendMessage(circleId, selectedText)
-                    if (!success) {
-                        Toast.makeText(
-                            this@CircleChatActivity,
-                            getString(R.string.chat_send_error),
-                            Toast.LENGTH_SHORT
-                        ).show()
-                    }
+        val dialogView = layoutInflater.inflate(R.layout.dialog_predefined_messages, null)
+        val chipGroup = dialogView.findViewById<com.google.android.material.chip.ChipGroup>(R.id.chip_group_sections)
+        val rvOptions = dialogView.findViewById<RecyclerView>(R.id.rv_predefined_messages)
+        val btnClose = dialogView.findViewById<com.google.android.material.button.MaterialButton>(R.id.btn_close_dialog)
+
+        val adapter = PredefinedMessagesAdapter { selectedText ->
+            lifecycleScope.launch {
+                val success = circlesManager.sendMessage(circleId, selectedText)
+                if (!success) {
+                    Toast.makeText(
+                        this@CircleChatActivity,
+                        getString(R.string.chat_send_error),
+                        Toast.LENGTH_SHORT
+                    ).show()
                 }
             }
-            .setNegativeButton(getString(R.string.cancel), null)
-            .show()
-    }
+        }
 
-    private fun showSendMessageDialog() {
-        val sectionsMap = getPredefinedMessagesBySection()
-        val sectionTitles = sectionsMap.keys.toTypedArray()
+        rvOptions.layoutManager = LinearLayoutManager(this)
+        rvOptions.adapter = adapter
 
-        AlertDialog.Builder(this)
-            .setTitle(getString(R.string.chat_send_message))
-            .setItems(sectionTitles) { _, which ->
-                val selectedSection = sectionTitles[which]
-                val messages = sectionsMap[selectedSection].orEmpty()
-                showPredefinedMessageOptions(selectedSection, messages)
+        val dialog = AlertDialog.Builder(this)
+            .setView(dialogView)
+            .create()
+
+        // Cerrar desde botón inferior
+        btnClose.setOnClickListener { dialog.dismiss() }
+
+        // Crear chips dinámicamente
+        sections.forEachIndexed { index, section ->
+            val chip = Chip(this).apply {
+                text = "${section.emoji} ${section.title}"
+                isCheckable = true
+                isCheckedIconVisible = false
+                setChipBackgroundColorResource(R.color.accent_secondary)
+                setTextColor(ContextCompat.getColor(this@CircleChatActivity, R.color.text_primary))
+                chipStrokeWidth = 1f
+                chipStrokeColor = ContextCompat.getColorStateList(this@CircleChatActivity, R.color.border_color)
             }
-            .setNegativeButton(getString(R.string.cancel), null)
-            .show()
+
+            chip.setOnClickListener {
+                adapter.submitData(section.emoji, section.messages)
+            }
+
+            chipGroup.addView(chip)
+
+            if (index == 0) {
+                chip.isChecked = true
+                adapter.submitData(section.emoji, section.messages)
+            }
+        }
+
+        dialog.setOnShowListener {
+            dialog.window?.setLayout(
+                (resources.displayMetrics.widthPixels * 0.92f).toInt(),
+                WindowManager.LayoutParams.WRAP_CONTENT
+            )
+        }
+
+        dialog.show()
     }
 
     private fun showCreateEventDialog() {

@@ -448,6 +448,8 @@
     <!-- ========================================================= -->
     <!-- CIRCULOS: CHAT                                            -->
     <!-- ========================================================= -->
+    <string name="chat_predefined_subtitle">Selecciona una categoría y toca una frase para enviarla</string>
+
     <string name="msg_section_congratulations">Felicitaciones</string>
     <string name="msg_section_amazement">Asombro</string>
     <string name="msg_section_admiration">Admiración</string>

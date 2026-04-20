@@ -105,12 +105,11 @@
 
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/btnJoin"
+                    style="@style/PaceChatPrimaryButton"
                     android:layout_width="match_parent"
                     android:layout_height="54dp"
-                    android:text="@string/btn_join"
-                    android:textColor="@color/white"
                     android:layout_marginTop="12dp"
-                    app:backgroundTint="@color/accent_primary"/>
+                    android:text="@string/btn_join" />
             </LinearLayout>
 
             <!-- PANEL NUEVO -->
