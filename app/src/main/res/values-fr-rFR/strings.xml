@@ -448,4 +448,38 @@
     <string name="event_default_name">Événement</string>
     <string name="event_photo_label">Photo</string>
 
+    <!-- ========================================================= -->
+    <!-- CIRCULOS: CHAT                                            -->
+    <!-- ========================================================= -->
+    <string name="msg_section_congratulations">Félicitations</string>
+    <string name="msg_section_amazement">Émerveillement</string>
+    <string name="msg_section_admiration">Admiration</string>
+    <string name="msg_section_motivation">Motivation</string>
+    <string name="msg_section_happiness">Bonheur</string>
+    <string name="msg_section_achievement">Réussite</string>
+
+    <string name="msg_congrats_1">Félicitations ! Tu fais ça super bien.</string>
+    <string name="msg_congrats_2">Bravo pour ce progrès !</string>
+    <string name="msg_congrats_3">Super, continue comme ça !</string>
+
+    <string name="msg_amazement_1">Waouh, quel grand progrès !</string>
+    <string name="msg_amazement_2">C’est impressionnant ce que tu accomplis !</string>
+    <string name="msg_amazement_3">Tu me laisses sans voix, incroyable !</string>
+
+    <string name="msg_admiration_1">J’admire beaucoup ta constance.</string>
+    <string name="msg_admiration_2">Ta discipline est vraiment inspirante.</string>
+    <string name="msg_admiration_3">Quel bel exemple d’engagement.</string>
+
+    <string name="msg_motivation_1">Pas à pas, tu avances très bien.</string>
+    <string name="msg_motivation_2">N’arrête pas maintenant, tu es proche du but.</string>
+    <string name="msg_motivation_3">Crois en toi, tu peux le faire.</string>
+
+    <string name="msg_happiness_1">Ça me fait très plaisir de te voir comme ça.</string>
+    <string name="msg_happiness_2">Quel bonheur de partager ces progrès avec toi.</string>
+    <string name="msg_happiness_3">Tes progrès me rendent vraiment heureux.</string>
+
+    <string name="msg_achievement_1">Objectif atteint, excellent travail.</string>
+    <string name="msg_achievement_2">Encore une réussite débloquée.</string>
+    <string name="msg_achievement_3">Aujourd’hui, tu as ajouté une victoire de plus.</string>
+
 </resources>

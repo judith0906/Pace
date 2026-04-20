@@ -444,4 +444,38 @@
     <string name="event_participants_format">Van: %1$s\nDeclinan: %2$s</string>
     <string name="event_default_name">Evento</string>
     <string name="event_photo_label">Foto</string>
+
+    <!-- ========================================================= -->
+    <!-- CIRCULOS: CHAT                                            -->
+    <!-- ========================================================= -->
+    <string name="msg_section_congratulations">Felicitaciones</string>
+    <string name="msg_section_amazement">Asombro</string>
+    <string name="msg_section_admiration">Admiración</string>
+    <string name="msg_section_motivation">Motivación</string>
+    <string name="msg_section_happiness">Felicidad</string>
+    <string name="msg_section_achievement">Logro</string>
+
+    <string name="msg_congrats_1">¡Felicidades! Lo estás haciendo genial.</string>
+    <string name="msg_congrats_2">¡Enhorabuena por ese avance!</string>
+    <string name="msg_congrats_3">¡Qué bien, sigue así!</string>
+
+    <string name="msg_amazement_1">¡Wow, qué gran progreso!</string>
+    <string name="msg_amazement_2">¡Impresionante lo que estás logrando!</string>
+    <string name="msg_amazement_3">¡Me dejas sin palabras, brutal!</string>
+
+    <string name="msg_admiration_1">Admiro mucho tu constancia.</string>
+    <string name="msg_admiration_2">Tu disciplina inspira de verdad.</string>
+    <string name="msg_admiration_3">Qué ejemplo de compromiso.</string>
+
+    <string name="msg_motivation_1">Paso a paso, vas muy bien.</string>
+    <string name="msg_motivation_2">No pares ahora, estás cerca.</string>
+    <string name="msg_motivation_3">Confía en ti, puedes con esto.</string>
+
+    <string name="msg_happiness_1">Me alegra muchísimo verte así.</string>
+    <string name="msg_happiness_2">Qué alegría compartir este progreso contigo.</string>
+    <string name="msg_happiness_3">Tu avance me pone muy feliz.</string>
+
+    <string name="msg_achievement_1">Objetivo cumplido, gran trabajo.</string>
+    <string name="msg_achievement_2">Otro logro desbloqueado.</string>
+    <string name="msg_achievement_3">Hoy sumaste una victoria más.</string>
 </resources>

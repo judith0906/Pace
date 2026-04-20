@@ -444,4 +444,38 @@
     <string name="event_participants_format">Going: %1$s\nDeclined: %2$s</string>
     <string name="event_default_name">Event</string>
     <string name="event_photo_label">Photo</string>
+
+    <!-- ========================================================= -->
+    <!-- CIRCULOS: CHAT                                            -->
+    <!-- ========================================================= -->
+    <string name="msg_section_congratulations">Congratulations</string>
+    <string name="msg_section_amazement">Amazement</string>
+    <string name="msg_section_admiration">Admiration</string>
+    <string name="msg_section_motivation">Motivation</string>
+    <string name="msg_section_happiness">Happiness</string>
+    <string name="msg_section_achievement">Achievement</string>
+
+    <string name="msg_congrats_1">Congratulations! You are doing great.</string>
+    <string name="msg_congrats_2">Well done on that progress!</string>
+    <string name="msg_congrats_3">Great job, keep it up!</string>
+
+    <string name="msg_amazement_1">Wow, what amazing progress!</string>
+    <string name="msg_amazement_2">Impressive what you are achieving!</string>
+    <string name="msg_amazement_3">I am speechless, incredible!</string>
+
+    <string name="msg_admiration_1">I truly admire your consistency.</string>
+    <string name="msg_admiration_2">Your discipline is really inspiring.</string>
+    <string name="msg_admiration_3">What a great example of commitment.</string>
+
+    <string name="msg_motivation_1">Step by step, you are doing great.</string>
+    <string name="msg_motivation_2">Do not stop now, you are close.</string>
+    <string name="msg_motivation_3">Believe in yourself, you can do this.</string>
+
+    <string name="msg_happiness_1">I am so happy to see you like this.</string>
+    <string name="msg_happiness_2">It makes me happy to share this progress with you.</string>
+    <string name="msg_happiness_3">Your progress makes me really happy.</string>
+
+    <string name="msg_achievement_1">Goal achieved, great work.</string>
+    <string name="msg_achievement_2">Another achievement unlocked.</string>
+    <string name="msg_achievement_3">Today you added one more win.</string>
 </resources>

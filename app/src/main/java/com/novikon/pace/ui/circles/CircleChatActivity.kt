@@ -173,24 +173,73 @@ class CircleChatActivity : AppCompatActivity() {
         )
     }
 
+    private fun getPredefinedMessagesBySection(): LinkedHashMap<String, List<String>> {
+        return linkedMapOf(
+            getString(R.string.msg_section_congratulations) to listOf(
+                getString(R.string.msg_congrats_1),
+                getString(R.string.msg_congrats_2),
+                getString(R.string.msg_congrats_3)
+            ),
+            getString(R.string.msg_section_amazement) to listOf(
+                getString(R.string.msg_amazement_1),
+                getString(R.string.msg_amazement_2),
+                getString(R.string.msg_amazement_3)
+            ),
+            getString(R.string.msg_section_admiration) to listOf(
+                getString(R.string.msg_admiration_1),
+                getString(R.string.msg_admiration_2),
+                getString(R.string.msg_admiration_3)
+            ),
+            getString(R.string.msg_section_motivation) to listOf(
+                getString(R.string.msg_motivation_1),
+                getString(R.string.msg_motivation_2),
+                getString(R.string.msg_motivation_3)
+            ),
+            getString(R.string.msg_section_happiness) to listOf(
+                getString(R.string.msg_happiness_1),
+                getString(R.string.msg_happiness_2),
+                getString(R.string.msg_happiness_3)
+            ),
+            getString(R.string.msg_section_achievement) to listOf(
+                getString(R.string.msg_achievement_1),
+                getString(R.string.msg_achievement_2),
+                getString(R.string.msg_achievement_3)
+            )
+        )
+    }
+
+    private fun showPredefinedMessageOptions(sectionTitle: String, options: List<String>) {
+        if (options.isEmpty()) return
+
+        AlertDialog.Builder(this)
+            .setTitle(sectionTitle)
+            .setItems(options.toTypedArray()) { _, which ->
+                val selectedText = options[which]
+                lifecycleScope.launch {
+                    val success = circlesManager.sendMessage(circleId, selectedText)
+                    if (!success) {
+                        Toast.makeText(
+                            this@CircleChatActivity,
+                            getString(R.string.chat_send_error),
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    }
+                }
+            }
+            .setNegativeButton(getString(R.string.cancel), null)
+            .show()
+    }
+
     private fun showSendMessageDialog() {
-        val input = androidx.appcompat.widget.AppCompatEditText(this).apply {
-            hint = getString(R.string.chat_hint_message)
-        }
+        val sectionsMap = getPredefinedMessagesBySection()
+        val sectionTitles = sectionsMap.keys.toTypedArray()
 
         AlertDialog.Builder(this)
             .setTitle(getString(R.string.chat_send_message))
-            .setView(input)
-            .setPositiveButton(getString(R.string.event_send)) { _, _ ->
-                val text = input.text?.toString()?.trim().orEmpty()
-                if (text.isBlank()) return@setPositiveButton
-
-                lifecycleScope.launch {
-                    val success = circlesManager.sendMessage(circleId, text)
-                    if (!success) {
-                        Toast.makeText(this@CircleChatActivity, getString(R.string.chat_send_error), Toast.LENGTH_SHORT).show()
-                    }
-                }
+            .setItems(sectionTitles) { _, which ->
+                val selectedSection = sectionTitles[which]
+                val messages = sectionsMap[selectedSection].orEmpty()
+                showPredefinedMessageOptions(selectedSection, messages)
             }
             .setNegativeButton(getString(R.string.cancel), null)
             .show()
