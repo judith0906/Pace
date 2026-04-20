@@ -451,7 +451,7 @@
     <!-- ========================================================= -->
     <!-- CIRCULOS: CHAT                                            -->
     <!-- ========================================================= -->
-    <string name="chat_predefined_subtitle">Sélectionnez une catégorie et touchez une phrase pour l'envoyer</string>
+    <string name="chat_predefined_subtitle">Sélectionnez une catégorie et touchez une phrase pour l\'envoyer</string>
 
     <string name="msg_section_congratulations">Félicitations</string>
     <string name="msg_section_amazement">Émerveillement</string>
