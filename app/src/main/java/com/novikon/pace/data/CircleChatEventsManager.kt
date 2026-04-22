@@ -343,7 +343,8 @@ class CircleChatEventsManager(
     fun observeMessages(
         circleId: String,
         onMessageAdded: (Message) -> Unit,
-        onMessageChanged: (Message) -> Unit
+        onMessageChanged: (Message) -> Unit,
+        onMessageRemoved: (String) -> Unit
     ): ChildEventListener {
         fun parseMessage(snapshot: DataSnapshot): Message {
             return Message(
@@ -380,7 +381,12 @@ class CircleChatEventsManager(
                 onMessageChanged(parseMessage(snapshot))
             }
 
-            override fun onChildRemoved(snapshot: DataSnapshot) {}
+            override fun onChildRemoved(snapshot: DataSnapshot) {
+                val removedId = snapshot.child("id").getValue(String::class.java)
+                    ?: snapshot.key
+                    ?: return
+                onMessageRemoved(removedId)
+            }
             override fun onChildMoved(snapshot: DataSnapshot, previousChildName: String?) {}
             override fun onCancelled(error: DatabaseError) {}
         }
@@ -396,5 +402,35 @@ class CircleChatEventsManager(
         database.getReference("circles/$circleId/messages")
             .orderByChild("timestamp")
             .removeEventListener(listener)
+    }
+
+    suspend fun deleteOwnMessage(circleId: String, messageId: String): Boolean {
+        val uid = getUserId() ?: return false
+        val msgRef = database.getReference("circles/$circleId/messages/$messageId")
+
+        return suspendCancellableCoroutine { cont ->
+            msgRef.addListenerForSingleValueEvent(object : ValueEventListener {
+                override fun onDataChange(snapshot: DataSnapshot) {
+                    if (!snapshot.exists()) {
+                        cont.resume(false)
+                        return
+                    }
+
+                    val senderId = snapshot.child("senderId").getValue(String::class.java).orEmpty()
+                    if (senderId != uid) {
+                        cont.resume(false)
+                        return
+                    }
+
+                    msgRef.removeValue()
+                        .addOnSuccessListener { cont.resume(true) }
+                        .addOnFailureListener { cont.resume(false) }
+                }
+
+                override fun onCancelled(error: DatabaseError) {
+                    cont.resume(false)
+                }
+            })
+        }
     }
 }

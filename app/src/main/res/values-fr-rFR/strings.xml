@@ -484,4 +484,10 @@
     <string name="msg_achievement_2">Encore une réussite débloquée.</string>
     <string name="msg_achievement_3">Aujourd’hui, tu as ajouté une victoire de plus.</string>
 
+    <string name="delete_message">Supprimer le message</string>
+    <string name="delete_message_confirm_title">Supprimer le message</string>
+    <string name="delete_message_confirm_body">Voulez-vous vraiment supprimer ce message ?</string>
+    <string name="delete_message_success">Message supprimé</string>
+    <string name="delete_message_error">Impossible de supprimer le message</string>
+
 </resources>

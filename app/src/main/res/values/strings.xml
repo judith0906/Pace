@@ -480,4 +480,10 @@
     <string name="msg_achievement_1">Objetivo cumplido, gran trabajo.</string>
     <string name="msg_achievement_2">Otro logro desbloqueado.</string>
     <string name="msg_achievement_3">Hoy sumaste una victoria más.</string>
+
+    <string name="delete_message">Eliminar mensaje</string>
+    <string name="delete_message_confirm_title">Eliminar mensaje</string>
+    <string name="delete_message_confirm_body">¿Seguro que quieres eliminar este mensaje?</string>
+    <string name="delete_message_success">Mensaje eliminado</string>
+    <string name="delete_message_error">No se pudo eliminar el mensaje</string>
 </resources>

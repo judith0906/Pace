@@ -154,7 +154,8 @@ class CircleChatActivity : AppCompatActivity() {
             currentUserId = currentUserId,
             onJoinEvent = { message -> respondToEvent(message, true) },
             onDeclineEvent = { message -> respondToEvent(message, false) },
-            onCaptureMoment = { message -> onCaptureMomentClicked(message) }
+            onCaptureMoment = { message -> onCaptureMomentClicked(message) },
+            onDeleteMessage = { message -> confirmDeleteMessage(message) }
         )
 
         rvMessages.apply {
@@ -177,6 +178,9 @@ class CircleChatActivity : AppCompatActivity() {
             },
             onMessageChanged = { message ->
                 messagesAdapter.updateMessage(message)
+            },
+            onMessageRemoved = { messageId ->
+                messagesAdapter.removeMessage(messageId)
             }
         )
     }
@@ -632,6 +636,27 @@ class CircleChatActivity : AppCompatActivity() {
                 .setPositiveButton(getString(R.string.close), null)
                 .show()
         }
+    }
+
+    private fun confirmDeleteMessage(message: Message) {
+        val myUid = circlesManager.getUserId()
+        if (message.senderId != myUid) return
+
+        AlertDialog.Builder(this)
+            .setTitle(getString(R.string.delete_message_confirm_title))
+            .setMessage(getString(R.string.delete_message_confirm_body))
+            .setPositiveButton(getString(R.string.delete_message)) { _, _ ->
+                lifecycleScope.launch {
+                    val ok = eventsManager.deleteOwnMessage(circleId, message.id)
+                    Toast.makeText(
+                        this@CircleChatActivity,
+                        if (ok) getString(R.string.delete_message_success) else getString(R.string.delete_message_error),
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
+            }
+            .setNegativeButton(getString(R.string.cancel), null)
+            .show()
     }
 
     override fun onDestroy() {

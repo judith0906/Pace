@@ -8,6 +8,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
+import android.widget.PopupMenu
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.button.MaterialButton
@@ -23,7 +24,8 @@ class MessagesAdapter(
     private val currentUserId: String,
     private val onJoinEvent: (Message) -> Unit,
     private val onDeclineEvent: (Message) -> Unit,
-    private val onCaptureMoment: (Message) -> Unit
+    private val onCaptureMoment: (Message) -> Unit,
+    private val onDeleteMessage: (Message) -> Unit
 ) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     companion object {
@@ -72,6 +74,13 @@ class MessagesAdapter(
         notifyItemInserted(messages.size - 1)
     }
 
+    fun removeMessage(messageId: String) {
+        val idx = messages.indexOfFirst { it.id == messageId }
+        if (idx == -1) return
+        messages.removeAt(idx)
+        notifyItemRemoved(idx)
+    }
+
     fun updateMessage(message: Message) {
         val idx = messages.indexOfFirst { it.id == message.id }
         if (idx == -1) return
@@ -102,7 +111,8 @@ class MessagesAdapter(
         val inflater = LayoutInflater.from(parent.context)
         return when (viewType) {
             VIEW_TYPE_SENT -> SentMessageViewHolder(
-                inflater.inflate(R.layout.item_message_sent, parent, false)
+                inflater.inflate(R.layout.item_message_sent, parent, false),
+                onDeleteMessage
             )
             VIEW_TYPE_RECEIVED -> ReceivedMessageViewHolder(
                 inflater.inflate(R.layout.item_message_received, parent, false)
@@ -143,13 +153,31 @@ class MessagesAdapter(
 
     override fun getItemCount(): Int = messages.size
 
-    class SentMessageViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+    class SentMessageViewHolder(
+        itemView: View,
+        private val onDeleteMessage: (Message) -> Unit
+    ) : RecyclerView.ViewHolder(itemView) {
         private val tvText: TextView = itemView.findViewById(R.id.tv_message_text)
         private val tvTime: TextView = itemView.findViewById(R.id.tv_message_time)
 
         fun bind(message: Message) {
             tvText.text = resolveTemplateText(message, itemView.context)
             tvTime.text = formatTime(message.timestamp)
+
+            itemView.setOnLongClickListener { anchor ->
+                val popup = PopupMenu(anchor.context, anchor)
+                popup.menu.add(0, 1, 0, anchor.context.getString(R.string.delete_message))
+                popup.setOnMenuItemClickListener { item ->
+                    if (item.itemId == 1) {
+                        onDeleteMessage(message)
+                        true
+                    } else {
+                        false
+                    }
+                }
+                popup.show()
+                true
+            }
         }
     }
 
