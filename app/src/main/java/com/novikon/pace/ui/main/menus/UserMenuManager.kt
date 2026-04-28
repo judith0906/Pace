@@ -3,6 +3,10 @@ package com.novikon.pace.ui.main.menus
 import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import android.graphics.BitmapShader
+import android.graphics.Canvas
+import android.graphics.Paint
+import android.graphics.Shader
 import android.graphics.Typeface
 import android.net.Uri
 import android.os.Build
@@ -45,6 +49,7 @@ import kotlinx.coroutines.withContext
 import java.io.File
 import java.net.URL
 import java.util.concurrent.Executors
+import kotlin.math.min
 
 /**
  * Gestiona la barra lateral derecha (menú de usuario).
@@ -222,7 +227,30 @@ class UserMenuManager(
         }
     }
 
+    // Convierte un bitmap cuadrado en un avatar circular listo para mostrarse en el header.
+    // Se usa porque el recorte de uCrop solo muestra una máscara circular, pero devuelve
+    // un archivo final 1:1 (cuadrado). Con esto garantizamos que en UI se vea redondo.
+    private fun Bitmap.toCircularAvatar(): Bitmap {
+        val size = min(width, height)
+        val x = (width - size) / 2
+        val y = (height - size) / 2
+
+        val squared = Bitmap.createBitmap(this, x, y, size, size)
+        val output = Bitmap.createBitmap(size, size, Bitmap.Config.ARGB_8888)
+
+        val canvas = Canvas(output)
+        val paint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+            shader = BitmapShader(squared, Shader.TileMode.CLAMP, Shader.TileMode.CLAMP)
+        }
+
+        val r = size / 2f
+        canvas.drawCircle(r, r, r, paint)
+        return output
+    }
+
     // Descarga la imagen de perfil desde su URL pública y la pinta en el header.
+    // Antes de asignarla al ImageView, la recorta a circular para que se vea igual
+    // que en el editor de ajuste (avatar redondo).
     private fun setProfileImageFromUrl(url: String) {
         val headerView = navigationView.getHeaderView(0)
         val profileImage = headerView.findViewById<ImageView>(R.id.profileImage)
@@ -234,8 +262,9 @@ class UserMenuManager(
                 }
             }.onSuccess { bitmap ->
                 if (bitmap != null) {
+                    val circular = bitmap.toCircularAvatar()
                     activity.runOnUiThread {
-                        profileImage.setImageBitmap(bitmap)
+                        profileImage.setImageBitmap(circular)
                     }
                 }
             }
