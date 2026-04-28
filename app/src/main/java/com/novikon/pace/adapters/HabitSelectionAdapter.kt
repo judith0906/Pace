@@ -22,16 +22,19 @@ class HabitSelectionAdapter(
     private val onHabitToggled: (habit: Habit, isSelected: Boolean) -> Unit
 ) : RecyclerView.Adapter<HabitSelectionAdapter.HabitViewHolder>() {
 
+    // onCreateViewHolder: infla el layout de cada item y crea su ViewHolder.
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): HabitViewHolder {
         val view = LayoutInflater.from(parent.context)
             .inflate(R.layout.item_habit_selectable, parent, false)
         return HabitViewHolder(view)
     }
 
+    // onBindViewHolder: vincula los datos del elemento actual con su vista.
     override fun onBindViewHolder(holder: HabitViewHolder, position: Int) {
         holder.bind(habits[position])
     }
 
+    // getItemCount: devuelve la cantidad total de elementos a renderizar.
     override fun getItemCount(): Int = habits.size
 
     // Reemplaza la lista de hábitos y refresca el RecyclerView.
@@ -46,7 +49,6 @@ class HabitSelectionAdapter(
         private val habitName: TextView = view.findViewById(R.id.habitName)
         private val habitDuration: TextView = view.findViewById(R.id.habitDuration)
         private val habitCheckbox: android.widget.CheckBox = view.findViewById(R.id.habitCheckbox)
-
         fun bind(habit: Habit) {
             habitEmoji.text = habit.emoji
             habitName.text = habit.name
@@ -69,7 +71,6 @@ class HabitSelectionAdapter(
                 onHabitToggled(habit, isNowSelected)
             }
         }
-
         private fun updateSelectionState(isSelected: Boolean) {
             // Actualizamos el checkbox visualmente — clickable está en false
             // en el XML para que el click lo gestione el itemView completo

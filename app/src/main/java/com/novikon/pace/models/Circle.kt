@@ -1,5 +1,6 @@
 package com.novikon.pace.models
 
+// Modelo de un circulo: guarda datos base del grupo y su configuracion.
 data class Circle(
     val id: String = "",
     val name: String = "",

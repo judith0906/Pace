@@ -23,6 +23,7 @@ import com.novikon.pace.utils.ReminderScheduler
 import com.novikon.pace.utils.SettingsManager
 import kotlinx.coroutines.launch
 
+// Pantalla de ajustes: centraliza preferencias generales de la aplicacion.
 class SettingsActivity : AppCompatActivity() {
 
     private lateinit var settingsManager: SettingsManager
@@ -50,6 +51,7 @@ class SettingsActivity : AppCompatActivity() {
         }
     }
 
+    // Carga preferencias guardadas y prepara la UI de ajustes generales.
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -65,6 +67,7 @@ class SettingsActivity : AppCompatActivity() {
         setupListeners()
     }
 
+    // Vincula controles visuales para reflejar y editar las preferencias.
     private fun initializeViews() {
         darkModeSwitch = findViewById(R.id.darkModeSwitch)
         currentLanguageText = findViewById(R.id.currentLanguageText)
@@ -73,6 +76,7 @@ class SettingsActivity : AppCompatActivity() {
         activeDaysText = findViewById(R.id.activeDaysText)
     }
 
+    // Rellena la pantalla con los valores actuales de tema, idioma y recordatorios.
     private fun loadSettings() {
         darkModeSwitch.isChecked =
             ThemeHelper.getThemeMode(this) == AppCompatDelegate.MODE_NIGHT_YES
@@ -82,6 +86,7 @@ class SettingsActivity : AppCompatActivity() {
         activeDaysText.text = getActiveDaysDisplayText()
     }
 
+    // Escucha cambios del usuario y guarda cada preferencia cuando se modifica.
     private fun setupListeners() {
         findViewById<ImageButton>(R.id.backButton).setOnClickListener {
             finish()
@@ -156,6 +161,7 @@ class SettingsActivity : AppCompatActivity() {
         }
     }
 
+    // Muestra selector de idioma y aplica el cambio inmediatamente.
     private fun showLanguageDialog() {
         val languages = Language.values()
         val languageNames = languages.map { it.displayName }.toTypedArray()
@@ -185,6 +191,7 @@ class SettingsActivity : AppCompatActivity() {
             .show()
     }
 
+    // Permite elegir la hora exacta para enviar recordatorios diarios.
     private fun showTimePicker() {
         val timeParts = settingsManager.reminderTime.split(":")
         val hour = timeParts[0].toIntOrNull() ?: 20
@@ -216,6 +223,7 @@ class SettingsActivity : AppCompatActivity() {
         ).show()
     }
 
+    // Permite seleccionar qué días de la semana recibir recordatorios.
     private fun showActiveDaysDialog() {
         val allDays = resources.getStringArray(R.array.week_days_short)
         val selectedIndices = settingsManager.activeDayIndices.toMutableSet()
@@ -251,6 +259,7 @@ class SettingsActivity : AppCompatActivity() {
             .show()
     }
 
+    // Explica por qué se necesita permiso de notificaciones antes de volver a pedirlo.
     private fun showPermissionRationale() {
         AlertDialog.Builder(this)
             .setTitle(getString(R.string.notification_permission_title))
@@ -276,6 +285,7 @@ class SettingsActivity : AppCompatActivity() {
         }
     }
 
+    // Programa o reprograma alarmas locales según la configuración actual.
     private fun scheduleReminders() {
         ReminderScheduler.scheduleReminders(
             context = this,
@@ -285,6 +295,7 @@ class SettingsActivity : AppCompatActivity() {
         )
     }
 
+    // Convierte los índices de días activos en un texto legible para la UI.
     private fun getActiveDaysDisplayText(): String {
         val allDays = resources.getStringArray(R.array.week_days_short)
         return settingsManager.activeDayIndices

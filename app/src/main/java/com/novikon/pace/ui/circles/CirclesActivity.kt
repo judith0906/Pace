@@ -15,6 +15,7 @@ import com.novikon.pace.helpers.LanguageHelper
 import com.novikon.pace.helpers.ThemeHelper
 import kotlinx.coroutines.launch
 
+// Pantalla de circulos: lista grupos del usuario y permite crear/unirse a nuevos.
 class CirclesActivity : AppCompatActivity() {
 
     private lateinit var rvCircles: RecyclerView
@@ -24,6 +25,7 @@ class CirclesActivity : AppCompatActivity() {
 
     private val circlesManager by lazy { CirclesRealtimeManager(this) }
 
+// onCreate: inicializa la pantalla y prepara vistas/eventos iniciales.
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -58,19 +60,16 @@ class CirclesActivity : AppCompatActivity() {
 
         loadCircles()
     }
-
     override fun onResume() {
         super.onResume()
         loadCircles()
     }
-
     private fun loadCircles() {
         lifecycleScope.launch {
             val circles = circlesManager.getUserCircles()
             adapter.submitList(circles)
         }
     }
-
     private fun createCircle(name: String, maxParticipants: Int) {
         lifecycleScope.launch {
             val createdId = circlesManager.createCircle(name, maxParticipants)
@@ -83,7 +82,6 @@ class CirclesActivity : AppCompatActivity() {
             if (createdId != null) loadCircles()
         }
     }
-
     private fun joinByCode(code: String) {
         lifecycleScope.launch {
             val result = circlesManager.joinCircleByCode(code)

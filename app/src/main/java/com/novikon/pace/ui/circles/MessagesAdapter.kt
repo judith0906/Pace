@@ -20,6 +20,7 @@ import java.util.Date
 import java.util.Locale
 import java.util.concurrent.Executors
 
+// Adapter de mensajes: maneja multiples tipos de burbuja y estados de evento.
 class MessagesAdapter(
     private val currentUserId: String,
     private val onJoinEvent: (Message) -> Unit,
@@ -37,17 +38,14 @@ class MessagesAdapter(
         private const val VIEW_TYPE_PHOTO = 6
 
         private const val EVENT_CAPTURE_WINDOW_MS = 60 * 60 * 1000L
-
         private fun formatTime(timestamp: Long): String {
             if (timestamp == 0L) return ""
             return SimpleDateFormat("HH:mm", Locale.getDefault()).format(Date(timestamp))
         }
-
         private fun formatDateTime(timestamp: Long): String {
             if (timestamp == 0L) return "-"
             return SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.getDefault()).format(Date(timestamp))
         }
-
         private fun resolveTemplateText(message: Message, context: Context): String {
             val key = message.messageTemplateKey
             if (key.isBlank()) return message.text
@@ -68,30 +66,25 @@ class MessagesAdapter(
     private val messages = mutableListOf<Message>()
     private val ioExecutor = Executors.newCachedThreadPool()
     private val mainHandler = Handler(Looper.getMainLooper())
-
     fun addMessage(message: Message) {
         messages.add(message)
         notifyItemInserted(messages.size - 1)
     }
-
     fun removeMessage(messageId: String) {
         val idx = messages.indexOfFirst { it.id == messageId }
         if (idx == -1) return
         messages.removeAt(idx)
         notifyItemRemoved(idx)
     }
-
     fun updateMessage(message: Message) {
         val idx = messages.indexOfFirst { it.id == message.id }
         if (idx == -1) return
         messages[idx] = message
         notifyItemChanged(idx)
     }
-
     fun refreshTemporalStates() {
         notifyDataSetChanged()
     }
-
     override fun getItemViewType(position: Int): Int {
         val msg = messages[position]
         return when (msg.type) {
@@ -107,6 +100,7 @@ class MessagesAdapter(
         }
     }
 
+// onCreateViewHolder: infla el layout de cada item y crea su ViewHolder.
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
         val inflater = LayoutInflater.from(parent.context)
         return when (viewType) {
@@ -139,6 +133,7 @@ class MessagesAdapter(
         }
     }
 
+// onBindViewHolder: vincula los datos del elemento actual con su vista.
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         val message = messages[position]
         when (holder) {
@@ -151,15 +146,16 @@ class MessagesAdapter(
         }
     }
 
+// getItemCount: devuelve la cantidad total de elementos a renderizar.
     override fun getItemCount(): Int = messages.size
 
+// ViewHolder de mensaje enviado: muestra contenido publicado por el usuario actual.
     class SentMessageViewHolder(
         itemView: View,
         private val onDeleteMessage: (Message) -> Unit
     ) : RecyclerView.ViewHolder(itemView) {
         private val tvText: TextView = itemView.findViewById(R.id.tv_message_text)
         private val tvTime: TextView = itemView.findViewById(R.id.tv_message_time)
-
         fun bind(message: Message) {
             tvText.text = resolveTemplateText(message, itemView.context)
             tvTime.text = formatTime(message.timestamp)
@@ -181,11 +177,11 @@ class MessagesAdapter(
         }
     }
 
+// ViewHolder de mensaje recibido: pinta mensajes enviados por otros miembros.
     class ReceivedMessageViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         private val tvSenderName: TextView = itemView.findViewById(R.id.tv_sender_name)
         private val tvText: TextView = itemView.findViewById(R.id.tv_message_text)
         private val tvTime: TextView = itemView.findViewById(R.id.tv_message_time)
-
         fun bind(message: Message) {
             tvSenderName.text = message.senderName
             tvText.text = resolveTemplateText(message, itemView.context)
@@ -193,14 +189,15 @@ class MessagesAdapter(
         }
     }
 
+// ViewHolder de sistema: renderiza avisos automáticos del chat.
     class SystemMessageViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         private val tvSystemMessage: TextView = itemView.findViewById(R.id.tv_system_message)
-
         fun bind(message: Message) {
             tvSystemMessage.text = resolveTemplateText(message, itemView.context)
         }
     }
 
+// ViewHolder de evento: presenta invitaciones/eventos y acciones de respuesta.
     class EventMessageViewHolder(
         itemView: View,
         private val currentUserId: String,
@@ -212,7 +209,6 @@ class MessagesAdapter(
         private val tvParticipants: TextView = itemView.findViewById(R.id.tv_event_participants)
         private val btnJoin: MaterialButton = itemView.findViewById(R.id.btn_event_join)
         private val btnDecline: MaterialButton = itemView.findViewById(R.id.btn_event_decline)
-
         fun bind(message: Message) {
             val context = itemView.context
             tvTitle.text = context.getString(R.string.event_title_format, message.eventHabitName)
@@ -256,6 +252,7 @@ class MessagesAdapter(
         }
     }
 
+// ViewHolder de inicio de evento: representa cuando una actividad ya comenzó.
     class EventStartViewHolder(
         itemView: View,
         private val currentUserId: String,
@@ -263,7 +260,6 @@ class MessagesAdapter(
     ) : RecyclerView.ViewHolder(itemView) {
         private val tvText: TextView = itemView.findViewById(R.id.tv_event_started_text)
         private val btnCapture: MaterialButton = itemView.findViewById(R.id.btn_capture_moment)
-
         fun bind(message: Message) {
             tvText.text = resolveTemplateText(message, itemView.context)
 
@@ -282,6 +278,7 @@ class MessagesAdapter(
         }
     }
 
+// ViewHolder de foto: muestra capturas compartidas en el contexto del evento.
     class PhotoMessageViewHolder(
         itemView: View,
         private val ioExecutor: java.util.concurrent.ExecutorService,
@@ -290,7 +287,6 @@ class MessagesAdapter(
         private val tvSender: TextView = itemView.findViewById(R.id.tv_photo_sender)
         private val ivPhoto: ImageView = itemView.findViewById(R.id.iv_photo_message)
         private val tvTime: TextView = itemView.findViewById(R.id.tv_photo_time)
-
         fun bind(message: Message, currentUserId: String) {
             tvSender.visibility = if (message.senderId == currentUserId) View.GONE else View.VISIBLE
             tvSender.text = message.senderName

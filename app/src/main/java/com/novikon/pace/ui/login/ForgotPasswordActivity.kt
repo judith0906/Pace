@@ -12,12 +12,14 @@ import com.novikon.pace.R
 import com.novikon.pace.helpers.LanguageHelper
 import com.novikon.pace.helpers.ThemeHelper
 
+// Pantalla de recuperacion: gestiona el envio de enlace para restablecer clave.
 class ForgotPasswordActivity : AppCompatActivity() {
 
     private lateinit var emailInput: TextInputEditText
     private lateinit var sendButton: MaterialButton
     private val auth: FirebaseAuth = Firebase.auth
 
+// onCreate: inicializa la pantalla y prepara vistas/eventos iniciales.
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -30,12 +32,10 @@ class ForgotPasswordActivity : AppCompatActivity() {
         initializeViews()
         setupListeners()
     }
-
     private fun initializeViews() {
         emailInput = findViewById(R.id.emailInput)
         sendButton = findViewById(R.id.sendButton)
     }
-
     private fun setupListeners() {
         findViewById<android.widget.ImageButton>(R.id.backButton).setOnClickListener {
             finish()

@@ -50,6 +50,7 @@ class HabitsManager(context: Context) {
         prefs.edit { putString(KEY_CURRENT_USER_ID, userId) }
     }
 
+    // Devuelve el identificador del usuario activo guardado en el dispositivo.
     fun getCurrentUserId(): String {
         return prefs.getString(KEY_CURRENT_USER_ID, "") ?: ""
     }
@@ -188,6 +189,8 @@ class HabitsManager(context: Context) {
         }
     }
 
+    // Actualiza el registro diario en caché local para ese hábito y fecha.
+    // Si ya existe, lo reemplaza para evitar duplicados en el mismo día.
     private fun saveLogToLocalCache(log: DailyHabitLog) {
         val logs = getHabitLogs().toMutableList()
         logs.removeAll { it.habitId == log.habitId && it.date == log.date }
@@ -195,11 +198,15 @@ class HabitsManager(context: Context) {
         prefs.edit { putString(KEY_HABIT_LOGS, gson.toJson(logs)) }
     }
 
+    // Guarda un registro diario completo tanto en caché local como en Firebase.
+    // Se usa cuando ya tenemos construido el objeto DailyHabitLog.
     suspend fun logHabit(log: DailyHabitLog): Boolean {
         saveLogToLocalCache(log)
         return databaseManager.saveHabitLog(log)
     }
 
+    // Crea un registro histórico cuando el usuario se une a un evento grupal.
+    // Convierte el hábito del evento en una entrada del historial diario.
     suspend fun logJoinedEventToHistory(
         eventId: String,
         habitLabel: String,
@@ -245,6 +252,8 @@ class HabitsManager(context: Context) {
         return logHabit(log)
     }
 
+    // Elimina registros del caché local por id de hábito.
+    // Si se pasa fecha, borra solo ese día; si no, borra todos los días del hábito.
     private fun removeLogFromLocalCache(habitId: String, date: String? = null) {
         val logs = getHabitLogs().toMutableList()
         if (date == null) {
@@ -255,6 +264,8 @@ class HabitsManager(context: Context) {
         prefs.edit { putString(KEY_HABIT_LOGS, gson.toJson(logs)) }
     }
 
+    // Elimina del historial local y remoto la marca de un evento al que se unió.
+    // Se usa cuando el usuario cambia su respuesta y deja de participar.
     suspend fun removeJoinedEventFromHistory(eventId: String): Boolean {
         val eventHabitId = "event_join_$eventId"
 

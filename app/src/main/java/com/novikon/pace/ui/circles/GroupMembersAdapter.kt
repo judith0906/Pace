@@ -10,23 +10,27 @@ import androidx.recyclerview.widget.RecyclerView
 import com.novikon.pace.R
 import com.novikon.pace.models.CircleMember
 
+// Adapter de miembros: renderiza usuarios del grupo y acciones sobre ellos.
 class GroupMembersAdapter(
     private val currentUserId: String?,
     private val members: List<CircleMember>,
     private val onBlockClicked: (CircleMember) -> Unit
 ) : RecyclerView.Adapter<GroupMembersAdapter.MemberViewHolder>() {
 
+// ViewHolder de miembro: encapsula las vistas de nombre, rol y acciones.
     class MemberViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val tvName: TextView = itemView.findViewById(R.id.tv_member_name)
         val btnMore: ImageButton = itemView.findViewById(R.id.btn_member_more)
     }
 
+// onCreateViewHolder: infla el layout de cada item y crea su ViewHolder.
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MemberViewHolder {
         val view = LayoutInflater.from(parent.context)
             .inflate(R.layout.item_group_member, parent, false)
         return MemberViewHolder(view)
     }
 
+// onBindViewHolder: vincula los datos del elemento actual con su vista.
     override fun onBindViewHolder(holder: MemberViewHolder, position: Int) {
         val member = members[position]
         holder.tvName.text = member.displayName
@@ -54,5 +58,6 @@ class GroupMembersAdapter(
         }
     }
 
+// getItemCount: devuelve la cantidad total de elementos a renderizar.
     override fun getItemCount(): Int = members.size
 }

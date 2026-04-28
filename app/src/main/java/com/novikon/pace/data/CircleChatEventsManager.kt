@@ -22,6 +22,7 @@ import java.net.HttpURLConnection
 import java.net.URL
 import kotlin.coroutines.resume
 
+// Gestor de eventos del chat: crea, actualiza y sincroniza eventos de circulo.
 class CircleChatEventsManager(
     private val context: Context
 ) {
@@ -29,14 +30,18 @@ class CircleChatEventsManager(
     private val database = FirebaseDatabase.getInstance()
     private val auth = FirebaseAuth.getInstance()
 
+    // Devuelve el id del usuario autenticado para asociar acciones del chat.
     fun getUserId(): String? = auth.currentUser?.uid
 
+    // Obtiene el nombre visible del usuario para mostrarlo en mensajes y eventos.
     private fun getUserName(): String {
         return auth.currentUser?.displayName
             ?: auth.currentUser?.email?.substringBefore("@")
             ?: context.getString(R.string.default_user)
     }
 
+    // Crea un evento grupal y publica su tarjeta inicial en el chat.
+    // Deja al creador apuntado automáticamente como participante.
     suspend fun createEvent(
         circleId: String,
         habitName: String,
@@ -99,6 +104,8 @@ class CircleChatEventsManager(
         }
     }
 
+    // Registra si el usuario se une o declina un evento y sincroniza esa respuesta
+    // tanto en el nodo del evento como en el mensaje que lo representa en el chat.
     suspend fun respondToEvent(
         circleId: String,
         messageId: String,
@@ -112,6 +119,7 @@ class CircleChatEventsManager(
             val eventRef = database.getReference("circles/$circleId/events/$eventId")
 
             eventRef.addListenerForSingleValueEvent(object : ValueEventListener {
+
                 override fun onDataChange(snapshot: DataSnapshot) {
                     if (!snapshot.exists()) {
                         cont.resume(false)
@@ -160,6 +168,7 @@ class CircleChatEventsManager(
         }
     }
 
+    // Busca eventos cuya hora ya llegó y dispara su inicio automático.
     suspend fun checkAndStartDueEvents(circleId: String): Boolean {
         val now = System.currentTimeMillis()
 
@@ -187,6 +196,7 @@ class CircleChatEventsManager(
         }
     }
 
+    // Procesa los eventos vencidos uno por uno para evitar colisiones de escritura.
     private fun processDueEventsSequentially(
         circleId: String,
         events: List<DataSnapshot>,
@@ -215,6 +225,7 @@ class CircleChatEventsManager(
         }
     }
 
+    // Marca el evento como iniciado y publica el mensaje de sistema que avisa al grupo.
     private fun markEventStartedAndSendSystemMessage(
         circleId: String,
         eventId: String,
@@ -268,6 +279,7 @@ class CircleChatEventsManager(
         })
     }
 
+    // Sube una foto de "momento del evento" y la envía al chat como mensaje tipo PHOTO.
     suspend fun sendPhotoMoment(
         circleId: String,
         eventId: String,
@@ -304,6 +316,7 @@ class CircleChatEventsManager(
         }
     }
 
+    // Sube una imagen al storage y devuelve su URL pública para compartirla en el chat.
     private suspend fun uploadToSupabase(imageBytes: ByteArray, objectPath: String): String? {
         return withContext(Dispatchers.IO) {
             val baseUrl = BuildConfig.SUPABASE_URL.removeSuffix("/")
@@ -340,12 +353,14 @@ class CircleChatEventsManager(
         }
     }
 
+    // Escucha cambios en tiempo real del chat del círculo y notifica altas/cambios/bajas.
     fun observeMessages(
         circleId: String,
         onMessageAdded: (Message) -> Unit,
         onMessageChanged: (Message) -> Unit,
         onMessageRemoved: (String) -> Unit
     ): ChildEventListener {
+        // Convierte el snapshot de Firebase al modelo Message usado por la UI.
         fun parseMessage(snapshot: DataSnapshot): Message {
             return Message(
                 id = snapshot.child("id").getValue(String::class.java) ?: snapshot.key ?: "",
@@ -387,7 +402,9 @@ class CircleChatEventsManager(
                     ?: return
                 onMessageRemoved(removedId)
             }
+
             override fun onChildMoved(snapshot: DataSnapshot, previousChildName: String?) {}
+
             override fun onCancelled(error: DatabaseError) {}
         }
 
@@ -398,18 +415,21 @@ class CircleChatEventsManager(
         return listener
     }
 
+    // Detiene la escucha del chat para evitar fugas cuando se cierra la pantalla.
     fun removeMessagesListener(circleId: String, listener: ChildEventListener) {
         database.getReference("circles/$circleId/messages")
             .orderByChild("timestamp")
             .removeEventListener(listener)
     }
 
+    // Permite borrar un mensaje únicamente si pertenece al usuario actual.
     suspend fun deleteOwnMessage(circleId: String, messageId: String): Boolean {
         val uid = getUserId() ?: return false
         val msgRef = database.getReference("circles/$circleId/messages/$messageId")
 
         return suspendCancellableCoroutine { cont ->
             msgRef.addListenerForSingleValueEvent(object : ValueEventListener {
+
                 override fun onDataChange(snapshot: DataSnapshot) {
                     if (!snapshot.exists()) {
                         cont.resume(false)

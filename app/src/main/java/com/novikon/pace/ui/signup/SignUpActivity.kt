@@ -13,6 +13,7 @@ import com.novikon.pace.helpers.ThemeHelper
 import com.novikon.pace.ui.main.MainActivity
 import com.novikon.pace.utils.SessionManager
 
+// Pantalla de registro: crea cuentas nuevas con validacion y alta de usuario.
 class SignUpActivity : AppCompatActivity() {
 
     private lateinit var nameInput: TextInputEditText
@@ -34,6 +35,7 @@ class SignUpActivity : AppCompatActivity() {
         authManager.handleGoogleSignInResult(result.data)
     }
 
+// onCreate: inicializa la pantalla y prepara vistas/eventos iniciales.
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -49,7 +51,6 @@ class SignUpActivity : AppCompatActivity() {
         initializeViews()
         setupListeners()
     }
-
     private fun setupAuthManager() {
         authManager = SignUpAuthManager(
             activity = this,
@@ -59,7 +60,6 @@ class SignUpActivity : AppCompatActivity() {
             onAuthError = ::onRegistrationError
         )
     }
-
     private fun initializeViews() {
         nameInput = findViewById(R.id.nameInput)
         emailInput = findViewById(R.id.emailInput)
@@ -68,7 +68,6 @@ class SignUpActivity : AppCompatActivity() {
         signUpButton = findViewById(R.id.signUpButton)
         googleSignUpButton = findViewById(R.id.googleSignUpButton)
     }
-
     private fun setupListeners() {
         signUpButton.setOnClickListener {
             handleSignUp()

@@ -32,7 +32,6 @@ class ReminderReceiver : BroadcastReceiver() {
         // actualiza la notificación existente en lugar de crear una nueva.
         private const val NOTIFICATION_ID = 1001
     }
-
     override fun onReceive(context: Context, intent: Intent) {
         val dayIndex = intent.getIntExtra("day_index", -1)
 

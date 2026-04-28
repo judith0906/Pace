@@ -11,6 +11,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.novikon.pace.R
 import com.novikon.pace.models.Habit
 
+// Adapter de detalle diario: pinta la lista de habitos para un dia concreto.
 class DayDetailAdapter(
     private var habits: List<Habit>,
     private val habitStatus: Map<String, Boolean>  // id del hábito -> true si está hecho
@@ -24,12 +25,14 @@ class DayDetailAdapter(
         val habitStatus: TextView = view.findViewById(R.id.habitStatus)
     }
 
+    // onCreateViewHolder: infla el layout de cada item y crea su ViewHolder.
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): HabitViewHolder {
         val view = LayoutInflater.from(parent.context)
             .inflate(R.layout.dialog_habit_item, parent, false)
         return HabitViewHolder(view)
     }
 
+    // onBindViewHolder: vincula los datos del elemento actual con su vista.
     override fun onBindViewHolder(holder: HabitViewHolder, position: Int) {
         val habit = habits[position]
         val isDone = habitStatus[habit.id] ?: false
@@ -60,5 +63,6 @@ class DayDetailAdapter(
         }
     }
 
+    // getItemCount: devuelve la cantidad total de elementos a renderizar.
     override fun getItemCount(): Int = habits.size
 }

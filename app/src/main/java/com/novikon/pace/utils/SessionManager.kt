@@ -10,6 +10,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
+// Gestor de sesion: persiste estado de login, actividad reciente y datos basicos.
 class SessionManager(private val context: Context) {
 
     private val prefs: SharedPreferences = context.getSharedPreferences(

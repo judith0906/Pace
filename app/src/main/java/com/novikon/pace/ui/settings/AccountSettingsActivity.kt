@@ -29,6 +29,7 @@ import com.novikon.pace.utils.SessionManager
 import kotlinx.coroutines.launch
 import java.util.TimeZone
 
+// Pantalla de cuenta: administra datos de perfil, privacidad y acciones de sesion.
 class AccountSettingsActivity : AppCompatActivity() {
 
     private lateinit var backButton: ImageButton
@@ -42,6 +43,7 @@ class AccountSettingsActivity : AppCompatActivity() {
     private val circlesManager by lazy { CirclesRealtimeManager(this) }
     private var blockedUsersDialog: AlertDialog? = null
 
+// onCreate: inicializa la pantalla y prepara vistas/eventos iniciales.
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -60,13 +62,11 @@ class AccountSettingsActivity : AppCompatActivity() {
         loadUserName()
         loadSystemTimezone()
     }
-
     private fun initializeViews() {
         backButton = findViewById(R.id.backButton)
         currentNameText = findViewById(R.id.currentNameText)
         currentTimezoneText = findViewById(R.id.currentTimezoneText)
     }
-
     private fun setupListeners() {
         backButton.setOnClickListener { finish() }
 
@@ -105,7 +105,6 @@ class AccountSettingsActivity : AppCompatActivity() {
             showDeleteAccountDialog()
         }
     }
-
     private fun loadUserName() {
         val user = auth.currentUser ?: return
         val userId = user.uid
@@ -118,13 +117,11 @@ class AccountSettingsActivity : AppCompatActivity() {
                         ?: getString(R.string.default_user)
                     currentNameText.text = name
                 }
-
                 override fun onCancelled(error: DatabaseError) {
                     currentNameText.text = user.displayName ?: getString(R.string.default_user)
                 }
             })
     }
-
     private fun loadSystemTimezone() {
         val tz = TimeZone.getDefault()
         val offsetMs = tz.rawOffset
@@ -139,7 +136,6 @@ class AccountSettingsActivity : AppCompatActivity() {
         val readableName = tz.id.replace("_", " ")
         currentTimezoneText.text = "$readableName ($gmtOffset)"
     }
-
     private fun showChangeNameDialog() {
         val dialogView = layoutInflater.inflate(R.layout.dialog_input, null)
         val nameInput = dialogView.findViewById<TextInputEditText>(R.id.dialogInput)
@@ -157,7 +153,6 @@ class AccountSettingsActivity : AppCompatActivity() {
             .setNegativeButton(getString(R.string.cancel), null)
             .show()
     }
-
     private fun changeName(newName: String) {
         val user = auth.currentUser ?: return
         val userId = user.uid
@@ -181,7 +176,6 @@ class AccountSettingsActivity : AppCompatActivity() {
                 Toast.makeText(this, "${getString(R.string.error)}${e.message}", Toast.LENGTH_LONG).show()
             }
     }
-
     private fun showPrivacyDialog(title: String) {
         val options = arrayOf(
             getString(R.string.everyone),
@@ -201,7 +195,6 @@ class AccountSettingsActivity : AppCompatActivity() {
             }
             .show()
     }
-
     private fun showBlockedUsersDialog() {
         val dialogView = layoutInflater.inflate(R.layout.dialog_blocked_users, null)
         val rvBlockedUsers = dialogView.findViewById<androidx.recyclerview.widget.RecyclerView>(R.id.rv_blocked_users)
@@ -226,7 +219,6 @@ class AccountSettingsActivity : AppCompatActivity() {
         blockedUsersDialog?.show()
         loadBlockedUsersInto(adapter, tvEmpty)
     }
-
     private fun loadBlockedUsersInto(adapter: BlockedUsersAdapter, tvEmpty: TextView) {
         lifecycleScope.launch {
             val blockedUsers = circlesManager.getBlockedUsers()
@@ -234,7 +226,6 @@ class AccountSettingsActivity : AppCompatActivity() {
             tvEmpty.visibility = if (blockedUsers.isEmpty()) View.VISIBLE else View.GONE
         }
     }
-
     private fun showUnblockConfirmation(targetUid: String, displayName: String, onDone: () -> Unit) {
         AlertDialog.Builder(this)
             .setTitle(getString(R.string.unblock_user))
@@ -253,7 +244,6 @@ class AccountSettingsActivity : AppCompatActivity() {
             .setNegativeButton(getString(R.string.cancel), null)
             .show()
     }
-
     private fun showSignOutAllDevicesDialog() {
         AlertDialog.Builder(this)
             .setTitle(getString(R.string.sign_out_all_title))
@@ -262,7 +252,6 @@ class AccountSettingsActivity : AppCompatActivity() {
             .setNegativeButton(getString(R.string.cancel), null)
             .show()
     }
-
     private fun signOutAllDevices() {
         habitsManager.clearLocalData()
 
@@ -278,7 +267,6 @@ class AccountSettingsActivity : AppCompatActivity() {
             }
         }
     }
-
     private fun showDeleteAccountDialog() {
         AlertDialog.Builder(this)
             .setTitle(getString(R.string.delete_account_title))
@@ -289,7 +277,6 @@ class AccountSettingsActivity : AppCompatActivity() {
             .setNegativeButton(getString(R.string.cancel), null)
             .show()
     }
-
     private fun deleteAccount() {
         val user = auth.currentUser ?: return
         val userId = user.uid
@@ -317,7 +304,6 @@ class AccountSettingsActivity : AppCompatActivity() {
                 Toast.makeText(this, "${getString(R.string.error)}${e.message}", Toast.LENGTH_LONG).show()
             }
     }
-
     override fun onDestroy() {
         blockedUsersDialog?.dismiss()
         super.onDestroy()

@@ -22,6 +22,7 @@ import java.util.Date
 import java.util.Locale
 import java.util.concurrent.TimeUnit
 
+// Pantalla de dispositivos activos: muestra sesiones y permite cerrar remotas.
 class ActiveDevicesActivity : AppCompatActivity() {
 
     private lateinit var backButton: ImageButton
@@ -32,6 +33,7 @@ class ActiveDevicesActivity : AppCompatActivity() {
     private lateinit var databaseManager: RealtimeDatabaseManager
     private lateinit var sessionManager: SessionManager
 
+// onCreate: inicializa la pantalla y prepara vistas/eventos iniciales.
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -47,14 +49,12 @@ class ActiveDevicesActivity : AppCompatActivity() {
         setupListeners()
         loadDevices()
     }
-
     private fun initializeViews() {
         backButton = findViewById(R.id.backButton)
         loadingIndicator = findViewById(R.id.loadingIndicator)
         emptyText = findViewById(R.id.emptyText)
         devicesContainer = findViewById(R.id.devicesContainer)
     }
-
     private fun setupListeners() {
         backButton.setOnClickListener {
             finish()
@@ -142,7 +142,6 @@ class ActiveDevicesActivity : AppCompatActivity() {
             .setNegativeButton(getString(R.string.cancel), null)
             .show()
     }
-
     private fun closeSessionOnDevice(deviceId: String, deviceName: String, itemView: View) {
         lifecycleScope.launch {
             val success = databaseManager.removeDevice(deviceId, databaseManager.getUserId() ?: return@launch)

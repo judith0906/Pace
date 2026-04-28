@@ -14,6 +14,7 @@ import com.novikon.pace.ui.main.MainActivity
 import com.novikon.pace.ui.signup.SignUpActivity
 import com.novikon.pace.utils.SessionManager
 
+// Pantalla de inicio de sesion: valida credenciales y autentica al usuario.
 class LoginActivity : AppCompatActivity() {
 
     private lateinit var emailInput: TextInputEditText
@@ -33,6 +34,7 @@ class LoginActivity : AppCompatActivity() {
         authManager.handleGoogleSignInResult(result.data)
     }
 
+// onCreate: inicializa la pantalla y prepara vistas/eventos iniciales.
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -61,14 +63,12 @@ class LoginActivity : AppCompatActivity() {
             onAuthError = ::onAuthenticationError
         )
     }
-
     private fun initializeViews() {
         emailInput = findViewById(R.id.emailInput)
         passwordInput = findViewById(R.id.passwordInput)
         loginButton = findViewById(R.id.loginButton)
         googleSignInButton = findViewById(R.id.googleSignInButton)
     }
-
     private fun setupListeners() {
         loginButton.setOnClickListener {
             handleEmailPasswordLogin()

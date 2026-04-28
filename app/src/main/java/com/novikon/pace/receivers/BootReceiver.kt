@@ -15,7 +15,6 @@ import com.novikon.pace.utils.ReminderScheduler
 // Para que funcione debe estar registrado en el AndroidManifest.xml
 // con el permiso RECEIVE_BOOT_COMPLETED.
 class BootReceiver : BroadcastReceiver() {
-
     override fun onReceive(context: Context, intent: Intent) {
 
         // Verificar que el evento es el arranque del sistema

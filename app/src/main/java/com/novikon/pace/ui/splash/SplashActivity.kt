@@ -20,12 +20,14 @@ import com.novikon.pace.utils.SessionManager
 import com.novikon.pace.utils.SettingsManager
 import kotlinx.coroutines.launch
 
+// Pantalla splash: prepara app al inicio y coordina animacion de bienvenida.
 class SplashActivity : AppCompatActivity() {
 
     private lateinit var animator: SplashAnimator
     private lateinit var sessionManager: SessionManager
     private val auth: FirebaseAuth = Firebase.auth
 
+// onCreate: inicializa la pantalla y prepara vistas/eventos iniciales.
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setTheme(R.style.Theme_Pace)
@@ -42,7 +44,6 @@ class SplashActivity : AppCompatActivity() {
         setupWindowInsets()
         setupAnimations()
     }
-
     private fun setupWindowInsets() {
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.splash)) { v, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
@@ -50,7 +51,6 @@ class SplashActivity : AppCompatActivity() {
             insets
         }
     }
-
     private fun setupAnimations() {
         val logoText = findViewById<TextView>(R.id.logoText)
         val paceLogo = findViewById<View>(R.id.paceLogo)
@@ -106,13 +106,11 @@ class SplashActivity : AppCompatActivity() {
             }
         }
     }
-
     private fun goToMain() {
         startActivity(Intent(this, MainActivity::class.java))
         overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out)
         finish()
     }
-
     private fun goToLogin() {
         startActivity(Intent(this, LoginActivity::class.java))
         overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out)

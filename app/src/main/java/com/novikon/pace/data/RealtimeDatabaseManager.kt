@@ -39,7 +39,7 @@ class RealtimeDatabaseManager {
     // ── HÁBITOS ───────────────────────────────────────────────────────────────
 
     // Guarda la lista de hábitos seleccionados en Firebase.
-    // Usa setValue() que reemplaza todo el nodo — si el usuario
+    // Usa setValue() que reemplaza t*do el nodo — si el usuario
     // cambia sus hábitos, los anteriores se eliminan automáticamente.
     // Devuelve true si se guardó correctamente, false si hubo error.
     suspend fun saveHabits(habits: List<Habit>): Boolean {
@@ -209,7 +209,7 @@ class RealtimeDatabaseManager {
     // ── AJUSTES DE USUARIO ────────────────────────────────────────────────────
 
     // Guarda todos los ajustes del usuario en Firebase de una sola vez.
-    // Usa setValue() sobre el nodo settings/ — reemplaza todo el bloque
+    // Usa setValue() sobre el nodo settings/ — reemplaza t*do el bloque
     // para mantener consistencia y evitar campos huérfanos.
     // Devuelve true si se guardó correctamente, false si hubo error.
     suspend fun saveSettings(

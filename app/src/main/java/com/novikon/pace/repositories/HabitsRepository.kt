@@ -42,7 +42,6 @@ object HabitsRepository {
             Habit("physical_10", context.getString(R.string.physical10), "💃", "30 min", HabitCategory.PHYSICAL, TimeOfDay.ALL_DAY)
         )
     }
-
     private fun getMentalHabits(context: Context): List<Habit> {
         return listOf(
             Habit("mental_1", context.getString(R.string.mental1), "🧘‍♂️", "10-20 min", HabitCategory.MENTAL, TimeOfDay.ALL_DAY),
@@ -57,7 +56,6 @@ object HabitsRepository {
             Habit("mental_10", context.getString(R.string.mental10), "🎸", "30 min", HabitCategory.MENTAL, TimeOfDay.ALL_DAY)
         )
     }
-
     private fun getStudyHabits(context: Context): List<Habit> {
         return listOf(
             Habit("study_1", context.getString(R.string.study1), "📖", "60 min", HabitCategory.STUDY, TimeOfDay.ALL_DAY),
@@ -69,7 +67,6 @@ object HabitsRepository {
             Habit("study_10", context.getString(R.string.study10), "📝", "90 min", HabitCategory.STUDY, TimeOfDay.ALL_DAY)
         )
     }
-
     private fun getRoutineHabits(context: Context): List<Habit> {
         return listOf(
             Habit("routine_1", context.getString(R.string.routine1), "🛏️", "5 min", HabitCategory.ROUTINE, TimeOfDay.MORNING),
@@ -86,7 +83,6 @@ object HabitsRepository {
             Habit("routine_12", context.getString(R.string.routine12), "🪴", "10 min", HabitCategory.ROUTINE, TimeOfDay.ALL_DAY)
         )
     }
-
     private fun getBadHabitsToEliminate(context: Context): List<Habit> {
         return listOf(
             Habit("bad_1", context.getString(R.string.bad1), "🚭", "Todo el día", HabitCategory.BAD_HABITS, TimeOfDay.ALL_DAY),
@@ -101,7 +97,6 @@ object HabitsRepository {
             Habit("bad_12", context.getString(R.string.bad12), "🍽️", "Todo el día", HabitCategory.BAD_HABITS, TimeOfDay.ALL_DAY)
         )
     }
-
     private fun getWellbeingHabits(context: Context): List<Habit> {
         return listOf(
             Habit("wellbeing_2", context.getString(R.string.wellbeing2), "📞", "20 min", HabitCategory.WELLBEING, TimeOfDay.ALL_DAY),

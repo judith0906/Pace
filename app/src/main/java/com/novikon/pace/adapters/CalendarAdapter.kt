@@ -32,12 +32,14 @@ class CalendarAdapter(
         val todayCircle: View = view.findViewById(R.id.todayCircle)
     }
 
+// onCreateViewHolder: infla el layout de cada item y crea su ViewHolder.
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): DayViewHolder {
         val view = LayoutInflater.from(parent.context)
             .inflate(R.layout.calendar_day_item, parent, false)
         return DayViewHolder(view)
     }
 
+// onBindViewHolder: vincula los datos del elemento actual con su vista.
     override fun onBindViewHolder(holder: DayViewHolder, position: Int) {
         val day = days[position]
 
@@ -102,6 +104,7 @@ class CalendarAdapter(
         }
     }
 
+// getItemCount: devuelve la cantidad total de elementos a renderizar.
     override fun getItemCount(): Int = days.size
 
     // Actualiza los días del calendario — se llama cuando el usuario

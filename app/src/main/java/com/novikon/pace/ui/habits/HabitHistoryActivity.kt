@@ -30,6 +30,7 @@ import com.novikon.pace.models.DailyHabitLog
 import com.novikon.pace.models.HabitCategory
 import com.novikon.pace.models.TimeOfDay
 
+// Pantalla de historial: muestra calendario y detalle de cumplimiento de habitos.
 class HabitHistoryActivity : AppCompatActivity() {
 
     private lateinit var habitsManager: HabitsManager
@@ -53,6 +54,7 @@ class HabitHistoryActivity : AppCompatActivity() {
     // cada vez que se genera el calendario o se abre el detalle de un día.
     private var cachedHabits: List<Habit> = emptyList()
 
+// onCreate: inicializa la pantalla y prepara vistas/eventos iniciales.
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -81,7 +83,6 @@ class HabitHistoryActivity : AppCompatActivity() {
             loadMonth()
         }
     }
-
     private fun initializeViews() {
         backButton = findViewById(R.id.backButton)
         previousMonthButton = findViewById(R.id.previousMonthButton)
@@ -99,7 +100,6 @@ class HabitHistoryActivity : AppCompatActivity() {
         }
         calendarRecyclerView.adapter = calendarAdapter
     }
-
     private fun setupListeners() {
         backButton.setOnClickListener {
             finish()
@@ -275,12 +275,10 @@ class HabitHistoryActivity : AppCompatActivity() {
 
         dialog.show()
     }
-
     private fun getEventLogsForDate(date: String): List<DailyHabitLog> {
         return habitsManager.getHabitLogsForDate(date)
             .filter { it.source == "EVENT_JOIN" && it.isEventHabit }
     }
-
     private fun buildEventHabitsForDate(date: String): List<Habit> {
         return getEventLogsForDate(date).map { log ->
             Habit(

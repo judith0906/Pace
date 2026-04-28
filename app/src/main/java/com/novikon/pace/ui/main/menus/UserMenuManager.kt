@@ -38,7 +38,6 @@ class UserMenuManager(
     private val habitsManager: HabitsManager,
     private val sessionManager: SessionManager
 ) {
-
     fun setup() {
         styleMenuItems()
 
@@ -75,7 +74,6 @@ class UserMenuManager(
             item.title = spannable
         }
     }
-
     private fun handleMenuClick(menuItem: MenuItem) {
         when (menuItem.itemId) {
             R.id.menu_change_photo -> changeProfilePhoto()
@@ -164,7 +162,6 @@ class UserMenuManager(
             .setNegativeButton(activity.getString(R.string.cancel), null)
             .show()
     }
-
     private fun confirmLogout() {
         AlertDialog.Builder(activity)
             .setTitle(activity.getString(R.string.logout_title))
@@ -173,7 +170,6 @@ class UserMenuManager(
             .setNegativeButton(activity.getString(R.string.cancel), null)
             .show()
     }
-
     private fun signOut() {
         habitsManager.clearLocalData()
         sessionManager.markUserLoggedOut()

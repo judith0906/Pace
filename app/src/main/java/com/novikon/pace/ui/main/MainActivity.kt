@@ -32,6 +32,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
+// Pantalla principal: orquesta navegacion, preview de habitos y estado de sesion.
 class MainActivity : AppCompatActivity() {
 
     private lateinit var drawerLayout: DrawerLayout
@@ -67,6 +68,7 @@ class MainActivity : AppCompatActivity() {
         lifecycleScope.launch { loadAndDisplayHabits() }
     }
 
+    // Configura la pantalla principal, sincroniza datos del usuario y prepara navegación.
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -139,6 +141,7 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    // Enlaza las vistas del layout para poder actualizar la UI desde código.
     private fun initializeViews() {
         drawerLayout = findViewById(R.id.drawerLayout)
         navigationViewGeneral = findViewById(R.id.navigationViewGeneral)
@@ -147,6 +150,7 @@ class MainActivity : AppCompatActivity() {
         habitsPreviewContainer = findViewById(R.id.habitsPreviewContainer)
     }
 
+    // Inicializa los dos menús laterales y conecta sus acciones de navegación.
     private fun setupMenuManagers() {
         navigationMenuManager = NavigationMenuManager(
             activity = this,
@@ -208,6 +212,7 @@ class MainActivity : AppCompatActivity() {
             })
     }
 
+    // Asigna acciones a los botones principales de acceso rápido.
     private fun setupListeners() {
         findViewById<android.widget.ImageButton>(R.id.menuButton).setOnClickListener {
             drawerLayout.openDrawer(GravityCompat.START)
@@ -229,10 +234,12 @@ class MainActivity : AppCompatActivity() {
         startActivity(Intent(this, DailyHabitsActivity::class.java))
     }
 
+    // Abre la pantalla de círculos para ver grupos y chats.
     private fun navigateToCircles() {
         startActivity(Intent(this, CirclesActivity::class.java))
     }
 
+    // Placeholder temporal para la futura pantalla de todos los grupos públicos.
     private fun navigateToAllGroups() {
         Toast.makeText(this, getString(R.string.view_all_connections), Toast.LENGTH_SHORT).show()
     }
@@ -301,6 +308,7 @@ class MainActivity : AppCompatActivity() {
         database.getReference("users/$userId/profile/email").setValue(email)
     }
 
+    // Si el usuario aún no configuró hábitos, abre automáticamente la selección inicial.
     private fun checkFirstTimeHabitSelection() {
         lifecycleScope.launch {
             if (!habitsManager.areHabitsConfiguredAsync()) {
@@ -313,6 +321,7 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    // Reprograma alarmas locales al entrar en la app si los recordatorios están activos.
     private fun reprogramRemindersIfNeeded() {
         if (settingsManager.areRemindersEnabled) {
             ReminderScheduler.scheduleReminders(

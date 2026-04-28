@@ -12,12 +12,14 @@ import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 
+// Adapter de circulos: muestra cada grupo en la lista principal de comunidades.
 class CirclesAdapter(
     private val onCircleClick: (Circle) -> Unit
 ) : RecyclerView.Adapter<CirclesAdapter.CircleViewHolder>() {
 
     private val items = mutableListOf<Circle>()
 
+// ViewHolder de circulo: mantiene referencias a vistas de cada tarjeta.
     class CircleViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val ivAvatarPrimary: ShapeableImageView = itemView.findViewById(R.id.iv_avatar_primary)
         val tvAvatarMore: TextView = itemView.findViewById(R.id.tv_avatar_more)
@@ -27,12 +29,14 @@ class CirclesAdapter(
         val tvLastTime: TextView = itemView.findViewById(R.id.tv_last_message_time)
     }
 
+// onCreateViewHolder: infla el layout de cada item y crea su ViewHolder.
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CircleViewHolder {
         val view = LayoutInflater.from(parent.context)
             .inflate(R.layout.item_circle, parent, false)
         return CircleViewHolder(view)
     }
 
+// onBindViewHolder: vincula los datos del elemento actual con su vista.
     override fun onBindViewHolder(holder: CircleViewHolder, position: Int) {
         val circle = items[position]
         val context = holder.itemView.context
@@ -64,8 +68,8 @@ class CirclesAdapter(
         holder.itemView.setOnClickListener { onCircleClick(circle) }
     }
 
+// getItemCount: devuelve la cantidad total de elementos a renderizar.
     override fun getItemCount(): Int = items.size
-
     fun submitList(newItems: List<Circle>) {
         items.clear()
         items.addAll(newItems)

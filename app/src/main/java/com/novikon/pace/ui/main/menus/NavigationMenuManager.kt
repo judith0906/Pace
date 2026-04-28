@@ -26,7 +26,6 @@ class NavigationMenuManager(
     private val onNavigateToDailyHabits: () -> Unit,
     private val onNavigateToCircles: () -> Unit
 ) {
-
     fun setup() {
         styleMenuItems()
 
@@ -45,7 +44,6 @@ class NavigationMenuManager(
             item.title = spannable
         }
     }
-
     private fun handleMenuClick(menuItem: MenuItem) {
         when (menuItem.itemId) {
             R.id.menu_habits_history ->

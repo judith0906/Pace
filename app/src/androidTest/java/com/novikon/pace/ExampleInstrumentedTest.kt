@@ -14,6 +14,7 @@ import org.junit.Assert.*
  * See [testing documentation](http://d.android.com/tools/testing).
  */
 @RunWith(AndroidJUnit4::class)
+// Test instrumentado base: verifica acceso al contexto de la aplicacion.
 class ExampleInstrumentedTest {
     @Test
     fun useAppContext() {

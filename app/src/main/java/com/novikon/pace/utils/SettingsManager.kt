@@ -70,8 +70,8 @@ class SettingsManager(private val context: Context) {
             putStringSet(KEY_ACTIVE_DAY_INDICES, value.map { it.toString() }.toSet())
         }
 
+// isFirstRun: evalua una condicion y devuelve true/false.
     private fun isFirstRun(): Boolean = prefs.getBoolean(KEY_FIRST_RUN, true)
-
     private fun markFirstRunComplete() {
         prefs.edit { putBoolean(KEY_FIRST_RUN, false) }
     }
@@ -84,7 +84,6 @@ class SettingsManager(private val context: Context) {
             putStringSet(key, dayIndices.map { it.toString() }.toSet())
         }
     }
-
     fun getWeeklyActiveDays(weekStartDate: String): Set<Int>? {
         val key = "weekly_config_$weekStartDate"
         return prefs.getStringSet(key, null)

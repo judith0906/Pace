@@ -26,6 +26,7 @@ import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Locale
 
+// Pantalla de habitos diarios: permite marcar progreso y registrar completados.
 class DailyHabitsActivity : AppCompatActivity() {
 
     private lateinit var habitsManager: HabitsManager
@@ -54,6 +55,7 @@ class DailyHabitsActivity : AppCompatActivity() {
     // se recreara con datos incompletos, haciendo que falten hábitos.
     private var initialLoadDone = false
 
+// onCreate: inicializa la pantalla y prepara vistas/eventos iniciales.
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -79,7 +81,6 @@ class DailyHabitsActivity : AppCompatActivity() {
             }
         }
     }
-
     private fun initializeViews() {
         backButton = findViewById(R.id.backButton)
         editHabitsButton = findViewById(R.id.editHabitsButton)
@@ -140,7 +141,6 @@ class DailyHabitsActivity : AppCompatActivity() {
             updateProgress()
         }
     }
-
     private fun setupListeners() {
         backButton.setOnClickListener {
             finish()

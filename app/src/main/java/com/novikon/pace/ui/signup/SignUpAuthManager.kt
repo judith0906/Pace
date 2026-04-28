@@ -43,7 +43,6 @@ class SignUpAuthManager(
     init {
         setupGoogleSignIn()
     }
-
     private fun setupGoogleSignIn() {
         val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
             .requestIdToken(webClientId)

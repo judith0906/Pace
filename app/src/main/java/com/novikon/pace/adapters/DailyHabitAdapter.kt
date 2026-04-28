@@ -13,7 +13,7 @@ import com.novikon.pace.models.TimeOfDay
 
 // Adapter para la pantalla de hábitos del día.
 // Muestra los hábitos agrupados por franja horaria con cabeceras
-// de sección (Mañana, Tarde, Noche, Todo el día).
+// de sección (Mañana, Tarde, Noche, T*do el día).
 //
 // Recibe el Context para acceder a strings.xml con el idioma correcto.
 //
@@ -81,11 +81,11 @@ class DailyHabitAdapter(
 
         items = itemsList
     }
-
     override fun getItemViewType(position: Int): Int {
         return items[position].type
     }
 
+// onCreateViewHolder: infla el layout de cada item y crea su ViewHolder.
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
         return when (viewType) {
             VIEW_TYPE_HEADER -> {
@@ -101,6 +101,7 @@ class DailyHabitAdapter(
         }
     }
 
+// onBindViewHolder: vincula los datos del elemento actual con su vista.
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         val item = items[position]
 
@@ -116,6 +117,7 @@ class DailyHabitAdapter(
         }
     }
 
+    // getItemCount: devuelve la cantidad total de elementos a renderizar.
     override fun getItemCount(): Int = items.size
 
     // ViewHolder para las cabeceras de sección (Mañana, Tarde...)
@@ -130,7 +132,6 @@ class DailyHabitAdapter(
         private val habitTime: TextView = view.findViewById(R.id.habitTime)
         private val notDoneButton: MaterialButton = view.findViewById(R.id.notDoneButton)
         private val doneButton: MaterialButton = view.findViewById(R.id.doneButton)
-
         fun bind(habit: Habit, isDone: Boolean) {
             habitEmoji.text = habit.emoji
             habitName.text = habit.name

@@ -41,8 +41,10 @@ import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Locale
 
+// Pantalla de chat de circulo: gestiona mensajes, eventos y acciones del grupo.
 class CircleChatActivity : AppCompatActivity() {
 
+    // Agrupa mensajes predefinidos por temática para enviarlos rápidamente al chat.
     private data class PredefinedSection(
         val title: String,
         val emoji: String,
@@ -69,6 +71,7 @@ class CircleChatActivity : AppCompatActivity() {
     private var messagesListener: ChildEventListener? = null
     private val eventStartHandler = Handler(Looper.getMainLooper())
     private val eventStartTicker = object : Runnable {
+        // Revisa periódicamente eventos vencidos y refresca estados temporales en pantalla.
         override fun run() {
             lifecycleScope.launch { eventsManager.checkAndStartDueEvents(circleId) }
             messagesAdapter.refreshTemporalStates()
@@ -95,6 +98,7 @@ class CircleChatActivity : AppCompatActivity() {
         showCapturePreviewDialog(bitmap)
     }
 
+    // Prepara la pantalla del chat del grupo y activa la escucha en tiempo real.
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -132,6 +136,7 @@ class CircleChatActivity : AppCompatActivity() {
         }
     }
 
+    // Enlaza toolbar, lista de mensajes y botones inferiores del chat.
     private fun initializeViews() {
         toolbar = findViewById(R.id.toolbar_chat)
         rvMessages = findViewById(R.id.rv_messages)
@@ -139,6 +144,7 @@ class CircleChatActivity : AppCompatActivity() {
         btnSendMessage = findViewById(R.id.btn_send_message)
     }
 
+    // Configura el encabezado con nombre del grupo y botón para volver.
     private fun setupToolbar() {
         setSupportActionBar(toolbar)
         supportActionBar?.apply {
@@ -148,6 +154,7 @@ class CircleChatActivity : AppCompatActivity() {
         toolbar.setNavigationOnClickListener { finish() }
     }
 
+    // Inicializa la lista de mensajes y conecta acciones de cada tipo de mensaje.
     private fun setupRecyclerView() {
         val currentUserId = circlesManager.getUserId() ?: ""
         messagesAdapter = MessagesAdapter(
@@ -164,11 +171,13 @@ class CircleChatActivity : AppCompatActivity() {
         }
     }
 
+    // Conecta los botones inferiores para crear eventos y enviar mensajes rápidos.
     private fun setupBottomActions() {
         btnCreateEvent.setOnClickListener { showCreateEventDialog() }
         btnSendMessage.setOnClickListener { showSendMessageDialog() }
     }
 
+    // Escucha mensajes en vivo y mantiene la lista sincronizada con Firebase.
     private fun observeMessages() {
         messagesListener = eventsManager.observeMessages(
             circleId = circleId,
@@ -185,6 +194,7 @@ class CircleChatActivity : AppCompatActivity() {
         )
     }
 
+    // Devuelve el catálogo de mensajes sugeridos organizados por categoría.
     private fun getPredefinedSections(): List<PredefinedSection> {
         return listOf(
             PredefinedSection(
@@ -244,6 +254,7 @@ class CircleChatActivity : AppCompatActivity() {
         )
     }
 
+    // Muestra un diálogo de mensajes sugeridos para enviar apoyo al grupo en un toque.
     private fun showSendMessageDialog() {
         val sections = getPredefinedSections()
         if (sections.isEmpty()) return
@@ -315,6 +326,7 @@ class CircleChatActivity : AppCompatActivity() {
         dialog.show()
     }
 
+    // Permite elegir hábito, fecha y hora para crear un nuevo evento del grupo.
     private fun showCreateEventDialog() {
         lifecycleScope.launch {
             val habits = HabitsManager(this@CircleChatActivity).getSelectedHabitsAsync()
@@ -410,6 +422,7 @@ class CircleChatActivity : AppCompatActivity() {
         }
     }
 
+    // Guarda la respuesta del usuario al evento y actualiza su historial si corresponde.
     private fun respondToEvent(message: Message, join: Boolean) {
         if (message.eventId.isBlank() || message.id.isBlank()) return
 
@@ -446,6 +459,7 @@ class CircleChatActivity : AppCompatActivity() {
         }
     }
 
+    // Valida si el usuario puede subir foto del evento y solicita cámara si hace falta.
     private fun onCaptureMomentClicked(message: Message) {
         val now = System.currentTimeMillis()
         val isAllowedUser = message.captureAllowedIds.contains(circlesManager.getUserId())
@@ -465,6 +479,7 @@ class CircleChatActivity : AppCompatActivity() {
         }
     }
 
+    // Enseña vista previa de la foto antes de publicarla en el chat.
     private fun showCapturePreviewDialog(bitmap: Bitmap) {
         val preview = layoutInflater.inflate(R.layout.dialog_capture_moment_preview, null)
         val iv = preview.findViewById<ImageView>(R.id.iv_capture_preview)
@@ -490,6 +505,7 @@ class CircleChatActivity : AppCompatActivity() {
             .show()
     }
 
+    // Abre la información del grupo y muestra acciones según si el usuario es admin o miembro.
     private fun showGroupInfoDialog() {
         lifecycleScope.launch {
             val info = circlesManager.getGroupInfo(circleId) ?: return@launch
@@ -638,6 +654,7 @@ class CircleChatActivity : AppCompatActivity() {
         }
     }
 
+    // Pide confirmación y borra un mensaje propio del chat.
     private fun confirmDeleteMessage(message: Message) {
         val myUid = circlesManager.getUserId()
         if (message.senderId != myUid) return
@@ -659,6 +676,7 @@ class CircleChatActivity : AppCompatActivity() {
             .show()
     }
 
+    // Libera listeners y tareas periódicas al salir de la pantalla.
     override fun onDestroy() {
         super.onDestroy()
         eventStartHandler.removeCallbacks(eventStartTicker)

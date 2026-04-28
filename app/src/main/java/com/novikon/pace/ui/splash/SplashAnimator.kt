@@ -31,7 +31,6 @@ class SplashAnimator(
     private val progressLine: View,
     private val onAnimationComplete: () -> Unit
 ) {
-
     fun startAnimations() {
         initializeViews()
 
@@ -136,7 +135,6 @@ class SplashAnimator(
             start()
         }
     }
-
     private fun initializeViews() {
         // El logo y el texto arrancan invisibles —
         // cada uno animará por separado con su propio timing

@@ -2,7 +2,6 @@ package com.novikon.pace.data
 
 import android.content.Context
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.database.ChildEventListener
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
@@ -13,10 +12,10 @@ import com.novikon.pace.R
 import com.novikon.pace.models.BlockedUser
 import com.novikon.pace.models.Circle
 import com.novikon.pace.models.CircleMember
-import com.novikon.pace.models.Message
 import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlin.coroutines.resume
 
+// Informacion resumida del grupo: nombre, miembros, limites y metadatos.
 data class GroupInfo(
     val circleId: String,
     val name: String,
@@ -26,12 +25,14 @@ data class GroupInfo(
     val memberIds: List<String>
 )
 
+// Resultado de bloqueo: indica efectos del bloqueo sobre usuarios y pertenencia.
 data class BlockActionResult(
     val success: Boolean,
     val blockerLeftGroup: Boolean,
     val blockedUserRemoved: Boolean
 )
 
+// Motivos de fallo al unirse: clasifica por que un codigo de acceso no prospera.
 enum class JoinFailReason {
     INVALID_CODE,
     CODE_NOT_FOUND,
@@ -40,20 +41,20 @@ enum class JoinFailReason {
     GROUP_FULL_OR_TRANSACTION_FAILED
 }
 
+// Resultado de union: informa si el ingreso al circulo se completo o fallo.
 data class JoinResult(
     val success: Boolean,
     val reason: JoinFailReason? = null
 )
 
+// Gestor realtime de circulos: encapsula operaciones CRUD y membresia en Firebase.
 class CirclesRealtimeManager(
     private val context: Context
 ) {
 
     private val database = FirebaseDatabase.getInstance()
     private val auth = FirebaseAuth.getInstance()
-
     fun getUserId(): String? = auth.currentUser?.uid
-
     fun getUserName(): String = auth.currentUser?.displayName
         ?: auth.currentUser?.email?.substringBefore("@")
         ?: context.getString(R.string.default_user)
@@ -63,7 +64,6 @@ class CirclesRealtimeManager(
     private fun randomJoinCode(length: Int = 6): String {
         return (1..length).map { ('0'..'9').random() }.joinToString("")
     }
-
     private suspend fun generateUniqueJoinCode(): String {
         while (true) {
             val code = randomJoinCode()
@@ -73,7 +73,6 @@ class CirclesRealtimeManager(
                         override fun onDataChange(snapshot: DataSnapshot) {
                             cont.resume(snapshot.exists())
                         }
-
                         override fun onCancelled(error: DatabaseError) {
                             cont.resume(false)
                         }
@@ -82,7 +81,6 @@ class CirclesRealtimeManager(
             if (!exists) return code
         }
     }
-
     private suspend fun existsBlockBetween(userA: String, userB: String): Boolean {
         val aBlocksB = suspendCancellableCoroutine<Boolean> { cont ->
             database.getReference("users/$userA/blocked/$userB")
@@ -136,7 +134,6 @@ class CirclesRealtimeManager(
                 .addOnFailureListener { cont.resume(null) }
         }
     }
-
     suspend fun joinCircleByCode(codeRaw: String): JoinResult {
         val userId = getUserId() ?: return JoinResult(false, JoinFailReason.GROUP_NOT_FOUND)
         val code = codeRaw.trim()
@@ -148,7 +145,6 @@ class CirclesRealtimeManager(
                     override fun onDataChange(snapshot: DataSnapshot) {
                         cont.resume(snapshot.getValue(String::class.java))
                     }
-
                     override fun onCancelled(error: DatabaseError) {
                         cont.resume(null)
                     }
@@ -162,7 +158,6 @@ class CirclesRealtimeManager(
                     override fun onDataChange(snapshot: DataSnapshot) {
                         cont.resume(snapshot.children.mapNotNull { it.key })
                     }
-
                     override fun onCancelled(error: DatabaseError) {
                         cont.resume(emptyList())
                     }
@@ -188,7 +183,6 @@ class CirclesRealtimeManager(
 
         return JoinResult(true, null)
     }
-
     private suspend fun addMemberToCircleTransactional(circleId: String, targetUserId: String): Boolean {
         return suspendCancellableCoroutine { cont ->
             val membersRef = database.getReference("circles/$circleId/members")
@@ -215,7 +209,6 @@ class CirclesRealtimeManager(
                             currentData.value = mutable
                             return Transaction.success(currentData)
                         }
-
                         override fun onComplete(
                             error: DatabaseError?,
                             committed: Boolean,
@@ -233,14 +226,12 @@ class CirclesRealtimeManager(
                         }
                     })
                 }
-
                 override fun onCancelled(error: DatabaseError) {
                     cont.resume(false)
                 }
             })
         }
     }
-
     suspend fun leaveCircle(circleId: String): Boolean {
         val uid = getUserId() ?: return false
         val info = getGroupInfo(circleId) ?: return false
@@ -266,7 +257,6 @@ class CirclesRealtimeManager(
                 .addOnFailureListener { cont.resume(false) }
         }
     }
-
     suspend fun deleteCircle(circleId: String): Boolean {
         val currentUid = getUserId() ?: return false
         val info = getGroupInfo(circleId) ?: return false
@@ -314,14 +304,12 @@ class CirclesRealtimeManager(
                             )
                         )
                     }
-
                     override fun onCancelled(error: DatabaseError) {
                         cont.resume(null)
                     }
                 })
         }
     }
-
     suspend fun getUserCircles(): List<Circle> {
         val userId = getUserId() ?: return emptyList()
 
@@ -331,7 +319,6 @@ class CirclesRealtimeManager(
                     override fun onDataChange(snapshot: DataSnapshot) {
                         cont.resume(snapshot.children.mapNotNull { it.key })
                     }
-
                     override fun onCancelled(error: DatabaseError) {
                         cont.resume(emptyList())
                     }
@@ -350,7 +337,6 @@ class CirclesRealtimeManager(
             it.lastMessageTime.takeIf { t -> t > 0L } ?: it.createdAt
         }
     }
-
     private suspend fun getCircleById(circleId: String): Circle? {
         return suspendCancellableCoroutine { cont ->
             database.getReference("circles/$circleId")
@@ -386,14 +372,12 @@ class CirclesRealtimeManager(
                             )
                         )
                     }
-
                     override fun onCancelled(error: DatabaseError) {
                         cont.resume(null)
                     }
                 })
         }
     }
-
     suspend fun getMemberDisplayNames(userIds: List<String>): List<CircleMember> {
         val me = getUserId()
         val myName = getUserName()
@@ -413,7 +397,6 @@ class CirclesRealtimeManager(
                                 }
                             )
                         }
-
                         override fun onCancelled(error: DatabaseError) {
                             cont.resume(
                                 if (uid == me) myName else context.getString(R.string.default_user)
@@ -427,7 +410,6 @@ class CirclesRealtimeManager(
 
         return result
     }
-
     private suspend fun getDisplayName(uid: String): String {
         return suspendCancellableCoroutine { cont ->
             database.getReference("users/$uid/profile/displayName")
@@ -436,14 +418,12 @@ class CirclesRealtimeManager(
                         val name = snapshot.getValue(String::class.java)
                         cont.resume(name?.takeIf { it.isNotBlank() } ?: context.getString(R.string.default_user))
                     }
-
                     override fun onCancelled(error: DatabaseError) {
                         cont.resume(context.getString(R.string.default_user))
                     }
                 })
         }
     }
-
     suspend fun updateMaxParticipants(circleId: String, newMax: Int): Boolean {
         val currentUid = getUserId() ?: return false
         val info = getGroupInfo(circleId) ?: return false
@@ -458,7 +438,6 @@ class CirclesRealtimeManager(
                 .addOnFailureListener { cont.resume(false) }
         }
     }
-
     suspend fun removeMember(circleId: String, memberUid: String): Boolean {
         val currentUid = getUserId() ?: return false
         val info = getGroupInfo(circleId) ?: return false
@@ -488,7 +467,6 @@ class CirclesRealtimeManager(
                 .addOnFailureListener { cont.resume(false) }
         }
     }
-
     suspend fun unblockUser(targetUid: String): Boolean {
         val currentUid = getUserId() ?: return false
         return suspendCancellableCoroutine { cont ->
@@ -498,7 +476,6 @@ class CirclesRealtimeManager(
                 .addOnFailureListener { cont.resume(false) }
         }
     }
-
     suspend fun getBlockedUsers(): List<BlockedUser> {
         val currentUid = getUserId() ?: return emptyList()
 
@@ -508,7 +485,6 @@ class CirclesRealtimeManager(
                     override fun onDataChange(snapshot: DataSnapshot) {
                         cont.resume(snapshot.children.mapNotNull { it.key })
                     }
-
                     override fun onCancelled(error: DatabaseError) {
                         cont.resume(emptyList())
                     }
@@ -527,7 +503,6 @@ class CirclesRealtimeManager(
                         override fun onDataChange(snapshot: DataSnapshot) {
                             cont.resume(snapshot.getValue(String::class.java))
                         }
-
                         override fun onCancelled(error: DatabaseError) {
                             cont.resume(null)
                         }
@@ -545,7 +520,6 @@ class CirclesRealtimeManager(
 
         return result
     }
-
     suspend fun blockUserWithPolicy(circleId: String, targetUid: String): BlockActionResult {
         val blockerUid = getUserId() ?: return BlockActionResult(false, false, false)
         val info = getGroupInfo(circleId) ?: return BlockActionResult(false, false, false)
@@ -617,7 +591,6 @@ class CirclesRealtimeManager(
                 .addOnFailureListener { cont.resume(false) }
         }
     }
-
     suspend fun sendMessage(circleId: String, text: String): Boolean {
         val userId = getUserId() ?: return false
         val userName = getUserName()
@@ -644,36 +617,6 @@ class CirclesRealtimeManager(
                 .addOnFailureListener { cont.resume(false) }
         }
     }
-
-    fun observeMessages(
-        circleId: String,
-        onMessageAdded: (Message) -> Unit
-    ): ChildEventListener {
-        val listener = object : ChildEventListener {
-            override fun onChildAdded(snapshot: DataSnapshot, previousChildName: String?) {
-                val message = Message(
-                    id = snapshot.child("id").getValue(String::class.java) ?: snapshot.key ?: "",
-                    text = snapshot.child("text").getValue(String::class.java) ?: "",
-                    senderId = snapshot.child("senderId").getValue(String::class.java) ?: "",
-                    senderName = snapshot.child("senderName").getValue(String::class.java) ?: "",
-                    timestamp = snapshot.child("timestamp").getValue(Long::class.java) ?: 0L
-                )
-                onMessageAdded(message)
-            }
-
-            override fun onChildChanged(snapshot: DataSnapshot, previousChildName: String?) {}
-            override fun onChildRemoved(snapshot: DataSnapshot) {}
-            override fun onChildMoved(snapshot: DataSnapshot, previousChildName: String?) {}
-            override fun onCancelled(error: DatabaseError) {}
-        }
-
-        database.getReference("circles/$circleId/messages")
-            .orderByChild("timestamp")
-            .addChildEventListener(listener)
-
-        return listener
-    }
-
     suspend fun sendTemplateMessage(
         circleId: String,
         messageTemplateKey: String,
@@ -706,11 +649,5 @@ class CirclesRealtimeManager(
                 .addOnSuccessListener { cont.resume(true) }
                 .addOnFailureListener { cont.resume(false) }
         }
-    }
-
-    fun removeMessagesListener(circleId: String, listener: ChildEventListener) {
-        database.getReference("circles/$circleId/messages")
-            .orderByChild("timestamp")
-            .removeEventListener(listener)
     }
 }

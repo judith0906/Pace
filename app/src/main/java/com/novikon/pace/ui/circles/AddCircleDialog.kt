@@ -9,6 +9,7 @@ import com.google.android.material.tabs.TabLayout
 import com.novikon.pace.R
 import com.novikon.pace.databinding.DialogAddCircleBinding
 
+// Dialogo para circulos: permite crear un grupo nuevo o unirse con codigo.
 class AddCircleDialog(
     private val onJoinCircleByCode: (code: String) -> Unit,
     private val onCreateCircle: (name: String, maxParticipants: Int) -> Unit
@@ -16,7 +17,6 @@ class AddCircleDialog(
 
     private var _binding: DialogAddCircleBinding? = null
     private val binding get() = _binding!!
-
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -25,7 +25,6 @@ class AddCircleDialog(
         _binding = DialogAddCircleBinding.inflate(inflater, container, false)
         return binding.root
     }
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         showJoin()
 
@@ -35,7 +34,6 @@ class AddCircleDialog(
             override fun onTabSelected(tab: TabLayout.Tab?) {
                 if (tab?.position == 0) showJoin() else showCreate()
             }
-
             override fun onTabUnselected(tab: TabLayout.Tab?) {}
             override fun onTabReselected(tab: TabLayout.Tab?) {}
         })
@@ -68,17 +66,14 @@ class AddCircleDialog(
             dismiss()
         }
     }
-
     private fun showJoin() {
         binding.panelJoin.visibility = View.VISIBLE
         binding.panelCreate.visibility = View.GONE
     }
-
     private fun showCreate() {
         binding.panelJoin.visibility = View.GONE
         binding.panelCreate.visibility = View.VISIBLE
     }
-
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null

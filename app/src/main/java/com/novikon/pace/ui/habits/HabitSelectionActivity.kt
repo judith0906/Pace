@@ -25,6 +25,7 @@ import com.novikon.pace.models.TimeOfDay
 import com.novikon.pace.repositories.HabitsRepository
 import kotlinx.coroutines.launch
 
+// Pantalla de seleccion de habitos: configura que rutinas activara el usuario.
 class HabitSelectionActivity : AppCompatActivity() {
 
     private lateinit var habitsManager: HabitsManager
@@ -53,6 +54,7 @@ class HabitSelectionActivity : AppCompatActivity() {
     // conservan el timeOfDay original del repositorio.
     private val timeOfDayOverrides = mutableMapOf<String, TimeOfDay>()
 
+// onCreate: inicializa la pantalla y prepara vistas/eventos iniciales.
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -71,7 +73,6 @@ class HabitSelectionActivity : AppCompatActivity() {
             showCategory(HabitCategory.PHYSICAL)
         }
     }
-
     private fun initializeViews() {
         categoryChipGroup = findViewById(R.id.categoryChipGroup)
         habitsRecyclerView = findViewById(R.id.habitsRecyclerView)
@@ -105,7 +106,6 @@ class HabitSelectionActivity : AppCompatActivity() {
 
         customHabits.addAll(savedHabits.filter { it.isCustom })
     }
-
     private fun setupListeners() {
         categoryChipGroup.setOnCheckedStateChangeListener { _, checkedIds ->
             if (checkedIds.isNotEmpty()) {
@@ -133,7 +133,6 @@ class HabitSelectionActivity : AppCompatActivity() {
             saveSelectedHabits()
         }
     }
-
     private fun showCategory(category: HabitCategory) {
         currentCategory = category
         habitsRecyclerView.visibility = View.VISIBLE
@@ -158,7 +157,6 @@ class HabitSelectionActivity : AppCompatActivity() {
 
         updateSelectedCount()
     }
-
     private fun showCustomCategory() {
         habitsRecyclerView.visibility = View.GONE
         customHabitsLayout.visibility = View.VISIBLE
@@ -280,7 +278,6 @@ class HabitSelectionActivity : AppCompatActivity() {
             .setNegativeButton(getString(R.string.cancel), null)
             .show()
     }
-
     private fun updateSelectedCount() {
         selectedCountText.text = getString(R.string.selected_habits_count, selectedHabitIds.size)
     }
