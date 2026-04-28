@@ -1,35 +1,55 @@
 package com.novikon.pace.ui.main.menus
 
 import android.content.Intent
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.graphics.Typeface
+import android.net.Uri
+import android.os.Build
+import android.provider.MediaStore
 import android.text.SpannableString
 import android.text.style.ForegroundColorSpan
 import android.text.style.StyleSpan
 import android.view.MenuItem
+import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
+import androidx.activity.result.PickVisualMediaRequest
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
+import androidx.lifecycle.lifecycleScope
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.material.navigation.NavigationView
 import com.google.android.material.textfield.TextInputEditText
 import com.google.firebase.auth.EmailAuthProvider
 import com.google.firebase.auth.ktx.auth
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
+import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.database.ValueEventListener
 import com.google.firebase.ktx.Firebase
 import com.novikon.pace.R
 import com.novikon.pace.data.HabitsManager
+import com.novikon.pace.data.ProfilePhotoManager
 import com.novikon.pace.ui.login.LoginActivity
 import com.novikon.pace.ui.settings.AccountSettingsActivity
 import com.novikon.pace.utils.SessionManager
+import com.yalantis.ucrop.UCrop
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import java.io.File
+import java.net.URL
+import java.util.concurrent.Executors
 
 /**
  * Gestiona la barra lateral derecha (menú de usuario).
- * Responsable de configurar el header con datos del usuario,
- * estilar los ítems y manejar todas las acciones: cambio de foto,
- * cambio de contraseña, ajustes de cuenta y cierre de sesión.
+ * Se encarga de mostrar los datos del perfil y de manejar acciones
+ * como cambiar foto, cambiar contraseña, abrir ajustes y cerrar sesión.
  */
 class UserMenuManager(
     private val activity: AppCompatActivity,
@@ -38,8 +58,34 @@ class UserMenuManager(
     private val habitsManager: HabitsManager,
     private val sessionManager: SessionManager
 ) {
+    private val profilePhotoManager = ProfilePhotoManager(activity)
+    private val ioExecutor = Executors.newSingleThreadExecutor()
+
+    // Permite elegir una imagen del sistema para usarla como foto de perfil.
+    private val pickImageLauncher = activity.registerForActivityResult(
+        ActivityResultContracts.PickVisualMedia()
+    ) { uri ->
+        if (uri != null) {
+            startCrop(uri)
+        }
+    }
+
+    // Recibe el resultado del recorte y dispara la subida del avatar.
+    private val cropLauncher = activity.registerForActivityResult(
+        ActivityResultContracts.StartActivityForResult()
+    ) { result ->
+        if (result.resultCode != AppCompatActivity.RESULT_OK) return@registerForActivityResult
+        val resultData = result.data ?: return@registerForActivityResult
+        val outputUri = UCrop.getOutput(resultData) ?: return@registerForActivityResult
+
+        activity.lifecycleScope.launch {
+            uploadCroppedPhoto(outputUri)
+        }
+    }
+
     fun setup() {
         styleMenuItems()
+        setupUserPhoto()
 
         navigationView.setNavigationItemSelectedListener { menuItem ->
             handleMenuClick(menuItem)
@@ -49,31 +95,51 @@ class UserMenuManager(
     }
 
     // Muestra el email del usuario en el header del drawer.
-    // El email no cambia, así que una lectura única es suficiente.
     fun setupUserEmail() {
         val headerView = navigationView.getHeaderView(0)
         headerView.findViewById<TextView>(R.id.userEmailText).text =
             Firebase.auth.currentUser?.email ?: ""
     }
 
-    // Actualiza el nombre en el header. Llamado desde el listener de Firebase.
+    // Actualiza el nombre visible del usuario en el header.
     fun updateUserName(name: String) {
         val headerView = navigationView.getHeaderView(0)
         headerView.findViewById<TextView>(R.id.userNameText).text = name
     }
 
-    // Aplica negrita y color rojo al ítem de cerrar sesión
+    // Carga la foto de perfil desde Firebase y la pinta en el header.
+    private fun setupUserPhoto() {
+        val uid = Firebase.auth.currentUser?.uid ?: return
+        FirebaseDatabase.getInstance()
+            .getReference("users/$uid/profile/photoUrl")
+            .addListenerForSingleValueEvent(object : ValueEventListener {
+                override fun onDataChange(snapshot: DataSnapshot) {
+                    val url = snapshot.getValue(String::class.java)
+                    if (!url.isNullOrBlank()) {
+                        setProfileImageFromUrl(url)
+                    }
+                }
+
+                override fun onCancelled(error: DatabaseError) = Unit
+            })
+    }
+
+    // Resalta visualmente el item de cerrar sesión.
     private fun styleMenuItems() {
         navigationView.menu.findItem(R.id.menu_logout)?.let { item ->
             val spannable = SpannableString(item.title)
             spannable.setSpan(StyleSpan(Typeface.BOLD), 0, spannable.length, 0)
             spannable.setSpan(
                 ForegroundColorSpan(activity.getColor(R.color.error_red)),
-                0, spannable.length, 0
+                0,
+                spannable.length,
+                0
             )
             item.title = spannable
         }
     }
+
+    // Enruta cada pulsación del menú de usuario a su funcionalidad.
     private fun handleMenuClick(menuItem: MenuItem) {
         when (menuItem.itemId) {
             R.id.menu_change_photo -> changeProfilePhoto()
@@ -84,22 +150,99 @@ class UserMenuManager(
         }
     }
 
-    // Muestra un diálogo para elegir entre cámara y galería.
-    // La subida de foto está pendiente de implementar.
+    // Abre el selector de imágenes del sistema para iniciar el cambio de avatar.
     private fun changeProfilePhoto() {
-        AlertDialog.Builder(activity)
-            .setTitle(activity.getString(R.string.change_profile_photo_title))
-            .setItems(arrayOf(
-                activity.getString(R.string.take_photo),
-                activity.getString(R.string.choose_from_gallery)
-            )) { _, _ ->
-                Toast.makeText(activity, activity.getString(R.string.coming_soon), Toast.LENGTH_SHORT).show()
-            }
-            .show()
+        pickImageLauncher.launch(
+            PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)
+        )
     }
 
-    // Muestra un diálogo para cambiar la contraseña.
-    // Pide la contraseña actual para reautenticar antes de cambiarla.
+    // Abre la pantalla de recorte con máscara circular para que el usuario
+    // ajuste zoom/posición y vea cómo quedará el avatar redondo.
+    private fun startCrop(sourceUri: Uri) {
+        val destinationUri = Uri.fromFile(
+            File(activity.cacheDir, "avatar_crop_${System.currentTimeMillis()}.jpg")
+        )
+
+        val options = UCrop.Options().apply {
+            setCircleDimmedLayer(true)
+            setShowCropFrame(false)
+            setShowCropGrid(false)
+            setCompressionQuality(88)
+            setHideBottomControls(false)
+            setFreeStyleCropEnabled(false)
+        }
+
+        val cropIntent = UCrop.of(sourceUri, destinationUri)
+            .withAspectRatio(1f, 1f)
+            .withMaxResultSize(1080, 1080)
+            .withOptions(options)
+            .getIntent(activity)
+
+        cropLauncher.launch(cropIntent)
+    }
+
+    // Convierte la imagen recortada a Bitmap, la sube a Supabase,
+    // guarda la URL en Firebase y actualiza el header del menú.
+    private suspend fun uploadCroppedPhoto(croppedUri: Uri) {
+        val bitmap = withContext(Dispatchers.IO) { decodeBitmap(croppedUri) }
+        if (bitmap == null) {
+            Toast.makeText(activity, activity.getString(R.string.error), Toast.LENGTH_SHORT).show()
+            return
+        }
+
+        val photoUrl = profilePhotoManager.uploadProfilePhoto(bitmap)
+        if (photoUrl.isNullOrBlank()) {
+            Toast.makeText(activity, activity.getString(R.string.error), Toast.LENGTH_SHORT).show()
+            return
+        }
+
+        val saved = profilePhotoManager.saveProfilePhotoUrl(photoUrl)
+        if (!saved) {
+            Toast.makeText(activity, activity.getString(R.string.error), Toast.LENGTH_SHORT).show()
+            return
+        }
+
+        setProfileImageFromUrl(photoUrl)
+        Toast.makeText(activity, activity.getString(R.string.change_profile_photo_title), Toast.LENGTH_SHORT).show()
+    }
+
+    // Decodifica una URI de imagen del sistema a Bitmap.
+    private fun decodeBitmap(uri: Uri): Bitmap? {
+        return try {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+                val source = android.graphics.ImageDecoder.createSource(activity.contentResolver, uri)
+                android.graphics.ImageDecoder.decodeBitmap(source)
+            } else {
+                @Suppress("DEPRECATION")
+                MediaStore.Images.Media.getBitmap(activity.contentResolver, uri)
+            }
+        } catch (_: Exception) {
+            null
+        }
+    }
+
+    // Descarga la imagen de perfil desde su URL pública y la pinta en el header.
+    private fun setProfileImageFromUrl(url: String) {
+        val headerView = navigationView.getHeaderView(0)
+        val profileImage = headerView.findViewById<ImageView>(R.id.profileImage)
+
+        ioExecutor.execute {
+            runCatching {
+                URL(url).openStream().use { stream ->
+                    BitmapFactory.decodeStream(stream)
+                }
+            }.onSuccess { bitmap ->
+                if (bitmap != null) {
+                    activity.runOnUiThread {
+                        profileImage.setImageBitmap(bitmap)
+                    }
+                }
+            }
+        }
+    }
+
+    // Muestra un diálogo para cambiar la contraseña con reautenticación.
     private fun changePassword() {
         val dialogView = activity.layoutInflater.inflate(R.layout.dialog_change_password, null)
         val currentPasswordInput = dialogView.findViewById<TextInputEditText>(R.id.currentPasswordInput)
@@ -123,7 +266,6 @@ class UserMenuManager(
                 val email = user?.email
 
                 if (email != null) {
-                    // Reautenticar antes de cambiar la contraseña — Firebase lo requiere
                     val credential = EmailAuthProvider.getCredential(email, currentPassword)
                     user.reauthenticate(credential)
                         .addOnSuccessListener {
@@ -151,7 +293,6 @@ class UserMenuManager(
                             ).show()
                         }
                 } else {
-                    // Las cuentas de Google no tienen contraseña en Firebase
                     Toast.makeText(
                         activity,
                         activity.getString(R.string.google_account_no_password),
@@ -162,6 +303,8 @@ class UserMenuManager(
             .setNegativeButton(activity.getString(R.string.cancel), null)
             .show()
     }
+
+    // Pide confirmación antes de cerrar la sesión.
     private fun confirmLogout() {
         AlertDialog.Builder(activity)
             .setTitle(activity.getString(R.string.logout_title))
@@ -170,13 +313,13 @@ class UserMenuManager(
             .setNegativeButton(activity.getString(R.string.cancel), null)
             .show()
     }
+
+    // Cierra sesión local, Firebase y Google, y vuelve a Login limpio.
     private fun signOut() {
         habitsManager.clearLocalData()
         sessionManager.markUserLoggedOut()
         Firebase.auth.signOut()
 
-        // Cerrar también la sesión de Google para que aparezca
-        // el selector de cuentas en el próximo login
         val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
             .requestIdToken(activity.getString(R.string.default_web_client_id))
             .requestEmail()

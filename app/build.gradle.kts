@@ -25,6 +25,7 @@ android {
         buildConfigField("String", "SUPABASE_URL", "\"https://nveliyinwnrcagsykxtz.supabase.co\"")
         buildConfigField("String", "SUPABASE_ANON_KEY", "\"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im52ZWxpeWlud25yY2Fnc3lreHR6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzYxNjg2MDcsImV4cCI6MjA5MTc0NDYwN30.xbn52nb0MS2OpGWbPnxjgG3KTxwEPwIQWsHNGtlHjAo\"")
         buildConfigField("String", "SUPABASE_BUCKET", "\"chat-moments\"")
+        buildConfigField("String", "SUPABASE_PROFILE_BUCKET", "\"profile-photos\"")
 
     }
 
@@ -69,6 +70,9 @@ dependencies {
     implementation("androidx.drawerlayout:drawerlayout:1.2.0")
     // WorkManager para notificaciones programadas
     implementation("androidx.work:work-runtime-ktx:2.9.0")
+
+    // Recorte de foto de perfil
+    implementation("com.github.yalantis:ucrop:2.2.10")
 
     implementation("com.google.code.gson:gson:2.10.1")
     implementation("com.google.firebase:firebase-storage-ktx")
