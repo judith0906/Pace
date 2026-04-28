@@ -215,13 +215,11 @@
                         <!-- Botón "Ver todas" (solo visible si hay más de 5) -->
                         <com.google.android.material.button.MaterialButton
                             android:id="@+id/viewAllGroupsButton"
-                            style="@style/PaceChatSecondaryButton"
-
+                            style="@style/PaceChatPrimaryButton"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="@string/btn_cnx"
-
-                            android:layout_gravity="center_horizontal"
+                            android:layout_gravity="end"
                             android:visibility="gone"/>
 
                     </LinearLayout>

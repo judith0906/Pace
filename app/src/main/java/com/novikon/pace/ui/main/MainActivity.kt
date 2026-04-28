@@ -31,6 +31,13 @@ import com.novikon.pace.utils.SettingsManager
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
+import com.google.android.material.button.MaterialButton
+import com.novikon.pace.data.CirclesRealtimeManager
+import com.novikon.pace.models.Circle
+import com.novikon.pace.ui.circles.CirclesAdapter
+import com.novikon.pace.ui.circles.CircleChatActivity
 
 // Pantalla principal: orquesta navegacion, preview de habitos y estado de sesion.
 class MainActivity : AppCompatActivity() {
@@ -48,6 +55,12 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var navigationMenuManager: NavigationMenuManager
     private lateinit var userMenuManager: UserMenuManager
+
+    private lateinit var groupsRecyclerView: RecyclerView
+    private lateinit var viewAllGroupsButton: MaterialButton
+
+    private val circlesManager by lazy { CirclesRealtimeManager(this) }
+    private lateinit var circlesPreviewAdapter: CirclesAdapter
 
     // Controla si onCreate ya ejecutó la carga inicial de hábitos.
     // Evita que onResume vuelva a pintar la preview justo después de onCreate,
@@ -85,6 +98,7 @@ class MainActivity : AppCompatActivity() {
         database = FirebaseDatabase.getInstance()
 
         initializeViews()
+        setupCirclesPreview()
         setupMenuManagers()
         setupListeners()
 
@@ -121,6 +135,7 @@ class MainActivity : AppCompatActivity() {
 
                 // Carga y pinta los hábitos una única vez al arrancar
                 loadAndDisplayHabits()
+                loadAndDisplayCirclesPreview()
                 checkFirstTimeHabitSelection()
                 initialLoadDone = true
             }
@@ -148,6 +163,8 @@ class MainActivity : AppCompatActivity() {
         navigationViewUser = findViewById(R.id.navigationViewUser)
         welcomeText = findViewById(R.id.welcomeText)
         habitsPreviewContainer = findViewById(R.id.habitsPreviewContainer)
+        groupsRecyclerView = findViewById(R.id.groupsRecyclerView)
+        viewAllGroupsButton = findViewById(R.id.viewAllGroupsButton)
     }
 
     // Inicializa los dos menús laterales y conecta sus acciones de navegación.
@@ -301,6 +318,43 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    // ── CÍRCULOS ───────────────────────────────────────────────────────────────
+    // Prepara el RecyclerView de la preview de círculos.
+    // El click abre directamente el chat del grupo seleccionado.
+    private fun setupCirclesPreview() {
+        circlesPreviewAdapter = CirclesAdapter { circle ->
+            val intent = Intent(this, CircleChatActivity::class.java).apply {
+                putExtra(CircleChatActivity.EXTRA_CIRCLE_ID, circle.id)
+                putExtra(CircleChatActivity.EXTRA_CIRCLE_NAME, circle.name)
+            }
+            startActivity(intent)
+        }
+
+        groupsRecyclerView.layoutManager = LinearLayoutManager(this)
+        groupsRecyclerView.adapter = circlesPreviewAdapter
+        groupsRecyclerView.itemAnimator = null
+    }
+
+    // Carga los círculos del usuario y muestra una preview de hasta 5.
+    // Si hay más de 2, muestra el botón "Ver todas".
+    private fun loadAndDisplayCirclesPreview() {
+        lifecycleScope.launch {
+            val circles = circlesManager.getUserCircles()
+
+            withContext(Dispatchers.Main) {
+                val preview = circles.take(2)
+                circlesPreviewAdapter.submitList(preview)
+
+                viewAllGroupsButton.visibility =
+                    if (circles.size > 2) android.view.View.VISIBLE else android.view.View.GONE
+
+                viewAllGroupsButton.setOnClickListener {
+                    startActivity(Intent(this@MainActivity, CirclesActivity::class.java))
+                }
+            }
+        }
+    }
+
     // ── UTILIDADES ────────────────────────────────────────────────────────────
 
     private fun saveUserEmailToFirebase(userId: String) {
@@ -340,6 +394,7 @@ class MainActivity : AppCompatActivity() {
         super.onResume()
         if (initialLoadDone) {
             lifecycleScope.launch { loadAndDisplayHabits() }
+            loadAndDisplayCirclesPreview()
         }
     }
 }
