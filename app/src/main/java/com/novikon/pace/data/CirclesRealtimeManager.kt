@@ -424,6 +424,21 @@ class CirclesRealtimeManager(
                 })
         }
     }
+
+    // Renombra el círculo. Solo lo puede hacer el admin (creador del grupo).
+    suspend fun updateCircleName(circleId: String, newName: String): Boolean {
+        val currentUid = getUserId() ?: return false
+        val info = getGroupInfo(circleId) ?: return false
+        if (info.createdBy != currentUid) return false
+        if (newName.isBlank()) return false
+
+        return suspendCancellableCoroutine { cont ->
+            database.getReference("circles/$circleId/name")
+                .setValue(newName.trim())
+                .addOnSuccessListener { cont.resume(true) }
+                .addOnFailureListener { cont.resume(false) }
+        }
+    }
     suspend fun updateMaxParticipants(circleId: String, newMax: Int): Boolean {
         val currentUid = getUserId() ?: return false
         val info = getGroupInfo(circleId) ?: return false

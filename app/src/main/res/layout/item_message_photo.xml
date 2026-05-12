@@ -1,17 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!-- Burbuja de foto: la alineación (START/END) se controla dinámicamente desde PhotoMessageViewHolder -->
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
     android:paddingHorizontal="8dp"
-    android:paddingVertical="4dp">
+    android:paddingVertical="4dp"
+    android:gravity="start">
 
     <TextView
         android:id="@+id/tv_photo_sender"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textColor="@color/accent_secondary"
+        android:textColor="@color/sender_name_color"
         android:textStyle="bold"
         android:textSize="12sp"
         android:layout_marginBottom="4dp" />
@@ -22,7 +24,9 @@
         android:layout_height="280dp"
         android:adjustViewBounds="true"
         android:scaleType="centerCrop"
-        android:background="@color/background_card" />
+        android:background="@color/background_card"
+        android:clickable="true"
+        android:focusable="true" />
 
     <TextView
         android:id="@+id/tv_photo_time"

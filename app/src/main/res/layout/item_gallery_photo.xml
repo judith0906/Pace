@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Miniatura de foto para la galería del dialog de info del grupo (grid 3 columnas) -->
+<FrameLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="100dp"
+    android:padding="2dp">
+
+    <ImageView
+        android:id="@+id/iv_gallery_thumb"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:scaleType="centerCrop"
+        android:background="@color/background_card"
+        android:clickable="true"
+        android:focusable="true" />
+
+</FrameLayout>

@@ -53,6 +53,32 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="12dp" />
 
+        <!-- Campo para renombrar el grupo (solo admin) -->
+        <LinearLayout
+            android:id="@+id/layout_admin_rename"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:orientation="horizontal"
+            android:visibility="gone">
+
+            <EditText
+                android:id="@+id/et_new_name"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:hint="@string/group_rename_hint"
+                android:inputType="text"
+                android:maxLines="1"
+                android:imeOptions="actionDone" />
+
+            <Button
+                android:id="@+id/btn_save_name"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/save" />
+        </LinearLayout>
+
         <LinearLayout
             android:id="@+id/layout_admin_max"
             android:layout_width="match_parent"
@@ -97,5 +123,30 @@
             android:textColor="@color/white"
             android:visibility="gone"
             app:backgroundTint="@color/error_red" />
+
+        <!-- Galería de fotos del círculo al estilo WhatsApp -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:text="@string/group_gallery_title"
+            android:textStyle="bold"
+            android:textSize="14sp" />
+
+        <TextView
+            android:id="@+id/tv_gallery_empty"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:text="@string/group_gallery_empty"
+            android:textColor="@color/text_secondary"
+            android:visibility="gone" />
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rv_photo_gallery"
+            android:layout_width="match_parent"
+            android:layout_height="200dp"
+            android:layout_marginTop="8dp" />
+
     </LinearLayout>
 </ScrollView>

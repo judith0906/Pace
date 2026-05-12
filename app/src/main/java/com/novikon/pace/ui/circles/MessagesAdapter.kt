@@ -26,7 +26,9 @@ class MessagesAdapter(
     private val onJoinEvent: (Message) -> Unit,
     private val onDeclineEvent: (Message) -> Unit,
     private val onCaptureMoment: (Message) -> Unit,
-    private val onDeleteMessage: (Message) -> Unit
+    private val onDeleteMessage: (Message) -> Unit,
+    // Callback para abrir una foto en pantalla completa al clicarla
+    private val onPhotoClick: (String) -> Unit = {}
 ) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     companion object {
@@ -125,7 +127,8 @@ class MessagesAdapter(
             VIEW_TYPE_PHOTO -> PhotoMessageViewHolder(
                 inflater.inflate(R.layout.item_message_photo, parent, false),
                 ioExecutor,
-                mainHandler
+                mainHandler,
+                onPhotoClick
             )
             else -> SystemMessageViewHolder(
                 inflater.inflate(R.layout.item_message_system, parent, false)
@@ -278,23 +281,41 @@ class MessagesAdapter(
         }
     }
 
-// ViewHolder de foto: muestra capturas compartidas en el contexto del evento.
+    // ViewHolder de foto: muestra capturas compartidas en el contexto del evento.
     class PhotoMessageViewHolder(
         itemView: View,
         private val ioExecutor: java.util.concurrent.ExecutorService,
-        private val mainHandler: Handler
+        private val mainHandler: Handler,
+        // Callback para pantalla completa al pulsar la imagen
+        private val onPhotoClick: (String) -> Unit = {}
     ) : RecyclerView.ViewHolder(itemView) {
         private val tvSender: TextView = itemView.findViewById(R.id.tv_photo_sender)
         private val ivPhoto: ImageView = itemView.findViewById(R.id.iv_photo_message)
         private val tvTime: TextView = itemView.findViewById(R.id.tv_photo_time)
+        // Contenedor raíz del item para controlar la alineación
+        private val container: android.widget.LinearLayout = itemView as android.widget.LinearLayout
+
         fun bind(message: Message, currentUserId: String) {
-            tvSender.visibility = if (message.senderId == currentUserId) View.GONE else View.VISIBLE
+            val isOwnPhoto = message.senderId == currentUserId
+
+            // Nombre del emisor: solo visible si es de otro usuario
+            tvSender.visibility = if (isOwnPhoto) View.GONE else View.VISIBLE
             tvSender.text = message.senderName
             tvTime.text = formatTime(message.timestamp)
+
+            // Alinear el contenedor: mis fotos a la derecha, las ajenas a la izquierda
+            container.gravity = if (isOwnPhoto) {
+                android.view.Gravity.END
+            } else {
+                android.view.Gravity.START
+            }
 
             ivPhoto.setImageDrawable(null)
             val url = message.photoUrl
             if (url.isBlank()) return
+
+            // Abrir imagen en pantalla completa al pulsar
+            ivPhoto.setOnClickListener { onPhotoClick(url) }
 
             ioExecutor.execute {
                 runCatching {

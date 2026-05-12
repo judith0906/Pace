@@ -335,6 +335,10 @@
     <!-- ========================================================= -->
     <!-- CIRCULOS: GENERAL                                         -->
     <!-- ========================================================= -->
+    <!-- Rename group -->
+    <string name="group_rename_hint">New group name</string>
+    <string name="group_rename_success">Name updated</string>
+    <string name="group_rename_error">Error updating the name</string>
     <string name="no_messages_yet">No messages yet</string>
     <string name="dialog_title_group">New circle</string>
     <string name="tab_join">Join</string>
@@ -448,6 +452,16 @@
     <!-- ========================================================= -->
     <!-- CIRCULOS: CHAT                                            -->
     <!-- ========================================================= -->
+    <!-- Circle notifications -->
+    <string name="notif_new_event">%1$s created an event: %2$s</string>
+    <string name="notif_event_started">The event %1$s has started!</string>
+    <string name="notif_photo_sent">Sent a photo 📷</string>
+    <string name="notif_system_message">New message in the circle</string>
+
+    <!-- Group gallery -->
+    <string name="group_gallery_title">Circle photos</string>
+    <string name="group_gallery_empty">No photos shared yet</string>
+
     <string name="chat_predefined_subtitle">Select a category and tap a phrase to send it</string>
 
     <string name="msg_section_congratulations">Congratulations</string>

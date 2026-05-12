@@ -415,6 +415,29 @@ class CircleChatEventsManager(
         return listener
     }
 
+    // Devuelve todas las URLs de fotos enviadas en el chat de un círculo.
+    // Se usa para pintar la galería en el dialog de info del grupo.
+    suspend fun getCirclePhotoUrls(circleId: String): List<String> {
+        return suspendCancellableCoroutine { cont ->
+            database.getReference("circles/$circleId/messages")
+                .orderByChild("type")
+                .equalTo("PHOTO")
+                .addListenerForSingleValueEvent(object : ValueEventListener {
+                    override fun onDataChange(snapshot: DataSnapshot) {
+                        val urls = snapshot.children
+                            .mapNotNull { it.child("photoUrl").getValue(String::class.java) }
+                            .filter { it.isNotBlank() }
+                            // Las más recientes primero
+                            .reversed()
+                        cont.resume(urls)
+                    }
+                    override fun onCancelled(error: DatabaseError) {
+                        cont.resume(emptyList())
+                    }
+                })
+        }
+    }
+
     // Detiene la escucha del chat para evitar fugas cuando se cierra la pantalla.
     fun removeMessagesListener(circleId: String, listener: ChildEventListener) {
         database.getReference("circles/$circleId/messages")

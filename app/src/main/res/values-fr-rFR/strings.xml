@@ -332,6 +332,10 @@
     <!-- ========================================================= -->
     <!-- CÍRCULOS / CHAT                                           -->
     <!-- ========================================================= -->
+    <!-- Renommer le groupe -->
+    <string name="group_rename_hint">Nouveau nom du groupe</string>
+    <string name="group_rename_success">Nom mis à jour</string>
+    <string name="group_rename_error">Erreur lors de la mise à jour du nom</string>
     <string name="no_messages_yet">Aucun message pour l\'instant</string>
     <string name="dialog_title_group">Nouveau cercle</string>
     <string name="tab_join">Rejoindre</string>
@@ -451,6 +455,16 @@
     <!-- ========================================================= -->
     <!-- CIRCULOS: CHAT                                            -->
     <!-- ========================================================= -->
+    <!-- Notifications du cercle -->
+    <string name="notif_new_event">%1$s a créé un événement : %2$s</string>
+    <string name="notif_event_started">L\'événement %1$s a commencé !</string>
+    <string name="notif_photo_sent">A envoyé une photo 📷</string>
+    <string name="notif_system_message">Nouveau message dans le cercle</string>
+
+    <!-- Galerie du groupe -->
+    <string name="group_gallery_title">Photos du cercle</string>
+    <string name="group_gallery_empty">Aucune photo partagée pour l\'instant</string>
+
     <string name="chat_predefined_subtitle">Sélectionnez une catégorie et touchez une phrase pour l\'envoyer</string>
 
     <string name="msg_section_congratulations">Félicitations</string>

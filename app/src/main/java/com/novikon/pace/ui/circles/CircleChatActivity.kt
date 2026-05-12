@@ -162,7 +162,9 @@ class CircleChatActivity : AppCompatActivity() {
             onJoinEvent = { message -> respondToEvent(message, true) },
             onDeclineEvent = { message -> respondToEvent(message, false) },
             onCaptureMoment = { message -> onCaptureMomentClicked(message) },
-            onDeleteMessage = { message -> confirmDeleteMessage(message) }
+            onDeleteMessage = { message -> confirmDeleteMessage(message) },
+            // Abre la foto en pantalla completa al pulsar en el chat
+            onPhotoClick = { url -> showFullscreenImage(url) }
         )
 
         rvMessages.apply {
@@ -179,9 +181,19 @@ class CircleChatActivity : AppCompatActivity() {
 
     // Escucha mensajes en vivo y mantiene la lista sincronizada con Firebase.
     private fun observeMessages() {
+        val currentUserId = circlesManager.getUserId() ?: ""
         messagesListener = eventsManager.observeMessages(
             circleId = circleId,
             onMessageAdded = { message ->
+                // Muestra notificación tipo WhatsApp para mensajes de otros usuarios
+                CircleNotificationHelper.showIfNeeded(
+                    context = this,
+                    message = message,
+                    currentUserId = currentUserId,
+                    circleName = circleName,
+                    circleId = circleId,
+                    targetActivityClass = CircleChatActivity::class.java
+                )
                 messagesAdapter.addMessage(message)
                 rvMessages.scrollToPosition(messagesAdapter.itemCount - 1)
             },
@@ -521,6 +533,10 @@ class CircleChatActivity : AppCompatActivity() {
             val layoutAdminMax = view.findViewById<View>(R.id.layout_admin_max)
             val etNewMax = view.findViewById<EditText>(R.id.et_new_max)
             val btnSaveMax = view.findViewById<Button>(R.id.btn_save_max)
+            // Vistas para renombrar el grupo (solo admin)
+            val layoutAdminRename = view.findViewById<View>(R.id.layout_admin_rename)
+            val etNewName = view.findViewById<EditText>(R.id.et_new_name)
+            val btnSaveName = view.findViewById<Button>(R.id.btn_save_name)
             val rvMembers = view.findViewById<RecyclerView>(R.id.rv_members)
             val btnLeaveGroup = view.findViewById<MaterialButton>(R.id.btn_leave_group)
 
@@ -587,8 +603,29 @@ class CircleChatActivity : AppCompatActivity() {
 
             if (isAdmin) {
                 layoutAdminMax.visibility = View.VISIBLE
+                layoutAdminRename.visibility = View.VISIBLE
                 btnDeleteGroup.visibility = View.VISIBLE
                 etNewMax.setText(info.maxParticipants.toString())
+                // Rellena el campo con el nombre actual del grupo
+                etNewName.setText(info.name)
+
+                btnSaveName.setOnClickListener {
+                    val newName = etNewName.text.toString().trim()
+                    if (newName.isBlank()) return@setOnClickListener
+                    lifecycleScope.launch {
+                        val ok = circlesManager.updateCircleName(circleId, newName)
+                        if (ok) {
+                            // Actualiza el título de la toolbar al instante
+                            circleName = newName
+                            supportActionBar?.title = newName
+                        }
+                        Toast.makeText(
+                            this@CircleChatActivity,
+                            if (ok) getString(R.string.group_rename_success) else getString(R.string.group_rename_error),
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    }
+                }
 
                 btnSaveMax.setOnClickListener {
                     val newMax = etNewMax.text.toString().toIntOrNull()
@@ -644,6 +681,32 @@ class CircleChatActivity : AppCompatActivity() {
                 }
             }
 
+            // Carga las imágenes del círculo para la galería del dialog de info
+            val galleryRv = view.findViewById<RecyclerView>(R.id.rv_photo_gallery)
+            val galleryEmpty = view.findViewById<TextView>(R.id.tv_gallery_empty)
+            val galleryPhotos = mutableListOf<String>()
+
+            galleryRv.layoutManager = androidx.recyclerview.widget.GridLayoutManager(this@CircleChatActivity, 3)
+            val galleryAdapter = CirclePhotoGalleryAdapter(galleryPhotos) { url ->
+                // Al clicar una imagen la abrimos en pantalla completa
+                showFullscreenImage(url)
+            }
+            galleryRv.adapter = galleryAdapter
+
+            // Obtiene las URLs de fotos del chat de este círculo
+            lifecycleScope.launch {
+                val photos = eventsManager.getCirclePhotoUrls(circleId)
+                if (photos.isEmpty()) {
+                    galleryEmpty.visibility = View.VISIBLE
+                    galleryRv.visibility = View.GONE
+                } else {
+                    galleryEmpty.visibility = View.GONE
+                    galleryRv.visibility = View.VISIBLE
+                    galleryPhotos.addAll(photos)
+                    galleryAdapter.notifyDataSetChanged()
+                }
+            }
+
             if (isFinishing || isDestroyed) return@launch
 
             AlertDialog.Builder(this@CircleChatActivity)
@@ -674,6 +737,35 @@ class CircleChatActivity : AppCompatActivity() {
             }
             .setNegativeButton(getString(R.string.cancel), null)
             .show()
+    }
+
+    // Muestra una imagen en pantalla completa con fondo oscuro y cierre al clicar.
+    private fun showFullscreenImage(url: String) {
+        val dialogView = layoutInflater.inflate(R.layout.dialog_fullscreen_image, null)
+        val iv = dialogView.findViewById<ImageView>(R.id.iv_fullscreen)
+
+        val dialog = AlertDialog.Builder(this, android.R.style.Theme_Black_NoTitleBar_Fullscreen)
+            .setView(dialogView)
+            .create()
+
+        // Cerrar al clicar en cualquier parte de la imagen
+        dialogView.setOnClickListener { dialog.dismiss() }
+        iv.setOnClickListener { dialog.dismiss() }
+
+        dialog.show()
+
+        // Carga la imagen en background igual que en el adapter
+        val executor = java.util.concurrent.Executors.newSingleThreadExecutor()
+        val handler = android.os.Handler(android.os.Looper.getMainLooper())
+        executor.execute {
+            runCatching {
+                java.net.URL(url).openStream().use { stream ->
+                    android.graphics.BitmapFactory.decodeStream(stream)
+                }
+            }.onSuccess { bitmap ->
+                if (bitmap != null) handler.post { iv.setImageBitmap(bitmap) }
+            }
+        }
     }
 
     // Libera listeners y tareas periódicas al salir de la pantalla.

@@ -20,7 +20,7 @@
             android:id="@+id/tv_sender_name"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textColor="@color/accent_secondary"
+            android:textColor="@color/sender_name_color"
             android:textSize="12sp"
             android:textStyle="bold"
             android:layout_marginBottom="2dp"/>
