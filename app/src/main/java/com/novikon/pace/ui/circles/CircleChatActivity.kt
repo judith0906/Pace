@@ -40,6 +40,7 @@ import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Locale
+import com.google.android.material.slider.Slider
 
 // Pantalla de chat de circulo: gestiona mensajes, eventos y acciones del grupo.
 class CircleChatActivity : AppCompatActivity() {
@@ -80,6 +81,10 @@ class CircleChatActivity : AppCompatActivity() {
     }
 
     private var pendingCaptureMessage: Message? = null
+
+    // Marca si el usuario está actualmente dentro de esta pantalla de chat.
+    // Se usa para suprimir notificaciones mientras la actividad está en primer plano.
+    private var isInForeground = false
 
     private val cameraPermissionLauncher = registerForActivityResult(
         ActivityResultContracts.RequestPermission()
@@ -185,15 +190,17 @@ class CircleChatActivity : AppCompatActivity() {
         messagesListener = eventsManager.observeMessages(
             circleId = circleId,
             onMessageAdded = { message ->
-                // Muestra notificación tipo WhatsApp para mensajes de otros usuarios
-                CircleNotificationHelper.showIfNeeded(
-                    context = this,
-                    message = message,
-                    currentUserId = currentUserId,
-                    circleName = circleName,
-                    circleId = circleId,
-                    targetActivityClass = CircleChatActivity::class.java
-                )
+                // Muestra notificación solo si el usuario está fuera del chat
+                if (!isInForeground) {
+                    CircleNotificationHelper.showIfNeeded(
+                        context = this,
+                        message = message,
+                        currentUserId = currentUserId,
+                        circleName = circleName,
+                        circleId = circleId,
+                        targetActivityClass = CircleChatActivity::class.java
+                    )
+                }
                 messagesAdapter.addMessage(message)
                 rvMessages.scrollToPosition(messagesAdapter.itemCount - 1)
             },
@@ -526,21 +533,19 @@ class CircleChatActivity : AppCompatActivity() {
             val isAdmin = myUid == info.createdBy
 
             val view = layoutInflater.inflate(R.layout.dialog_group_info, null)
-            val tvGroupName = view.findViewById<TextView>(R.id.tv_group_name)
+            val etGroupName = view.findViewById<EditText>(R.id.tv_group_name)
+            val btnEditName = view.findViewById<android.widget.ImageButton>(R.id.btn_edit_name)
             val btnDeleteGroup = view.findViewById<MaterialButton>(R.id.btn_delete_group)
             val tvJoinCode = view.findViewById<TextView>(R.id.tv_join_code)
             val tvMembersSummary = view.findViewById<TextView>(R.id.tv_members_summary)
             val layoutAdminMax = view.findViewById<View>(R.id.layout_admin_max)
-            val etNewMax = view.findViewById<EditText>(R.id.et_new_max)
-            val btnSaveMax = view.findViewById<Button>(R.id.btn_save_max)
-            // Vistas para renombrar el grupo (solo admin)
-            val layoutAdminRename = view.findViewById<View>(R.id.layout_admin_rename)
-            val etNewName = view.findViewById<EditText>(R.id.et_new_name)
-            val btnSaveName = view.findViewById<Button>(R.id.btn_save_name)
+            val tvMaxValue = view.findViewById<TextView>(R.id.tv_max_value)
+            val sliderMaxMembers = view.findViewById<com.google.android.material.slider.Slider>(R.id.slider_max_members)
+            val btnSaveMax = view.findViewById<MaterialButton>(R.id.btn_save_max)
             val rvMembers = view.findViewById<RecyclerView>(R.id.rv_members)
             val btnLeaveGroup = view.findViewById<MaterialButton>(R.id.btn_leave_group)
 
-            tvGroupName.text = info.name
+            etGroupName.setText(info.name)
             tvJoinCode.text = if (isAdmin) {
                 if (info.joinCode.isBlank()) "-" else info.joinCode
             } else {
@@ -602,35 +607,21 @@ class CircleChatActivity : AppCompatActivity() {
             )
 
             if (isAdmin) {
-                layoutAdminMax.visibility = View.VISIBLE
-                layoutAdminRename.visibility = View.VISIBLE
+                btnEditName.visibility = View.VISIBLE
                 btnDeleteGroup.visibility = View.VISIBLE
-                etNewMax.setText(info.maxParticipants.toString())
-                // Rellena el campo con el nombre actual del grupo
-                etNewName.setText(info.name)
+                layoutAdminMax.visibility = View.VISIBLE
 
-                btnSaveName.setOnClickListener {
-                    val newName = etNewName.text.toString().trim()
-                    if (newName.isBlank()) return@setOnClickListener
-                    lifecycleScope.launch {
-                        val ok = circlesManager.updateCircleName(circleId, newName)
-                        if (ok) {
-                            // Actualiza el título de la toolbar al instante
-                            circleName = newName
-                            supportActionBar?.title = newName
-                        }
-                        Toast.makeText(
-                            this@CircleChatActivity,
-                            if (ok) getString(R.string.group_rename_success) else getString(R.string.group_rename_error),
-                            Toast.LENGTH_SHORT
-                        ).show()
-                    }
+                // Slider de máximo de miembros: inicializar con el valor actual
+                sliderMaxMembers.value = info.maxParticipants.toFloat().coerceIn(2f, 20f)
+                tvMaxValue.text = info.maxParticipants.toString()
+
+                // Actualizar el texto del valor en tiempo real al deslizar
+                sliderMaxMembers.addOnChangeListener { _, value, _ ->
+                    tvMaxValue.text = value.toInt().toString()
                 }
 
                 btnSaveMax.setOnClickListener {
-                    val newMax = etNewMax.text.toString().toIntOrNull()
-                    if (newMax == null || newMax <= 0) return@setOnClickListener
-
+                    val newMax = sliderMaxMembers.value.toInt()
                     lifecycleScope.launch {
                         val ok = circlesManager.updateMaxParticipants(circleId, newMax)
                         Toast.makeText(
@@ -638,6 +629,44 @@ class CircleChatActivity : AppCompatActivity() {
                             if (ok) getString(R.string.group_max_updated) else getString(R.string.group_max_update_error),
                             Toast.LENGTH_SHORT
                         ).show()
+                    }
+                }
+
+                // Botón lápiz: alternar entre modo edición y modo guardado
+                var editing = false
+                btnEditName.setOnClickListener {
+                    editing = !editing
+                    etGroupName.isEnabled = editing
+                    if (editing) {
+                        // Activar edición: poner foco y mostrar teclado
+                        etGroupName.requestFocus()
+                        etGroupName.setSelection(etGroupName.text?.length ?: 0)
+                        val imm = getSystemService(android.content.Context.INPUT_METHOD_SERVICE)
+                                as android.view.inputmethod.InputMethodManager
+                        imm.showSoftInput(etGroupName, android.view.inputmethod.InputMethodManager.SHOW_IMPLICIT)
+                        btnEditName.setImageResource(R.drawable.ic_send) // icono de confirmar
+                    } else {
+                        // Confirmar y guardar el nuevo nombre
+                        val newName = etGroupName.text.toString().trim()
+                        if (newName.isNotBlank()) {
+                            lifecycleScope.launch {
+                                val ok = circlesManager.updateCircleName(circleId, newName)
+                                if (ok) {
+                                    // Actualizar toolbar de la actividad al instante
+                                    circleName = newName
+                                    supportActionBar?.title = newName
+                                }
+                                Toast.makeText(
+                                    this@CircleChatActivity,
+                                    if (ok) getString(R.string.group_rename_success) else getString(R.string.group_rename_error),
+                                    Toast.LENGTH_SHORT
+                                ).show()
+                            }
+                        }
+                        val imm = getSystemService(android.content.Context.INPUT_METHOD_SERVICE)
+                                as android.view.inputmethod.InputMethodManager
+                        imm.hideSoftInputFromWindow(etGroupName.windowToken, 0)
+                        btnEditName.setImageResource(R.drawable.ic_edit) // volver al icono lápiz
                     }
                 }
 
@@ -688,12 +717,10 @@ class CircleChatActivity : AppCompatActivity() {
 
             galleryRv.layoutManager = androidx.recyclerview.widget.GridLayoutManager(this@CircleChatActivity, 3)
             val galleryAdapter = CirclePhotoGalleryAdapter(galleryPhotos) { url ->
-                // Al clicar una imagen la abrimos en pantalla completa
                 showFullscreenImage(url)
             }
             galleryRv.adapter = galleryAdapter
 
-            // Obtiene las URLs de fotos del chat de este círculo
             lifecycleScope.launch {
                 val photos = eventsManager.getCirclePhotoUrls(circleId)
                 if (photos.isEmpty()) {
@@ -739,22 +766,40 @@ class CircleChatActivity : AppCompatActivity() {
             .show()
     }
 
-    // Muestra una imagen en pantalla completa con fondo oscuro y cierre al clicar.
+    // Muestra una imagen en pantalla completa real, ocupando t*do el display.
+    // Carga la imagen en alta calidad sin reescalar.
     private fun showFullscreenImage(url: String) {
         val dialogView = layoutInflater.inflate(R.layout.dialog_fullscreen_image, null)
         val iv = dialogView.findViewById<ImageView>(R.id.iv_fullscreen)
+        val btnClose = dialogView.findViewById<android.widget.ImageButton>(R.id.btn_close_fullscreen)
 
-        val dialog = AlertDialog.Builder(this, android.R.style.Theme_Black_NoTitleBar_Fullscreen)
-            .setView(dialogView)
-            .create()
+        val dialog = android.app.Dialog(this, android.R.style.Theme_Black_NoTitleBar_Fullscreen)
+        dialog.setContentView(dialogView)
 
-        // Cerrar al clicar en cualquier parte de la imagen
+        // Forzar que la ventana ocupe exactamente el 100% de la pantalla
+        dialog.window?.apply {
+            setLayout(
+                android.view.ViewGroup.LayoutParams.MATCH_PARENT,
+                android.view.ViewGroup.LayoutParams.MATCH_PARENT
+            )
+            // Sin padding ni márgenes del sistema
+            setBackgroundDrawable(android.graphics.drawable.ColorDrawable(android.graphics.Color.BLACK))
+            // Ocultar barra de navegación y status bar para inmersión total
+            decorView.systemUiVisibility = (
+                android.view.View.SYSTEM_UI_FLAG_FULLSCREEN
+                or android.view.View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
+                or android.view.View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
+            )
+        }
+
+        // Cerrar al pulsar fondo o botón X
         dialogView.setOnClickListener { dialog.dismiss() }
-        iv.setOnClickListener { dialog.dismiss() }
+        btnClose.setOnClickListener { dialog.dismiss() }
+        // La imagen en sí no cierra al tocarla (puede que el usuario quiera hacer zoom)
 
         dialog.show()
 
-        // Carga la imagen en background igual que en el adapter
+        // Carga la imagen original sin reducir calidad
         val executor = java.util.concurrent.Executors.newSingleThreadExecutor()
         val handler = android.os.Handler(android.os.Looper.getMainLooper())
         executor.execute {
@@ -766,6 +811,19 @@ class CircleChatActivity : AppCompatActivity() {
                 if (bitmap != null) handler.post { iv.setImageBitmap(bitmap) }
             }
         }
+    }
+    // Marca la pantalla como activa: no mostrar notificaciones mientras se ve el chat.
+    // También cancela cualquier notificación pendiente de este círculo.
+    override fun onResume() {
+        super.onResume()
+        isInForeground = true
+        CircleNotificationHelper.cancelNotification(this, circleId)
+    }
+
+    // Al salir de la pantalla se vuelven a permitir las notificaciones.
+    override fun onPause() {
+        super.onPause()
+        isInForeground = false
     }
 
     // Libera listeners y tareas periódicas al salir de la pantalla.

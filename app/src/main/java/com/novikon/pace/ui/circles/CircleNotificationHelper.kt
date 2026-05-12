@@ -11,14 +11,15 @@ import com.novikon.pace.R
 import com.novikon.pace.models.Message
 
 // Helper para mostrar notificaciones tipo WhatsApp del chat del círculo.
-// Se lanza cada vez que llega un mensaje nuevo de otro usuario u evento.
+// Solo lanza notificación si el mensaje no es propio y la app está en segundo plano.
 object CircleNotificationHelper {
 
     // Canal dedicado a mensajes del círculo — separado del canal de recordatorios.
     private const val CHANNEL_ID = "pace_circle_chat"
     private const val CHANNEL_NAME = "Mensajes del círculo"
 
-    // Muestra una notificación si el mensaje no es propio y la app está en segundo plano.
+    // Muestra una notificación si el mensaje no es propio.
+    // La actividad ya comprueba el foreground antes de llamar a este método.
     fun showIfNeeded(
         context: Context,
         message: Message,
@@ -27,23 +28,27 @@ object CircleNotificationHelper {
         circleId: String,
         targetActivityClass: Class<*>
     ) {
-        // No notificar mensajes propios
+        // No notificar nunca mensajes propios
         if (message.senderId == currentUserId) return
 
         val title: String
         val body: String
 
-        // Construye título y cuerpo según el tipo de mensaje
+        // Título = nombre del emisor o del círculo según el tipo de mensaje.
+        // El nombre del creador/emisor aparece siempre que esté disponible.
         when (message.type) {
             "EVENT" -> {
+                // Quién ha creado el evento y sobre qué hábito
                 title = circleName
                 body = context.getString(R.string.notif_new_event, message.senderName, message.eventHabitName)
             }
             "EVENT_START" -> {
+                // Inicio automático de evento — no tiene emisor humano
                 title = circleName
                 body = context.getString(R.string.notif_event_started, message.eventHabitName)
             }
             "PHOTO" -> {
+                // Nombre del que envía la foto como título (igual que WhatsApp)
                 title = message.senderName.ifBlank { circleName }
                 body = context.getString(R.string.notif_photo_sent)
             }
@@ -52,7 +57,7 @@ object CircleNotificationHelper {
                 body = message.text.ifBlank { context.getString(R.string.notif_system_message) }
             }
             else -> {
-                // Mensaje normal de texto o template (join/decline de evento, etc.)
+                // Mensaje de texto normal: título = nombre del emisor
                 title = message.senderName.ifBlank { circleName }
                 body = message.text.ifBlank { "..." }
             }
@@ -62,6 +67,7 @@ object CircleNotificationHelper {
     }
 
     // Construye y lanza la notificación con el canal correcto.
+    // Usa circleId como tag → una sola notificación por círculo, se reemplaza si llega otra.
     private fun showNotification(
         context: Context,
         title: String,
@@ -94,14 +100,20 @@ object CircleNotificationHelper {
             .setPriority(NotificationCompat.PRIORITY_HIGH)
             .setAutoCancel(true)
             .setContentIntent(pendingIntent)
-            // Vibración y sonido por defecto, igual que WhatsApp
             .setDefaults(NotificationCompat.DEFAULT_ALL)
             .build()
 
         val manager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-        // Usamos el circleId como tag y un ID fijo por canal, así cada círculo
-        // tiene su propia notificación (se agrupa por círculo, no por mensaje)
+        // Tag = circleId: si ya existe una notificación de este círculo se reemplaza,
+        // no se acumulan. Al entrar al chat se cancela con cancelNotification().
         manager.notify(circleId, 2001, notification)
+    }
+
+    // Cancela la notificación del círculo al entrar en su chat.
+    // Llamar desde onResume de CircleChatActivity.
+    fun cancelNotification(context: Context, circleId: String) {
+        val manager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+        manager.cancel(circleId, 2001)
     }
 
     // Crea el canal de notificaciones si no existe (requerido desde Android 8).
