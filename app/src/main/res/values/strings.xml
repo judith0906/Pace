@@ -495,6 +495,120 @@
     <string name="msg_achievement_2">Otro logro desbloqueado.</string>
     <string name="msg_achievement_3">Hoy sumaste una victoria más.</string>
 
+    <!-- Mensajes predefinidos: felicitaciones (4-20) -->
+    <string name="msg_congrats_4">¡Estás en racha, no pares!</string>
+    <string name="msg_congrats_5">¡Qué orgullo verte crecer así!</string>
+    <string name="msg_congrats_6">¡Lo estás clavando!</string>
+    <string name="msg_congrats_7">¡Eso es dedicación de verdad!</string>
+    <string name="msg_congrats_8">¡Mira hasta dónde has llegado!</string>
+    <string name="msg_congrats_9">¡Otro día, otra victoria!</string>
+    <string name="msg_congrats_10">¡Qué pasada lo que estás consiguiendo!</string>
+    <string name="msg_congrats_11">¡Sigue así, vas genial!</string>
+    <string name="msg_congrats_12">¡Enhorabuena, te lo mereces!</string>
+    <string name="msg_congrats_13">¡Eres un crack!</string>
+    <string name="msg_congrats_14">¡Aplausos para ti!</string>
+    <string name="msg_congrats_15">¡Hoy has vuelto a demostrar lo que vales!</string>
+    <string name="msg_congrats_16">¡Pequeños pasos, grandes logros!</string>
+    <string name="msg_congrats_17">¡Qué constancia tan admirable!</string>
+    <string name="msg_congrats_18">¡No hay quien te pare!</string>
+    <string name="msg_congrats_19">¡Sigue sumando, campeón!</string>
+    <string name="msg_congrats_20">¡Hoy has sido la estrella del grupo!</string>
+
+    <!-- Mensajes predefinidos: asombro (4-20) -->
+    <string name="msg_amazement_4">¡No me lo puedo creer, increíble!</string>
+    <string name="msg_amazement_5">¡Eso sí que es superarse!</string>
+    <string name="msg_amazement_6">¡Me has dejado con la boca abierta!</string>
+    <string name="msg_amazement_7">¡Vaya nivel, chapó!</string>
+    <string name="msg_amazement_8">¡Esto es alucinante!</string>
+    <string name="msg_amazement_9">¡Cada día me sorprendes más!</string>
+    <string name="msg_amazement_10">¡Brutal, de verdad!</string>
+    <string name="msg_amazement_11">¡Tremendo lo que acabas de hacer!</string>
+    <string name="msg_amazement_12">¡Esto no lo esperaba, wow!</string>
+    <string name="msg_amazement_13">¡Eres una máquina!</string>
+    <string name="msg_amazement_14">¡Impresionante tu progreso!</string>
+    <string name="msg_amazement_15">¡No te conocía este nivel!</string>
+    <string name="msg_amazement_16">¡Qué subidón ver esto!</string>
+    <string name="msg_amazement_17">¡Eso tiene mucho mérito!</string>
+    <string name="msg_amazement_18">¡Flipante, de 10!</string>
+    <string name="msg_amazement_19">¡Me has puesto los pelos de punta!</string>
+    <string name="msg_amazement_20">¡Eres un fenómeno!</string>
+
+    <!-- Mensajes predefinidos: admiración (4-20) -->
+    <string name="msg_admiration_4">Tu esfuerzo diario es una inspiración.</string>
+    <string name="msg_admiration_5">Gracias por demostrarnos que se puede.</string>
+    <string name="msg_admiration_6">Eres el ejemplo que todos necesitamos.</string>
+    <string name="msg_admiration_7">Me motivas cada vez que te veo así.</string>
+    <string name="msg_admiration_8">Tu constancia habla por sí sola.</string>
+    <string name="msg_admiration_9">Qué bonito es verte tan comprometido.</string>
+    <string name="msg_admiration_10">Eres de los que convierten las palabras en hechos.</string>
+    <string name="msg_admiration_11">Tu actitud lo dice todo.</string>
+    <string name="msg_admiration_12">Admiro cómo te superas día a día.</string>
+    <string name="msg_admiration_13">Eres un referente para el grupo.</string>
+    <string name="msg_admiration_14">Tu dedicación inspira a todos.</string>
+    <string name="msg_admiration_15">Ojalá todos tuviéramos tu empuje.</string>
+    <string name="msg_admiration_16">Lo que haces requiere mucho valor.</string>
+    <string name="msg_admiration_17">Eres de esas personas que elevan al grupo entero.</string>
+    <string name="msg_admiration_18">Me alegra compartir este círculo contigo.</string>
+    <string name="msg_admiration_19">Qué privilegio verte así de comprometido.</string>
+    <string name="msg_admiration_20">Tu ejemplo nos empuja a todos a más.</string>
+
+    <!-- Mensajes predefinidos: motivación (4-20) -->
+    <string name="msg_motivation_4">Cada día que avanzas te acerca más.</string>
+    <string name="msg_motivation_5">Tú puedes con esto y más.</string>
+    <string name="msg_motivation_6">El esfuerzo siempre tiene recompensa.</string>
+    <string name="msg_motivation_7">No te rindas, el resultado está cerca.</string>
+    <string name="msg_motivation_8">Los días difíciles son los que más cuentan.</string>
+    <string name="msg_motivation_9">Hoy es un buen día para seguir.</string>
+    <string name="msg_motivation_10">Sigue adelante, el grupo te apoya.</string>
+    <string name="msg_motivation_11">Un paso más y llegarás.</string>
+    <string name="msg_motivation_12">La constancia siempre gana.</string>
+    <string name="msg_motivation_13">¡Ánimo, hoy también puedes!</string>
+    <string name="msg_motivation_14">Recuerda por qué empezaste.</string>
+    <string name="msg_motivation_15">Estamos contigo, no estás solo.</string>
+    <string name="msg_motivation_16">Cada pequeño esfuerzo suma.</string>
+    <string name="msg_motivation_17">Hoy puede ser el día del cambio.</string>
+    <string name="msg_motivation_18">No te compares, solo avanza.</string>
+    <string name="msg_motivation_19">El camino más largo empieza con un paso.</string>
+    <string name="msg_motivation_20">¡Tú lo tienes, a por ello!</string>
+
+    <!-- Mensajes predefinidos: alegría (4-20) -->
+    <string name="msg_happiness_4">¡Qué buenas noticias dan ganas de saltar!</string>
+    <string name="msg_happiness_5">Me pone muy contento verte así.</string>
+    <string name="msg_happiness_6">¡Esto hay que celebrarlo!</string>
+    <string name="msg_happiness_7">Qué bonito momento para el grupo.</string>
+    <string name="msg_happiness_8">Me llena de energía verte tan bien.</string>
+    <string name="msg_happiness_9">¡Que siga el buen rollo!</string>
+    <string name="msg_happiness_10">¡Hoy es un gran día!</string>
+    <string name="msg_happiness_11">¡Cuánta energía positiva!</string>
+    <string name="msg_happiness_12">Me contagias las ganas con solo verte.</string>
+    <string name="msg_happiness_13">Esto es lo que hace especial a este grupo.</string>
+    <string name="msg_happiness_14">¡El grupo está que arde hoy!</string>
+    <string name="msg_happiness_15">Ver esto me saca una sonrisa enorme.</string>
+    <string name="msg_happiness_16">¡Qué alegría tan grande!</string>
+    <string name="msg_happiness_17">Momentos como este son los que importan.</string>
+    <string name="msg_happiness_18">¡Todo el grupo celebra contigo!</string>
+    <string name="msg_happiness_19">Eres luz para el grupo.</string>
+    <string name="msg_happiness_20">¡Qué día tan bonito nos estás dando!</string>
+
+    <!-- Mensajes predefinidos: logro (4-20) -->
+    <string name="msg_achievement_4">Meta conseguida, a por la siguiente.</string>
+    <string name="msg_achievement_5">Lo que has logrado hoy no es poca cosa.</string>
+    <string name="msg_achievement_6">¡Récord personal desbloqueado!</string>
+    <string name="msg_achievement_7">Hoy sumaste un punto más al marcador.</string>
+    <string name="msg_achievement_8">Un logro que ya nadie te puede quitar.</string>
+    <string name="msg_achievement_9">¡Misión cumplida!</string>
+    <string name="msg_achievement_10">Cada logro construye el siguiente.</string>
+    <string name="msg_achievement_11">¡Conseguido! El esfuerzo valió la pena.</string>
+    <string name="msg_achievement_12">Hoy demostraste que eres capaz.</string>
+    <string name="msg_achievement_13">Otro peldaño más en la escalera.</string>
+    <string name="msg_achievement_14">¡Lo que se propone, lo consigue!</string>
+    <string name="msg_achievement_15">Cada logro pequeño es parte del grande.</string>
+    <string name="msg_achievement_16">¡Objetivo superado con nota!</string>
+    <string name="msg_achievement_17">Hoy ganaste la batalla más importante: la de contigo.</string>
+    <string name="msg_achievement_18">¡Éxito total, enhorabuena!</string>
+    <string name="msg_achievement_19">De los que empiezan y también terminan.</string>
+    <string name="msg_achievement_20">¡Qué logro tan merecido!</string>
+
     <string name="delete_message">Eliminar mensaje</string>
     <string name="delete_message_confirm_title">Eliminar mensaje</string>
     <string name="delete_message_confirm_body">¿Seguro que quieres eliminar este mensaje?</string>

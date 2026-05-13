@@ -90,18 +90,31 @@ class CircleChatActivity : AppCompatActivity() {
         ActivityResultContracts.RequestPermission()
     ) { granted ->
         if (granted) {
-            cameraLauncher.launch(null)
+            launchCamera()
         } else {
             Toast.makeText(this, getString(R.string.camera_permission_needed), Toast.LENGTH_SHORT).show()
         }
     }
 
+    // URI temporal donde la cámara escribe la foto de alta resolución
+    private var cameraPhotoUri: android.net.Uri? = null
+
     private val cameraLauncher = registerForActivityResult(
-        ActivityResultContracts.TakePicturePreview()
-    ) { bitmap ->
-        if (bitmap == null) return@registerForActivityResult
+        ActivityResultContracts.TakePicture()
+    ) { saved ->
+        if (!saved) return@registerForActivityResult
+        val uri = cameraPhotoUri ?: return@registerForActivityResult
+        // Decodificar el archivo completo para obtener máxima calidad
+        val bitmap = android.graphics.BitmapFactory.decodeStream(
+            contentResolver.openInputStream(uri)
+        ) ?: return@registerForActivityResult
         showCapturePreviewDialog(bitmap)
     }
+
+    // Lanzador para pedir permiso de notificaciones en Android 13+
+    private val notifPermissionLauncher = registerForActivityResult(
+        androidx.activity.result.contract.ActivityResultContracts.RequestPermission()
+    ) { /* resultado ignorado: si concede, ya funcionará la próxima notificación */ }
 
     // Prepara la pantalla del chat del grupo y activa la escucha en tiempo real.
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -122,6 +135,17 @@ class CircleChatActivity : AppCompatActivity() {
         setupRecyclerView()
         setupBottomActions()
         observeMessages()
+
+        // Solicitar permiso de notificaciones en Android 13+ si aún no está concedido
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.TIRAMISU) {
+            val granted = androidx.core.content.ContextCompat.checkSelfPermission(
+                this,
+                android.Manifest.permission.POST_NOTIFICATIONS
+            ) == android.content.pm.PackageManager.PERMISSION_GRANTED
+            if (!granted) {
+                notifPermissionLauncher.launch(android.Manifest.permission.POST_NOTIFICATIONS)
+            }
+        }
 
         eventStartTicker.run()
     }
@@ -213,62 +237,50 @@ class CircleChatActivity : AppCompatActivity() {
         )
     }
 
-    // Devuelve el catálogo de mensajes sugeridos organizados por categoría.
+    // Devuelve el catálogo de mensajes sugeridos organizados por categoría (20 por sección).
     private fun getPredefinedSections(): List<PredefinedSection> {
         return listOf(
             PredefinedSection(
                 title = getString(R.string.msg_section_congratulations),
                 emoji = "🎉",
-                messages = listOf(
-                    PredefinedMessageOption("msg_congrats_1", getString(R.string.msg_congrats_1)),
-                    PredefinedMessageOption("msg_congrats_2", getString(R.string.msg_congrats_2)),
-                    PredefinedMessageOption("msg_congrats_3", getString(R.string.msg_congrats_3))
-                )
+                messages = (1..20).map {
+                    PredefinedMessageOption("msg_congrats_$it", getString(resources.getIdentifier("msg_congrats_$it", "string", packageName)))
+                }
             ),
             PredefinedSection(
                 title = getString(R.string.msg_section_amazement),
                 emoji = "😮",
-                messages = listOf(
-                    PredefinedMessageOption("msg_amazement_1", getString(R.string.msg_amazement_1)),
-                    PredefinedMessageOption("msg_amazement_2", getString(R.string.msg_amazement_2)),
-                    PredefinedMessageOption("msg_amazement_3", getString(R.string.msg_amazement_3))
-                )
+                messages = (1..20).map {
+                    PredefinedMessageOption("msg_amazement_$it", getString(resources.getIdentifier("msg_amazement_$it", "string", packageName)))
+                }
             ),
             PredefinedSection(
                 title = getString(R.string.msg_section_admiration),
                 emoji = "👏",
-                messages = listOf(
-                    PredefinedMessageOption("msg_admiration_1", getString(R.string.msg_admiration_1)),
-                    PredefinedMessageOption("msg_admiration_2", getString(R.string.msg_admiration_2)),
-                    PredefinedMessageOption("msg_admiration_3", getString(R.string.msg_admiration_3))
-                )
+                messages = (1..20).map {
+                    PredefinedMessageOption("msg_admiration_$it", getString(resources.getIdentifier("msg_admiration_$it", "string", packageName)))
+                }
             ),
             PredefinedSection(
                 title = getString(R.string.msg_section_motivation),
                 emoji = "💪",
-                messages = listOf(
-                    PredefinedMessageOption("msg_motivation_1", getString(R.string.msg_motivation_1)),
-                    PredefinedMessageOption("msg_motivation_2", getString(R.string.msg_motivation_2)),
-                    PredefinedMessageOption("msg_motivation_3", getString(R.string.msg_motivation_3))
-                )
+                messages = (1..20).map {
+                    PredefinedMessageOption("msg_motivation_$it", getString(resources.getIdentifier("msg_motivation_$it", "string", packageName)))
+                }
             ),
             PredefinedSection(
                 title = getString(R.string.msg_section_happiness),
                 emoji = "😊",
-                messages = listOf(
-                    PredefinedMessageOption("msg_happiness_1", getString(R.string.msg_happiness_1)),
-                    PredefinedMessageOption("msg_happiness_2", getString(R.string.msg_happiness_2)),
-                    PredefinedMessageOption("msg_happiness_3", getString(R.string.msg_happiness_3))
-                )
+                messages = (1..20).map {
+                    PredefinedMessageOption("msg_happiness_$it", getString(resources.getIdentifier("msg_happiness_$it", "string", packageName)))
+                }
             ),
             PredefinedSection(
                 title = getString(R.string.msg_section_achievement),
                 emoji = "🏆",
-                messages = listOf(
-                    PredefinedMessageOption("msg_achievement_1", getString(R.string.msg_achievement_1)),
-                    PredefinedMessageOption("msg_achievement_2", getString(R.string.msg_achievement_2)),
-                    PredefinedMessageOption("msg_achievement_3", getString(R.string.msg_achievement_3))
-                )
+                messages = (1..20).map {
+                    PredefinedMessageOption("msg_achievement_$it", getString(resources.getIdentifier("msg_achievement_$it", "string", packageName)))
+                }
             )
         )
     }
@@ -429,6 +441,15 @@ class CircleChatActivity : AppCompatActivity() {
                     lifecycleScope.launch {
                         val tzId = java.util.TimeZone.getDefault().id
                         val ok = eventsManager.createEvent(circleId, habitName, scheduledAt, tzId)
+                if (ok) {
+                    // Programar el Worker para que el evento arranque a su hora
+                    // aunque ningún usuario esté en el chat en ese momento
+                    com.novikon.pace.workers.EventStartWorker.scheduleForEvent(
+                        context = this@CircleChatActivity,
+                        circleId = circleId,
+                        scheduledAtMillis = scheduledAt
+                    )
+                }
                         Toast.makeText(
                             this@CircleChatActivity,
                             if (ok) getString(R.string.event_created_success) else getString(R.string.event_created_error),
@@ -492,10 +513,23 @@ class CircleChatActivity : AppCompatActivity() {
         pendingCaptureMessage = message
         val cameraGranted = ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED
         if (cameraGranted) {
-            cameraLauncher.launch(null)
+            launchCamera()
         } else {
             cameraPermissionLauncher.launch(Manifest.permission.CAMERA)
         }
+    }
+
+    // Crea un archivo temporal y lanza la cámara apuntando a él para obtener foto completa.
+    private fun launchCamera() {
+        val photoFile = java.io.File(cacheDir, "camera/photo_${System.currentTimeMillis()}.jpg")
+            .also { it.parentFile?.mkdirs() }
+        val uri = androidx.core.content.FileProvider.getUriForFile(
+            this,
+            "${packageName}.fileprovider",
+            photoFile
+        )
+        cameraPhotoUri = uri
+        cameraLauncher.launch(uri)
     }
 
     // Enseña vista previa de la foto antes de publicarla en el chat.
@@ -611,8 +645,8 @@ class CircleChatActivity : AppCompatActivity() {
                 btnDeleteGroup.visibility = View.VISIBLE
                 layoutAdminMax.visibility = View.VISIBLE
 
-                // Slider de máximo de miembros: inicializar con el valor actual
-                sliderMaxMembers.value = info.maxParticipants.toFloat().coerceIn(2f, 20f)
+                // Slider de máximo de miembros: inicializar con el valor actual, igual rango que al crear
+                sliderMaxMembers.value = info.maxParticipants.toFloat().coerceIn(3f, 6f)
                 tvMaxValue.text = info.maxParticipants.toString()
 
                 // Actualizar el texto del valor en tiempo real al deslizar

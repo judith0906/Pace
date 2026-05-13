@@ -76,6 +76,16 @@ object CircleNotificationHelper {
         circleName: String,
         targetActivityClass: Class<*>
     ) {
+        // Android 13+ requiere permiso POST_NOTIFICATIONS en runtime.
+        // Si no está concedido, no se puede mostrar la notificación.
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.TIRAMISU) {
+            val granted = androidx.core.content.ContextCompat.checkSelfPermission(
+                context,
+                android.Manifest.permission.POST_NOTIFICATIONS
+            ) == android.content.pm.PackageManager.PERMISSION_GRANTED
+            if (!granted) return
+        }
+
         ensureChannel(context)
 
         // Al pulsar la notificación se abre el chat del círculo correspondiente

@@ -287,8 +287,9 @@ class CircleChatEventsManager(
     ): Boolean {
         val uid = getUserId() ?: return false
         val userName = getUserName()
+        // Calidad 95 para preservar detalle en las fotos del grupo
         val bytes = ByteArrayOutputStream().use { stream ->
-            bitmap.compress(Bitmap.CompressFormat.JPEG, 85, stream)
+            bitmap.compress(Bitmap.CompressFormat.JPEG, 95, stream)
             stream.toByteArray()
         }
         val objectPath = "circles/${circleId}/events/${eventId}/${uid}_${System.currentTimeMillis()}.jpg"

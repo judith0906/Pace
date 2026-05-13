@@ -82,6 +82,17 @@
             android:name=".ui.circles.CirclesActivity"
             android:exported="false" />
 
+        <!-- FileProvider para pasar la URI de la foto de alta resolución a la cámara -->
+        <provider
+            android:name="androidx.core.content.FileProvider"
+            android:authorities="${applicationId}.fileprovider"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/file_paths" />
+        </provider>
+
         <activity
             android:name=".ui.circles.CircleChatActivity"
             android:windowSoftInputMode="adjustResize"
