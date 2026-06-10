@@ -194,9 +194,10 @@ class HabitHistoryActivity : AppCompatActivity() {
         val weekStartDate = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
             .format(weekCalendar.time)
 
-        // Usar la configuración de esa semana, o la actual si no existe
+        // Si no hay snapshot para esa semana, asumir que todos los días eran activos
+        // (es mejor mostrar el historial que ocultarlo con datos que no tenemos)
         val activeDays = settingsManager.getWeeklyActiveDays(weekStartDate)
-            ?: settingsManager.activeDayIndices
+            ?: setOf(0, 1, 2, 3, 4, 5, 6)
 
         val dayIndex = when (calendar.get(Calendar.DAY_OF_WEEK)) {
             Calendar.MONDAY -> 0

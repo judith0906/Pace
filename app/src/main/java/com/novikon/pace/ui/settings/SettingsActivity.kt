@@ -237,22 +237,45 @@ class SettingsActivity : AppCompatActivity() {
                 if (isChecked) selectedIndices.add(which) else selectedIndices.remove(which)
             }
             .setPositiveButton(getString(R.string.save)) { _, _ ->
+                // Antes de cambiar, guardar la config ANTERIOR en todas las semanas
+                // pasadas que aún no tienen snapshot — así el historial no se distorsiona
+                val oldIndices = settingsManager.activeDayIndices
+                val todayCalendar = java.util.Calendar.getInstance()
+                val iterCalendar = java.util.Calendar.getInstance().apply {
+                    // Empezar desde hace 12 meses — cubre historial razonable
+                    add(java.util.Calendar.MONTH, -12)
+                    // Ir al lunes de esa semana
+                    val dow = get(java.util.Calendar.DAY_OF_WEEK)
+                    val back = if (dow == java.util.Calendar.SUNDAY) 6 else dow - 2
+                    add(java.util.Calendar.DAY_OF_MONTH, -back)
+                }
+                val sdf = java.text.SimpleDateFormat("yyyy-MM-dd", java.util.Locale.getDefault())
+
+                // Recorrer semana a semana hasta la actual y guardar la config anterior
+                // solo en las semanas que aún no tienen snapshot
+                while (!iterCalendar.after(todayCalendar)) {
+                    val weekKey = sdf.format(iterCalendar.time)
+                    if (settingsManager.getWeeklyActiveDays(weekKey) == null) {
+                        settingsManager.saveWeeklyActiveDays(weekKey, oldIndices)
+                    }
+                    iterCalendar.add(java.util.Calendar.WEEK_OF_YEAR, 1)
+                }
+
                 settingsManager.activeDayIndices = selectedIndices
                 activeDaysText.text = getActiveDaysDisplayText()
 
+                // Guardar la nueva config para la semana actual
                 val calendar = java.util.Calendar.getInstance()
                 val dayOfWeek = calendar.get(java.util.Calendar.DAY_OF_WEEK)
                 val daysToMonday = if (dayOfWeek == java.util.Calendar.SUNDAY) 6 else dayOfWeek - 2
                 calendar.add(java.util.Calendar.DAY_OF_MONTH, -daysToMonday)
-                val weekStartDate = java.text.SimpleDateFormat("yyyy-MM-dd", java.util.Locale.getDefault())
-                    .format(calendar.time)
+                val weekStartDate = sdf.format(calendar.time)
                 settingsManager.saveWeeklyActiveDays(weekStartDate, selectedIndices)
 
                 if (settingsManager.areRemindersEnabled) {
                     scheduleReminders()
                 }
 
-                // Sincronizar con Firebase — los días activos cambiaron
                 syncSettings()
 
                 Toast.makeText(this, getString(R.string.day_chng), Toast.LENGTH_SHORT).show()
