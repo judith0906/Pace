@@ -11,6 +11,7 @@ import com.google.firebase.ktx.Firebase
 import com.novikon.pace.R
 import com.novikon.pace.helpers.LanguageHelper
 import com.novikon.pace.helpers.ThemeHelper
+import com.novikon.pace.utils.applySystemBarInsets
 
 // Pantalla de recuperacion: gestiona el envio de enlace para restablecer clave.
 class ForgotPasswordActivity : AppCompatActivity() {
@@ -28,6 +29,7 @@ class ForgotPasswordActivity : AppCompatActivity() {
         LanguageHelper.applyLanguage(this)
 
         setContentView(R.layout.activity_forgot_password)
+        applySystemBarInsets()
 
         initializeViews()
         setupListeners()

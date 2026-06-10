@@ -12,6 +12,7 @@ import com.novikon.pace.helpers.LanguageHelper
 import com.novikon.pace.helpers.ThemeHelper
 import com.novikon.pace.ui.main.MainActivity
 import com.novikon.pace.utils.SessionManager
+import com.novikon.pace.utils.applySystemBarInsets
 
 // Pantalla de registro: crea cuentas nuevas con validacion y alta de usuario.
 class SignUpActivity : AppCompatActivity() {
@@ -44,6 +45,7 @@ class SignUpActivity : AppCompatActivity() {
         LanguageHelper.applyLanguage(this)
 
         setContentView(R.layout.activity_signup)
+        applySystemBarInsets()
 
         sessionManager = SessionManager(this)
 

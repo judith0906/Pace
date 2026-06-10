@@ -16,6 +16,7 @@ import com.novikon.pace.data.RealtimeDatabaseManager
 import com.novikon.pace.helpers.LanguageHelper
 import com.novikon.pace.helpers.ThemeHelper
 import com.novikon.pace.utils.SessionManager
+import com.novikon.pace.utils.applySystemBarInsets
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.Date
@@ -41,6 +42,7 @@ class ActiveDevicesActivity : AppCompatActivity() {
         LanguageHelper.applyLanguage(this)
 
         setContentView(R.layout.activity_active_devices)
+        applySystemBarInsets()
 
         databaseManager = RealtimeDatabaseManager()
         sessionManager = SessionManager(this)

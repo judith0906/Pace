@@ -38,6 +38,7 @@ import com.novikon.pace.data.CirclesRealtimeManager
 import com.novikon.pace.models.Circle
 import com.novikon.pace.ui.circles.CirclesAdapter
 import com.novikon.pace.ui.circles.CircleChatActivity
+import com.novikon.pace.utils.applySystemBarInsets
 
 // Pantalla principal: orquesta navegacion, preview de habitos y estado de sesion.
 class MainActivity : AppCompatActivity() {
@@ -89,6 +90,7 @@ class MainActivity : AppCompatActivity() {
         LanguageHelper.applyLanguage(this)
 
         setContentView(R.layout.activity_main)
+        applySystemBarInsets()
 
         sessionManager = SessionManager(this)
         // Actualizar timestamp de última actividad al arrancar

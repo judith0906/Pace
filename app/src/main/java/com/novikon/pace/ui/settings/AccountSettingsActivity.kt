@@ -26,6 +26,7 @@ import com.novikon.pace.helpers.LanguageHelper
 import com.novikon.pace.helpers.ThemeHelper
 import com.novikon.pace.ui.login.LoginActivity
 import com.novikon.pace.utils.SessionManager
+import com.novikon.pace.utils.applySystemBarInsets
 import kotlinx.coroutines.launch
 import java.util.TimeZone
 
@@ -51,6 +52,7 @@ class AccountSettingsActivity : AppCompatActivity() {
         LanguageHelper.applyLanguage(this)
 
         setContentView(R.layout.activity_account_settings)
+        applySystemBarInsets()
 
         auth = Firebase.auth
         database = FirebaseDatabase.getInstance()

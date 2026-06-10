@@ -19,6 +19,7 @@ import com.novikon.pace.helpers.LanguageHelper
 import com.novikon.pace.helpers.ThemeHelper
 import com.novikon.pace.models.Habit
 import com.novikon.pace.utils.SettingsManager
+import com.novikon.pace.utils.applySystemBarInsets
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -63,6 +64,7 @@ class DailyHabitsActivity : AppCompatActivity() {
         LanguageHelper.applyLanguage(this)
 
         setContentView(R.layout.activity_daily_habits)
+        applySystemBarInsets()
 
         habitsManager = HabitsManager(this)
         settingsManager = SettingsManager(this)

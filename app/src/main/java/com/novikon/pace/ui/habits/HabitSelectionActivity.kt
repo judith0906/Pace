@@ -23,6 +23,7 @@ import com.novikon.pace.models.Habit
 import com.novikon.pace.models.HabitCategory
 import com.novikon.pace.models.TimeOfDay
 import com.novikon.pace.repositories.HabitsRepository
+import com.novikon.pace.utils.applySystemBarInsets
 import kotlinx.coroutines.launch
 
 // Pantalla de seleccion de habitos: configura que rutinas activara el usuario.
@@ -62,6 +63,7 @@ class HabitSelectionActivity : AppCompatActivity() {
         LanguageHelper.applyLanguage(this)
 
         setContentView(R.layout.dialog_habit_selection)
+        applySystemBarInsets()
 
         habitsManager = HabitsManager(this)
 

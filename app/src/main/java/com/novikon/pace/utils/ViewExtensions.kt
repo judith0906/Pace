@@ -5,6 +5,9 @@ import android.view.View
 import android.widget.TextView
 import android.graphics.LinearGradient
 import android.graphics.Shader
+import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
 
 // Este archivo contiene "funciones de extensión"  para añadir funciones nuevas a
 // clases existentes sin nodificar ni heredar de ellas, esto nos sirve para evitar repeticiones de codigo
@@ -51,5 +54,13 @@ fun TextView.applyVerticalGradient(colors: IntArray) {
             Shader.TileMode.CLAMP  // fuera del rango, mantiene el color del extremo
         )
         paint.shader = shader  // aplicar el degradado al "pincel" del texto
+    }
+}
+
+fun AppCompatActivity.applySystemBarInsets() {
+    ViewCompat.setOnApplyWindowInsetsListener(findViewById(android.R.id.content)) { v, insets ->
+        val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
+        v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
+        insets
     }
 }

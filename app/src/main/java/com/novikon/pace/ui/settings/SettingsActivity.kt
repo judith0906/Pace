@@ -21,6 +21,7 @@ import com.novikon.pace.helpers.LanguageHelper
 import com.novikon.pace.helpers.ThemeHelper
 import com.novikon.pace.utils.ReminderScheduler
 import com.novikon.pace.utils.SettingsManager
+import com.novikon.pace.utils.applySystemBarInsets
 import kotlinx.coroutines.launch
 
 // Pantalla de ajustes: centraliza preferencias generales de la aplicacion.
@@ -59,6 +60,7 @@ class SettingsActivity : AppCompatActivity() {
         LanguageHelper.applyLanguage(this)
 
         setContentView(R.layout.activity_settings)
+        applySystemBarInsets()
 
         settingsManager = SettingsManager(this)
 

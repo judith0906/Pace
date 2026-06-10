@@ -40,6 +40,7 @@ import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Locale
 import com.google.android.material.slider.Slider
+import com.novikon.pace.utils.applySystemBarInsets
 
 // Pantalla de chat de circulo: gestiona mensajes, eventos y acciones del grupo.
 class CircleChatActivity : AppCompatActivity() {
@@ -122,6 +123,7 @@ class CircleChatActivity : AppCompatActivity() {
         ThemeHelper.applyTheme(this)
         LanguageHelper.applyLanguage(this)
         setContentView(R.layout.activity_circle_chat)
+        applySystemBarInsets()
 
         circleId = intent.getStringExtra(EXTRA_CIRCLE_ID) ?: run {
             finish()

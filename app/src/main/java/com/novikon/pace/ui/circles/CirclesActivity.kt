@@ -13,6 +13,7 @@ import com.novikon.pace.R
 import com.novikon.pace.data.CirclesRealtimeManager
 import com.novikon.pace.helpers.LanguageHelper
 import com.novikon.pace.helpers.ThemeHelper
+import com.novikon.pace.utils.applySystemBarInsets
 import kotlinx.coroutines.launch
 
 // Pantalla de circulos: lista grupos del usuario y permite crear/unirse a nuevos.
@@ -33,6 +34,7 @@ class CirclesActivity : AppCompatActivity() {
         LanguageHelper.applyLanguage(this)
 
         setContentView(R.layout.activity_circles)
+        applySystemBarInsets()
 
         rvCircles = findViewById(R.id.rv_circles)
         backButton = findViewById(R.id.backButton)

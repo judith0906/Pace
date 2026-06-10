@@ -29,6 +29,7 @@ import java.util.Locale
 import com.novikon.pace.models.DailyHabitLog
 import com.novikon.pace.models.HabitCategory
 import com.novikon.pace.models.TimeOfDay
+import com.novikon.pace.utils.applySystemBarInsets
 
 // Pantalla de historial: muestra calendario y detalle de cumplimiento de habitos.
 class HabitHistoryActivity : AppCompatActivity() {
@@ -62,6 +63,7 @@ class HabitHistoryActivity : AppCompatActivity() {
         LanguageHelper.applyLanguage(this)
 
         setContentView(R.layout.activity_habit_history)
+        applySystemBarInsets()
 
         habitsManager = HabitsManager(this)
         settingsManager = SettingsManager(this)

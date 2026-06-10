@@ -13,6 +13,7 @@ import com.novikon.pace.helpers.ThemeHelper
 import com.novikon.pace.ui.main.MainActivity
 import com.novikon.pace.ui.signup.SignUpActivity
 import com.novikon.pace.utils.SessionManager
+import com.novikon.pace.utils.applySystemBarInsets
 
 // Pantalla de inicio de sesion: valida credenciales y autentica al usuario.
 class LoginActivity : AppCompatActivity() {
@@ -44,6 +45,7 @@ class LoginActivity : AppCompatActivity() {
         LanguageHelper.applyLanguage(this)
 
         setContentView(R.layout.activity_login)
+        applySystemBarInsets()
 
         sessionManager = SessionManager(this)
 
