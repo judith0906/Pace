@@ -227,25 +227,29 @@ class HabitSelectionActivity : AppCompatActivity() {
         var selectedEmoji = emojis[0]
 
         emojis.forEach { emoji ->
-            val emojiButton = MaterialButton(this).apply {
+            val emojiButton = TextView(this).apply {
                 text = emoji
-                textSize = 24f
+                textSize = 28f
+                gravity = android.view.Gravity.CENTER
                 layoutParams = LinearLayout.LayoutParams(120, 120).apply {
                     setMargins(8, 8, 8, 8)
                 }
+                isClickable = true
+                isFocusable = true
+                setBackgroundResource(android.R.drawable.list_selector_background)
                 setOnClickListener {
                     selectedEmoji = emoji
                     alpha = 1.0f
                     emojiContainer.children.forEach { child ->
-                        if (child != this) (child as? MaterialButton)?.alpha = 0.5f
+                        if (child != this) child.alpha = 0.5f
                     }
                 }
             }
             emojiContainer.addView(emojiButton)
         }
 
-        (emojiContainer.getChildAt(0) as? MaterialButton)?.alpha = 1.0f
-        emojiContainer.children.drop(1).forEach { (it as? MaterialButton)?.alpha = 0.5f }
+        (emojiContainer.getChildAt(0) as? TextView)?.alpha = 1.0f
+        emojiContainer.children.drop(1).forEach { it.alpha = 0.5f }
 
         AlertDialog.Builder(this)
             .setView(dialogView)
