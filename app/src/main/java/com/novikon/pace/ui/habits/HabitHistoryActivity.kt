@@ -30,6 +30,8 @@ import com.novikon.pace.models.DailyHabitLog
 import com.novikon.pace.models.HabitCategory
 import com.novikon.pace.models.TimeOfDay
 import com.novikon.pace.utils.applySystemBarInsets
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 
 // Pantalla de historial: muestra calendario y detalle de cumplimiento de habitos.
 class HabitHistoryActivity : AppCompatActivity() {
@@ -68,21 +70,25 @@ class HabitHistoryActivity : AppCompatActivity() {
         habitsManager = HabitsManager(this)
         settingsManager = SettingsManager(this)
 
-        // Guardar la fecha de primera instalación si no existe todavía —
-        // se usa para no marcar como incompletos los días anteriores a la app
-        if (settingsManager.firstInstallDate.isEmpty()) {
-            settingsManager.firstInstallDate =
-                SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(Date())
-        }
-
         initializeViews()
         setupCalendar()
         setupListeners()
 
-        // Cargar hábitos y luego generar el calendario del mes actual
         lifecycleScope.launch {
+            // Establecer fecha local si no existe todavía
+            val today = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(Date())
+            if (settingsManager.firstInstallDate.isEmpty()) {
+                settingsManager.firstInstallDate = today
+            }
+
+            // Sincronizar con Firebase — si el usuario reinstalό, recupera la fecha real
+            settingsManager.syncFirstInstallDate(settingsManager.firstInstallDate)
+
             cachedHabits = habitsManager.getSelectedHabitsAsync()
-            loadMonth()
+
+            withContext(Dispatchers.Main) {
+                loadMonth()
+            }
         }
     }
     private fun initializeViews() {

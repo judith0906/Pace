@@ -434,4 +434,33 @@ class RealtimeDatabaseManager {
                 }
         }
     }
+
+    // Guarda la fecha de primera instalación en Firebase para que sobreviva
+    // a desinstalaciones. Solo se llama una vez — cuando se establece por primera vez.
+    suspend fun saveFirstInstallDate(date: String): Boolean {
+        val userId = getUserId() ?: return false
+        return suspendCancellableCoroutine { continuation ->
+            database.getReference("users/$userId/firstInstallDate")
+                .setValue(date)
+                .addOnSuccessListener { continuation.resume(true) }
+                .addOnFailureListener { continuation.resume(false) }
+        }
+    }
+
+    // Recupera la fecha de primera instalación desde Firebase.
+    // Devuelve null si no existe o si hay error de red.
+    suspend fun getFirstInstallDate(): String? {
+        val userId = getUserId() ?: return null
+        return suspendCancellableCoroutine { continuation ->
+            database.getReference("users/$userId/firstInstallDate")
+                .addListenerForSingleValueEvent(object : ValueEventListener {
+                    override fun onDataChange(snapshot: DataSnapshot) {
+                        continuation.resume(snapshot.getValue(String::class.java))
+                    }
+                    override fun onCancelled(error: DatabaseError) {
+                        continuation.resume(null)
+                    }
+                })
+        }
+    }
 }

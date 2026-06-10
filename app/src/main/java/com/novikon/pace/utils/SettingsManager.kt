@@ -173,4 +173,29 @@ class SettingsManager(private val context: Context) {
             false
         }
     }
+
+    // Sincroniza la fecha de primera instalación con Firebase.
+    // Si Firebase tiene una fecha anterior a la local, usa la de Firebase
+    // (el usuario reinstalό — la fecha real es la más antigua).
+    // Si Firebase no tiene ninguna, sube la local.
+    suspend fun syncFirstInstallDate(localDate: String): String {
+        val remoteDate = databaseManager.getFirstInstallDate()
+
+        return when {
+            // Firebase tiene fecha — usar la más antigua entre Firebase y local
+            remoteDate != null && remoteDate.isNotEmpty() -> {
+                val earliest = if (remoteDate < localDate) remoteDate else localDate
+                // Si la local era más reciente (reinstalación), actualizar local con la real
+                if (earliest != localDate) {
+                    firstInstallDate = earliest
+                }
+                earliest
+            }
+            // Firebase no tiene fecha — subir la local
+            else -> {
+                databaseManager.saveFirstInstallDate(localDate)
+                localDate
+            }
+        }
+    }
 }
