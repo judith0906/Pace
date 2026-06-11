@@ -134,6 +134,37 @@ class HabitsManager(context: Context) {
         return logHabit(log)
     }
 
+    // Inicializa los registros del día actual en Firebase con todos los hábitos
+    // en estado no completado. Se llama al abrir DailyHabitsActivity si el día
+    // no tiene logs todavía. Así el historial siempre tiene la lista completa
+    // de hábitos de ese día, aunque el usuario no toque ninguno.
+    suspend fun initializeDayLogsIfNeeded(date: String): Boolean {
+        val existingLogs = getHabitLogsForDate(date).filter { !it.isEventHabit }
+        if (existingLogs.isNotEmpty()) return true // ya inicializado
+
+        val habits = getSelectedHabitsAsync()
+        if (habits.isEmpty()) return false
+
+        var allSaved = true
+        habits.forEach { habit ->
+            val log = DailyHabitLog(
+                habitId = habit.id,
+                date = date,
+                isDone = false,
+                timestamp = System.currentTimeMillis(),
+                source = "MANUAL",
+                eventId = "",
+                habitName = habit.name,
+                habitEmoji = habit.emoji,
+                habitDuration = habit.duration,
+                isEventHabit = false
+            )
+            val saved = logHabit(log)
+            if (!saved) allSaved = false
+        }
+        return allSaved
+    }
+
     // Devuelve todos los registros del caché local.
     fun getHabitLogs(): List<DailyHabitLog> {
         val json = prefs.getString(KEY_HABIT_LOGS, null) ?: return emptyList()

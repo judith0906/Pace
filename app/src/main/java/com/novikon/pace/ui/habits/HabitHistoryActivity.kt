@@ -84,6 +84,7 @@ class HabitHistoryActivity : AppCompatActivity() {
             // Sincronizar con Firebase — si el usuario reinstalό, recupera la fecha real
             settingsManager.syncFirstInstallDate(settingsManager.firstInstallDate)
 
+            habitsManager.syncFromFirebase()
             cachedHabits = habitsManager.getSelectedHabitsAsync()
 
             withContext(Dispatchers.Main) {
@@ -229,7 +230,8 @@ class HabitHistoryActivity : AppCompatActivity() {
         // Si es descanso y no hay evento unido ese día, sigue siendo descanso
         if (isRestDay && eventHabits.isEmpty()) return DayStatus.REST_DAY
 
-        val dayHabits = (cachedHabits + eventHabits).distinctBy { it.id }
+        val logHabits = buildHabitsFromLogs(date)
+        val dayHabits = (logHabits + eventHabits).distinctBy { it.id }
         if (dayHabits.isEmpty()) return DayStatus.NO_DATA
 
         val logs = habitsManager.getHabitLogsForDate(date)
@@ -265,7 +267,8 @@ class HabitHistoryActivity : AppCompatActivity() {
 
         // Calcular el progreso del día
         val eventHabits = buildEventHabitsForDate(day.date)
-        val dayHabits = (cachedHabits + eventHabits).distinctBy { it.id }
+        val logHabits = buildHabitsFromLogs(day.date)
+        val dayHabits = (logHabits + eventHabits).distinctBy { it.id }
 
         val logs = habitsManager.getHabitLogsForDate(day.date)
         val habitStatusMap = logs.associate { it.habitId to it.isDone }
@@ -300,5 +303,34 @@ class HabitHistoryActivity : AppCompatActivity() {
                 isCustom = true
             )
         }
+    }
+
+    // Reconstruye la lista de hábitos de un día concreto a partir de sus logs.
+    // Usa los metadatos (nombre, emoji, duración) guardados en cada log,
+    // así el historial refleja los hábitos que existían ese día, no los actuales.
+    private fun buildHabitsFromLogs(date: String): List<Habit> {
+        val logs = habitsManager.getHabitLogsForDate(date)
+        if (logs.isEmpty()) return emptyList()
+
+        return logs
+            .filter { !it.isEventHabit } // los de evento se gestionan por buildEventHabitsForDate
+            .map { log ->
+                Habit(
+                    id = log.habitId,
+                    name = log.habitName.ifEmpty {
+                        // Fallback: buscar en cachedHabits si el nombre no fue guardado
+                        cachedHabits.find { it.id == log.habitId }?.name ?: log.habitId
+                    },
+                    emoji = log.habitEmoji.ifEmpty {
+                        cachedHabits.find { it.id == log.habitId }?.emoji ?: "✅"
+                    },
+                    duration = log.habitDuration.ifEmpty {
+                        cachedHabits.find { it.id == log.habitId }?.duration ?: ""
+                    },
+                    category = cachedHabits.find { it.id == log.habitId }?.category
+                        ?: HabitCategory.CUSTOM
+                )
+            }
+            .distinctBy { it.id }
     }
 }

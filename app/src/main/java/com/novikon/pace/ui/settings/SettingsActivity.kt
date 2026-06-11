@@ -264,13 +264,38 @@ class SettingsActivity : AppCompatActivity() {
                 settingsManager.activeDayIndices = selectedIndices
                 activeDaysText.text = getActiveDaysDisplayText()
 
-                // Guardar la nueva config para la semana actual
+                // Guardar la nueva config para la semana actual solo si los días
+                // que se están quitando aún no han ocurrido esta semana.
+                // Si algún día eliminado ya pasó esta semana, no sobreescribir —
+                // el snapshot correcto ya fue guardado por el bucle de arriba.
                 val calendar = java.util.Calendar.getInstance()
-                val dayOfWeek = calendar.get(java.util.Calendar.DAY_OF_WEEK)
-                val daysToMonday = if (dayOfWeek == java.util.Calendar.SUNDAY) 6 else dayOfWeek - 2
-                calendar.add(java.util.Calendar.DAY_OF_MONTH, -daysToMonday)
-                val weekStartDate = sdf.format(calendar.time)
-                settingsManager.saveWeeklyActiveDays(weekStartDate, selectedIndices)
+                val todayDayOfWeek = calendar.get(java.util.Calendar.DAY_OF_WEEK)
+                val todayIndex = when (todayDayOfWeek) {
+                    java.util.Calendar.MONDAY -> 0
+                    java.util.Calendar.TUESDAY -> 1
+                    java.util.Calendar.WEDNESDAY -> 2
+                    java.util.Calendar.THURSDAY -> 3
+                    java.util.Calendar.FRIDAY -> 4
+                    java.util.Calendar.SATURDAY -> 5
+                    java.util.Calendar.SUNDAY -> 6
+                    else -> 0
+                }
+
+                // Días que se están quitando en este cambio
+                val removedDays = oldIndices - selectedIndices
+
+                // Si algún día eliminado ya pasó esta semana (su índice < hoy), no tocar
+                // la semana actual — sus logs ya existen y el snapshot viejo es correcto.
+                // Si todos los días eliminados son futuros (índice >= hoy), sí actualizar.
+                val removedDayAlreadyPassed = removedDays.any { it < todayIndex }
+
+                if (!removedDayAlreadyPassed) {
+                    val dayOfWeek = calendar.get(java.util.Calendar.DAY_OF_WEEK)
+                    val daysToMonday = if (dayOfWeek == java.util.Calendar.SUNDAY) 6 else dayOfWeek - 2
+                    calendar.add(java.util.Calendar.DAY_OF_MONTH, -daysToMonday)
+                    val weekStartDate = sdf.format(calendar.time)
+                    settingsManager.saveWeeklyActiveDays(weekStartDate, selectedIndices)
+                }
 
                 if (settingsManager.areRemindersEnabled) {
                     scheduleReminders()

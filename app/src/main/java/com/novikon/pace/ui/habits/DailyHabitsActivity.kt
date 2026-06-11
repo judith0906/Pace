@@ -121,6 +121,17 @@ class DailyHabitsActivity : AppCompatActivity() {
             return
         }
 
+        // Inicializar los logs del día solo si NO es día de descanso —
+        // los días de descanso no deben tener logs para que el historial los pinte correctamente
+        val todayIndex = when (Calendar.getInstance().get(Calendar.DAY_OF_WEEK)) {
+            Calendar.MONDAY -> 0; Calendar.TUESDAY -> 1; Calendar.WEDNESDAY -> 2
+            Calendar.THURSDAY -> 3; Calendar.FRIDAY -> 4; Calendar.SATURDAY -> 5
+            Calendar.SUNDAY -> 6; else -> 0
+        }
+        if (settingsManager.activeDayIndices.contains(todayIndex)) {
+            habitsManager.initializeDayLogsIfNeeded(currentDate)
+        }
+
         // Cargar el estado de los hábitos para hoy desde el caché local
         val logs = habitsManager.getHabitLogsForDate(currentDate)
         logs.forEach { log ->
