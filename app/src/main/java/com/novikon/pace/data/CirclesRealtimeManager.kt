@@ -356,7 +356,22 @@ class CirclesRealtimeManager(
                         var lastMessageTime = 0L
                         val lastMsg = snapshot.child("messages").children.lastOrNull()
                         if (lastMsg != null) {
-                            lastMessage = lastMsg.child("text").getValue(String::class.java) ?: ""
+                            val templateKey = lastMsg.child("messageTemplateKey").getValue(String::class.java)
+                            val templateParams = lastMsg.child("messageTemplateParams").children
+                                .mapNotNull { it.getValue(String::class.java) }
+                                .toTypedArray()
+
+                            lastMessage = if (!templateKey.isNullOrBlank()) {
+                                val resId = context.resources.getIdentifier(templateKey, "string", context.packageName)
+                                if (resId != 0) {
+                                    if (templateParams.isNotEmpty()) context.getString(resId, *templateParams)
+                                    else context.getString(resId)
+                                } else {
+                                    lastMsg.child("text").getValue(String::class.java) ?: ""
+                                }
+                            } else {
+                                lastMsg.child("text").getValue(String::class.java) ?: ""
+                            }
                             lastMessageTime = lastMsg.child("timestamp").getValue(Long::class.java) ?: 0L
                         }
 
