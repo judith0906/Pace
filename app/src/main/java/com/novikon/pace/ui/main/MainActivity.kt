@@ -36,6 +36,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.button.MaterialButton
 import com.novikon.pace.data.CirclesRealtimeManager
 import com.novikon.pace.models.Circle
+import com.novikon.pace.repositories.HabitsRepository
 import com.novikon.pace.ui.circles.CirclesAdapter
 import com.novikon.pace.ui.circles.CircleChatActivity
 import com.novikon.pace.utils.applySystemBarInsets
@@ -285,7 +286,16 @@ class MainActivity : AppCompatActivity() {
     // el caché ya contiene los datos más recientes disponibles.
     private fun paintHabitsFromCache() {
         habitsPreviewContainer.removeAllViews()
-        val selectedHabits = habitsManager.getSelectedHabitsFromCache()
+        val cachedHabits = habitsManager.getSelectedHabitsFromCache()
+        val predefinedHabits = HabitsRepository.getAllPredefinedHabits(this)
+        val predefinedMap = predefinedHabits.associateBy { it.id }
+        val selectedHabits = cachedHabits.map { habit ->
+            if (!habit.isCustom) {
+                predefinedMap[habit.id]?.copy(timeOfDay = habit.timeOfDay) ?: habit
+            } else {
+                habit
+            }
+        }
 
         if (selectedHabits.isEmpty()) {
             val emptyView = layoutInflater.inflate(

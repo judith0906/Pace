@@ -18,6 +18,7 @@ import com.novikon.pace.data.HabitsManager
 import com.novikon.pace.helpers.LanguageHelper
 import com.novikon.pace.helpers.ThemeHelper
 import com.novikon.pace.models.Habit
+import com.novikon.pace.repositories.HabitsRepository
 import com.novikon.pace.utils.SettingsManager
 import com.novikon.pace.utils.applySystemBarInsets
 import kotlinx.coroutines.Dispatchers
@@ -114,6 +115,19 @@ class DailyHabitsActivity : AppCompatActivity() {
     private suspend fun loadHabits() {
         selectedHabits = habitsManager.getSelectedHabitsAsync()
 
+        val predefinedHabits = HabitsRepository.getAllPredefinedHabits(this)
+        val predefinedMap = predefinedHabits.associateBy { it.id }
+
+        selectedHabits = selectedHabits.map { habit ->
+            if (!habit.isCustom) {
+                predefinedMap[habit.id]?.copy(
+                    timeOfDay = habit.timeOfDay
+                ) ?: habit
+            } else {
+                habit
+            }
+        }
+
         if (selectedHabits.isEmpty()) {
             // Si no hay hábitos configurados, ir a la pantalla de selección
             startActivity(Intent(this, HabitSelectionActivity::class.java))
@@ -122,13 +136,19 @@ class DailyHabitsActivity : AppCompatActivity() {
         }
 
         // Inicializar los logs del día solo si NO es día de descanso —
-        // los días de descanso no deben tener logs para que el historial los pinte correctamente
         val todayIndex = when (Calendar.getInstance().get(Calendar.DAY_OF_WEEK)) {
             Calendar.MONDAY -> 0; Calendar.TUESDAY -> 1; Calendar.WEDNESDAY -> 2
             Calendar.THURSDAY -> 3; Calendar.FRIDAY -> 4; Calendar.SATURDAY -> 5
             Calendar.SUNDAY -> 6; else -> 0
         }
         if (settingsManager.activeDayIndices.contains(todayIndex)) {
+            // Forzar sync antes de inicializar para que los hábitos recién
+            // añadidos o modificados estén en caché antes de crear los logs del día
+            habitsManager.syncFromFirebase()
+            // Borrar logs del día para reinicializarlos con la lista actualizada
+            // de hábitos — así un custom recién añadido o uno deseleccionado
+            // queda reflejado correctamente desde el mismo día
+            habitsManager.clearDayLogs(currentDate)
             habitsManager.initializeDayLogsIfNeeded(currentDate)
         }
 

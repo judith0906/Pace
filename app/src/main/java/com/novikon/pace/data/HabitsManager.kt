@@ -119,6 +119,14 @@ class HabitsManager(context: Context) {
     // Es suspend para que la Activity use lifecycleScope — sin CoroutineScope huérfanos.
     // Devuelve true si Firebase confirmó el guardado, false si hubo error.
     suspend fun logHabit(habitId: String, date: String, isDone: Boolean): Boolean {
+        // Recuperar metadatos del log existente si ya fue inicializado,
+        // para no sobreescribir nombre/emoji/duración con vacíos al marcar/desmarcar
+        val existingLog = getHabitLogsForDate(date).find { it.habitId == habitId }
+
+        // Si no hay log existente, buscar metadatos en los hábitos guardados
+        val habit = if (existingLog?.habitName?.isNotEmpty() == true) null
+        else getSelectedHabitsFromCache().find { it.id == habitId }
+
         val log = DailyHabitLog(
             habitId = habitId,
             date = date,
@@ -126,9 +134,9 @@ class HabitsManager(context: Context) {
             timestamp = System.currentTimeMillis(),
             source = "MANUAL",
             eventId = "",
-            habitName = "",
-            habitEmoji = "",
-            habitDuration = "",
+            habitName = existingLog?.habitName?.ifEmpty { habit?.name ?: "" } ?: (habit?.name ?: ""),
+            habitEmoji = existingLog?.habitEmoji?.ifEmpty { habit?.emoji ?: "" } ?: (habit?.emoji ?: ""),
+            habitDuration = existingLog?.habitDuration?.ifEmpty { habit?.duration ?: "" } ?: (habit?.duration ?: ""),
             isEventHabit = false
         )
         return logHabit(log)
@@ -310,6 +318,51 @@ class HabitsManager(context: Context) {
 
         return kotlinx.coroutines.suspendCancellableCoroutine { cont ->
             logRef.orderByChild("habitId").equalTo(eventHabitId)
+                .addListenerForSingleValueEvent(object : com.google.firebase.database.ValueEventListener {
+                    override fun onDataChange(snapshot: com.google.firebase.database.DataSnapshot) {
+                        if (!snapshot.exists()) {
+                            cont.resume(true)
+                            return
+                        }
+
+                        val updates = mutableMapOf<String, Any?>()
+                        snapshot.children.forEach { child ->
+                            child.key?.let { key ->
+                                updates["users/$userId/habit_logs/$key"] = null
+                            }
+                        }
+
+                        com.google.firebase.database.FirebaseDatabase.getInstance()
+                            .reference
+                            .updateChildren(updates)
+                            .addOnSuccessListener { cont.resume(true) }
+                            .addOnFailureListener { cont.resume(false) }
+                    }
+
+                    override fun onCancelled(error: com.google.firebase.database.DatabaseError) {
+                        cont.resume(false)
+                    }
+                })
+        }
+    }
+
+    // Elimina todos los logs de un día concreto del caché local y de Firebase.
+// Se llama en loadHabits() antes de reinicializar el día, para que los hábitos
+// recién añadidos o deseleccionados queden reflejados correctamente.
+// Devuelve true si Firebase confirmó el borrado, false si hubo error.
+    suspend fun clearDayLogs(date: String): Boolean {
+        // 1) Borrar del caché local
+        val logs = getHabitLogs().toMutableList()
+        logs.removeAll { it.date == date }
+        prefs.edit { putString(KEY_HABIT_LOGS, gson.toJson(logs)) }
+
+        // 2) Borrar de Firebase
+        val userId = databaseManager.getUserId() ?: return false
+        val logsRef = com.google.firebase.database.FirebaseDatabase.getInstance()
+            .getReference("users/$userId/habit_logs")
+
+        return kotlinx.coroutines.suspendCancellableCoroutine { cont ->
+            logsRef.orderByChild("date").equalTo(date)
                 .addListenerForSingleValueEvent(object : com.google.firebase.database.ValueEventListener {
                     override fun onDataChange(snapshot: com.google.firebase.database.DataSnapshot) {
                         if (!snapshot.exists()) {

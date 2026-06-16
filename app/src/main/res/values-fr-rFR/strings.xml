@@ -175,6 +175,9 @@
     <string name="habits_saved">Habitudes sauvegardées</string>
     <string name="habits_saved_locally">Habitudes sauvegardées localement</string>
     <string name="time_of_day_title">Quand est-ce que tu feras %s ?</string>
+    <string name="delete_habit_title">Supprimer l\'habitude</string>
+    <string name="delete_habit_message">Êtes-vous sûr de vouloir supprimer "%s" ? Cette action est irréversible.</string>
+    <string name="delete">Supprimer</string>
 
     <!-- Habitos a seleccionar: fisicos -->
     <string name="physical1">Faire de l\'exercice</string>

@@ -181,6 +181,9 @@
     <string name="select_at_least_one">Select at least one habit</string>
     <string name="habits_saved">Habits saved</string>
     <string name="habits_saved_locally">Habits saved locally</string>
+    <string name="delete_habit_title">Delete habit</string>
+    <string name="delete_habit_message">Are you sure you want to delete "%s"? This cannot be undone.</string>
+    <string name="delete">Delete</string>
 
     <!-- Habitos a seleccionar: fisicos -->
     <string name="physical1">Exercise</string>

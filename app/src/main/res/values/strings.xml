@@ -181,6 +181,9 @@
     <string name="select_at_least_one">Selecciona al menos un hábito</string>
     <string name="habits_saved">Hábitos guardados</string>
     <string name="habits_saved_locally">Hábitos guardados localmente</string>
+    <string name="delete_habit_title">Eliminar hábito</string>
+    <string name="delete_habit_message">¿Seguro que quieres eliminar "%s"? No podrás recuperarlo.</string>
+    <string name="delete">Eliminar</string>
 
     <!-- Habitos a seleccionar: fisicos -->
     <string name="physical1">Hacer ejercicio</string>

@@ -142,7 +142,7 @@ class HabitSelectionActivity : AppCompatActivity() {
 
         val categoryHabits = allHabits.filter { it.category == category }
 
-        habitAdapter = HabitSelectionAdapter(categoryHabits, selectedHabitIds) { habit, isSelected ->
+        habitAdapter = HabitSelectionAdapter(categoryHabits, selectedHabitIds, onHabitToggled = { habit, isSelected ->
             if (isSelected) {
                 // Solo preguntamos la franja si el hábito es ALL_DAY —
                 // los que tienen franja fija (mañana/tarde/noche) ya la tienen clara
@@ -154,7 +154,7 @@ class HabitSelectionActivity : AppCompatActivity() {
                 timeOfDayOverrides.remove(habit.id)
             }
             updateSelectedCount()
-        }
+        })
         habitsRecyclerView.adapter = habitAdapter
 
         updateSelectedCount()
@@ -163,16 +163,21 @@ class HabitSelectionActivity : AppCompatActivity() {
         habitsRecyclerView.visibility = View.GONE
         customHabitsLayout.visibility = View.VISIBLE
 
-        customHabitAdapter = HabitSelectionAdapter(customHabits, selectedHabitIds) { habit, isSelected ->
-            if (isSelected) {
-                // Los hábitos personalizados siempre son ALL_DAY al crearse —
-                // preguntamos al usuario en qué franja quiere realizarlos
-                showTimeOfDayDialog(habit)
-            } else {
-                timeOfDayOverrides.remove(habit.id)
+        customHabitAdapter = HabitSelectionAdapter(
+            customHabits,
+            selectedHabitIds,
+            onHabitToggled = { habit, isSelected ->
+                if (isSelected) {
+                    showTimeOfDayDialog(habit)
+                } else {
+                    timeOfDayOverrides.remove(habit.id)
+                }
+                updateSelectedCount()
+            },
+            onDelete = { habit ->
+                showDeleteCustomHabitDialog(habit)
             }
-            updateSelectedCount()
-        }
+        )
         customHabitsRecyclerView.adapter = customHabitAdapter
 
         updateSelectedCount()
@@ -291,11 +296,14 @@ class HabitSelectionActivity : AppCompatActivity() {
     // Recoge todos los hábitos seleccionados, aplica los overrides de franja
     // horaria elegidos por el usuario, y los guarda en Firebase y caché.
     private fun saveSelectedHabits() {
+        // Los hábitos predefinidos solo se guardan si están seleccionados.
+        // Los personalizados se guardan SIEMPRE (seleccionados o no) para no perderlos —
+        // desseleccionar no es eliminar.
         val selectedHabits = (allHabits + customHabits)
-            .filter { selectedHabitIds.contains(it.id) }
+            .filter { habit ->
+                if (habit.isCustom) true else selectedHabitIds.contains(habit.id)
+            }
             .map { habit ->
-                // Si el usuario eligió una franja para este hábito, la aplicamos —
-                // si no, conservamos la franja original del repositorio
                 val chosenTimeOfDay = timeOfDayOverrides[habit.id]
                 if (chosenTimeOfDay != null) habit.copy(timeOfDay = chosenTimeOfDay) else habit
             }
@@ -322,5 +330,20 @@ class HabitSelectionActivity : AppCompatActivity() {
             }
             finish()
         }
+    }
+
+    private fun showDeleteCustomHabitDialog(habit: Habit) {
+        AlertDialog.Builder(this)
+            .setTitle(getString(R.string.delete_habit_title))
+            .setMessage(getString(R.string.delete_habit_message, habit.name))
+            .setPositiveButton(getString(R.string.delete)) { _, _ ->
+                customHabits.remove(habit)
+                selectedHabitIds.remove(habit.id)
+                timeOfDayOverrides.remove(habit.id)
+                customHabitAdapter.updateHabits(customHabits)
+                updateSelectedCount()
+            }
+            .setNegativeButton(getString(R.string.cancel), null)
+            .show()
     }
 }
