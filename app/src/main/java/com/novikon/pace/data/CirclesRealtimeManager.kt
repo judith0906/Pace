@@ -486,6 +486,50 @@ class CirclesRealtimeManager(
         }
     }
 
+    suspend fun removeUserFromAllCircles(userId: String): Boolean {
+        val circleIds = suspendCancellableCoroutine<List<String>> { cont ->
+            database.getReference("users/$userId/circles")
+                .addListenerForSingleValueEvent(object : com.google.firebase.database.ValueEventListener {
+                    override fun onDataChange(snapshot: com.google.firebase.database.DataSnapshot) {
+                        cont.resume(snapshot.children.mapNotNull { it.key })
+                    }
+                    override fun onCancelled(error: com.google.firebase.database.DatabaseError) {
+                        cont.resume(emptyList())
+                    }
+                })
+        }
+
+        if (circleIds.isEmpty()) return true
+
+        val updates = mutableMapOf<String, Any?>()
+
+        for (circleId in circleIds) {
+            val info = getGroupInfo(circleId) ?: continue
+
+            if (info.createdBy == userId) {
+                // Es creador: borrar el círculo entero
+                updates["circles/$circleId"] = null
+                if (info.joinCode.isNotBlank()) {
+                    updates["circleJoinCodes/${info.joinCode}"] = null
+                }
+                // Limpiar la referencia en todos los miembros
+                info.memberIds.forEach { memberId ->
+                    updates["users/$memberId/circles/$circleId"] = null
+                }
+            } else {
+                // Es miembro: solo salir
+                updates["circles/$circleId/members/$userId"] = null
+                updates["users/$userId/circles/$circleId"] = null
+            }
+        }
+
+        return suspendCancellableCoroutine { cont ->
+            database.reference.updateChildren(updates)
+                .addOnSuccessListener { cont.resume(true) }
+                .addOnFailureListener { cont.resume(false) }
+        }
+    }
+
     // -------------------- BLOCKING --------------------
 
     suspend fun blockUser(targetUid: String): Boolean {

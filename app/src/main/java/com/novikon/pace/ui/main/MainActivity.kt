@@ -203,17 +203,17 @@ class MainActivity : AppCompatActivity() {
                 override fun onDataChange(snapshot: DataSnapshot) {
                     val nameFromDb = snapshot.getValue(String::class.java)
 
-                    // Si no hay nombre en Realtime Database todavía,
-                    // usamos el de Firebase Auth (puede venir del registro o de Google)
-                    // y lo escribimos en la DB para que quede persistido
                     val name = if (!nameFromDb.isNullOrBlank()) {
                         nameFromDb
                     } else {
                         val authName = Firebase.auth.currentUser?.displayName
                         if (!authName.isNullOrBlank()) {
-                            // Persistir en DB para las próximas veces
-                            database.getReference("users/$userId/profile/displayName")
-                                .setValue(authName)
+                            // Solo escribir si no se está borrando la cuenta
+                            val prefs = getSharedPreferences("pace_prefs", MODE_PRIVATE)
+                            if (!prefs.getBoolean("deleting_account", false)) {
+                                database.getReference("users/$userId/profile/displayName")
+                                    .setValue(authName)
+                            }
                             authName
                         } else {
                             getString(R.string.default_user)

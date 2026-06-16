@@ -6,6 +6,7 @@ import android.view.View
 import android.widget.ImageButton
 import android.widget.TextView
 import android.widget.Toast
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
@@ -28,7 +29,9 @@ import com.novikon.pace.ui.login.LoginActivity
 import com.novikon.pace.utils.SessionManager
 import com.novikon.pace.utils.applySystemBarInsets
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.suspendCancellableCoroutine
 import java.util.TimeZone
+import kotlin.coroutines.resume
 
 // Pantalla de cuenta: administra datos de perfil, privacidad y acciones de sesion.
 class AccountSettingsActivity : AppCompatActivity() {
@@ -40,6 +43,20 @@ class AccountSettingsActivity : AppCompatActivity() {
     private lateinit var database: FirebaseDatabase
     private lateinit var habitsManager: HabitsManager
     private lateinit var sessionManager: SessionManager
+    private val googleReauthLauncher = registerForActivityResult(
+        ActivityResultContracts.StartActivityForResult()
+    ) { result ->
+        val task = com.google.android.gms.auth.api.signin.GoogleSignIn
+            .getSignedInAccountFromIntent(result.data)
+        try {
+            val account = task.getResult(com.google.android.gms.common.api.ApiException::class.java)
+            val credential = com.google.firebase.auth.GoogleAuthProvider
+                .getCredential(account.idToken, null)
+            proceedDeleteWithCredential(credential)
+        } catch (e: Exception) {
+            Toast.makeText(this, getString(R.string.error_google_signin), Toast.LENGTH_LONG).show()
+        }
+    }
 
     private val circlesManager by lazy { CirclesRealtimeManager(this) }
     private var blockedUsersDialog: AlertDialog? = null
@@ -270,42 +287,133 @@ class AccountSettingsActivity : AppCompatActivity() {
         }
     }
     private fun showDeleteAccountDialog() {
-        AlertDialog.Builder(this)
-            .setTitle(getString(R.string.delete_account_title))
-            .setMessage(getString(R.string.delete_account_message))
-            .setPositiveButton(getString(R.string.delete_account_confirm)) { _, _ ->
-                deleteAccount()
+        val user = auth.currentUser ?: return
+        val isGoogleUser = user.providerData.any { it.providerId == "google.com" }
+
+        if (isGoogleUser) {
+            // Confirmar primero, luego reautenticar con Google
+            AlertDialog.Builder(this)
+                .setTitle(getString(R.string.delete_account_title))
+                .setMessage(getString(R.string.delete_account_message))
+                .setPositiveButton(getString(R.string.delete_account_confirm)) { _, _ ->
+                    startGoogleReauth()
+                }
+                .setNegativeButton(getString(R.string.cancel), null)
+                .show()
+        } else {
+            // Confirmar con contraseña
+            val input = android.widget.EditText(this).apply {
+                inputType = android.text.InputType.TYPE_CLASS_TEXT or
+                        android.text.InputType.TYPE_TEXT_VARIATION_PASSWORD
+                hint = getString(R.string.in_psswd)
             }
-            .setNegativeButton(getString(R.string.cancel), null)
-            .show()
+            AlertDialog.Builder(this)
+                .setTitle(getString(R.string.delete_account_title))
+                .setMessage(getString(R.string.delete_account_message))
+                .setView(input)
+                .setPositiveButton(getString(R.string.delete_account_confirm)) { _, _ ->
+                    val password = input.text.toString()
+                    if (password.isNotBlank()) {
+                        val email = user.email ?: return@setPositiveButton
+                        val credential = com.google.firebase.auth.EmailAuthProvider
+                            .getCredential(email, password)
+                        proceedDeleteWithCredential(credential)
+                    }
+                }
+                .setNegativeButton(getString(R.string.cancel), null)
+                .show()
+        }
     }
-    private fun deleteAccount() {
+
+    private fun startGoogleReauth() {
+        val gso = com.google.android.gms.auth.api.signin.GoogleSignInOptions
+            .Builder(com.google.android.gms.auth.api.signin.GoogleSignInOptions.DEFAULT_SIGN_IN)
+            .requestIdToken(getString(R.string.default_web_client_id))
+            .requestEmail()
+            .build()
+        val googleSignInClient = com.google.android.gms.auth.api.signin.GoogleSignIn
+            .getClient(this, gso)
+        googleReauthLauncher.launch(googleSignInClient.signInIntent)
+    }
+
+    private fun proceedDeleteWithCredential(credential: com.google.firebase.auth.AuthCredential) {
         val user = auth.currentUser ?: return
         val userId = user.uid
 
-        database.getReference("users/$userId")
-            .removeValue()
+        user.reauthenticate(credential)
             .addOnSuccessListener {
-                user.delete()
-                    .addOnSuccessListener {
+                getSharedPreferences("pace_prefs", MODE_PRIVATE)
+                    .edit().putBoolean("deleting_account", true).apply()
+                lifecycleScope.launch {
+                    val userId = user.uid
+
+                    // 1) Borrar subnodos de users/$userId explícitamente
+                    // (evita conflictos con reglas en cascada)
+                    val userRef = database.getReference("users/$userId")
+                    val subnodes = listOf("habits", "habit_logs", "settings", "profile", "devices", "circles", "blocked", "firstInstallDate")
+                    subnodes.forEach { node ->
+                        suspendCancellableCoroutine<Unit> { cont ->
+                            userRef.child(node).removeValue()
+                                .addOnSuccessListener { cont.resume(Unit) }
+                                .addOnFailureListener { cont.resume(Unit) }
+                        }
+                    }
+
+                    // Borrar displayName explícitamente antes que profile
+                    suspendCancellableCoroutine<Unit> { cont ->
+                        userRef.child("profile/displayName").removeValue()
+                            .addOnSuccessListener { cont.resume(Unit) }
+                            .addOnFailureListener { cont.resume(Unit) }
+                    }
+
+                    // Borrar el nodo raíz una vez vacío
+                    suspendCancellableCoroutine<Unit> { cont ->
+                        userRef.removeValue()
+                            .addOnSuccessListener { cont.resume(Unit) }
+                            .addOnFailureListener { cont.resume(Unit) }
+                    }
+
+                    // 2) Limpiar círculos
+                    circlesManager.removeUserFromAllCircles(userId)
+
+                    // 3) Borrar cuenta de Auth (al final, cuando ya no necesitamos permisos)
+                    val deleteOk = suspendCancellableCoroutine<Boolean> { cont ->
+                        user.delete()
+                            .addOnSuccessListener { cont.resume(true) }
+                            .addOnFailureListener { cont.resume(false) }
+                    }
+
+                    if (deleteOk) {
                         habitsManager.clearLocalData()
                         sessionManager.markUserLoggedOut()
-                        Toast.makeText(this, getString(R.string.account_deleted), Toast.LENGTH_SHORT).show()
-
-                        val intent = Intent(this, LoginActivity::class.java).apply {
+                        Toast.makeText(
+                            this@AccountSettingsActivity,
+                            getString(R.string.account_deleted),
+                            Toast.LENGTH_SHORT
+                        ).show()
+                        val intent = Intent(this@AccountSettingsActivity, LoginActivity::class.java).apply {
                             flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
                         }
                         startActivity(intent)
                         finish()
+                    } else {
+                        Toast.makeText(
+                            this@AccountSettingsActivity,
+                            getString(R.string.error),
+                            Toast.LENGTH_LONG
+                        ).show()
                     }
-                    .addOnFailureListener { e ->
-                        Toast.makeText(this, "${getString(R.string.error)}${e.message}", Toast.LENGTH_LONG).show()
-                    }
+                }
             }
             .addOnFailureListener { e ->
-                Toast.makeText(this, "${getString(R.string.error)}${e.message}", Toast.LENGTH_LONG).show()
+                Toast.makeText(
+                    this,
+                    "${getString(R.string.error)}${e.message}",
+                    Toast.LENGTH_LONG
+                ).show()
             }
     }
+
     override fun onDestroy() {
         blockedUsersDialog?.dismiss()
         super.onDestroy()
