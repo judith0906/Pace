@@ -169,7 +169,7 @@
     <string name="category_custom">✨ Otros</string>
     <string name="custom_habits_title">Hábitos personalizados</string>
     <string name="custom_habits_message">Crea tus propios hábitos según tus necesidades</string>
-    <string name="add_custom_habit">+ Añadir hábito</string>
+    <string name="add_custom_habit"> Añadir hábito</string>
     <string name="selected_habits_count">%d hábitos seleccionados</string>
     <string name="habit_name">Nombre del hábito</string>
     <string name="select_emoji">Selecciona un emoji</string>

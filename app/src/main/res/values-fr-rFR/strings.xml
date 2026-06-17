@@ -156,7 +156,7 @@
     <string name="category_custom">✨ Personnalisées</string>
     <string name="custom_habits_title">Habitudes personnalisées</string>
     <string name="custom_habits_message">Créez vos propres habitudes selon vos besoins</string>
-    <string name="add_custom_habit">+ Ajouter habitude</string>
+    <string name="add_custom_habit"> Ajouter habitude</string>
     <string name="selected_habits_count">%d habitudes sélectionnées</string>
     <string name="later">Plus tard</string>
     <string name="habit_name">Nom de l\'habitude</string>

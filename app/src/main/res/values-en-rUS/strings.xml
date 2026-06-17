@@ -169,7 +169,7 @@
     <string name="category_custom">✨ Custom</string>
     <string name="custom_habits_title">Custom habits</string>
     <string name="custom_habits_message">Create your own habits according to your needs</string>
-    <string name="add_custom_habit">+ Add habit</string>
+    <string name="add_custom_habit"> Add habit</string>
     <string name="selected_habits_count">%d habits selected</string>
     <string name="habit_name">Habit name</string>
     <string name="select_emoji">Select an emoji</string>
