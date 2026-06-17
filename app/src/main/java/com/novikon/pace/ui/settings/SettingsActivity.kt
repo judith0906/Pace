@@ -6,6 +6,7 @@ import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
 import android.widget.ImageButton
+import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
@@ -229,30 +230,47 @@ class SettingsActivity : AppCompatActivity() {
     private fun showActiveDaysDialog() {
         val allDays = resources.getStringArray(R.array.week_days_short)
         val selectedIndices = settingsManager.activeDayIndices.toMutableSet()
-        val checkedItems = BooleanArray(allDays.size) { selectedIndices.contains(it) }
 
-        AlertDialog.Builder(this)
-            .setTitle(getString(R.string.active_days_title))
-            .setMultiChoiceItems(allDays, checkedItems) { _, which, isChecked ->
-                if (isChecked) selectedIndices.add(which) else selectedIndices.remove(which)
+        val dialogView = layoutInflater.inflate(R.layout.dialog_active_days, null)
+        val chipContainer = dialogView.findViewById<LinearLayout>(R.id.chipContainer)
+
+        allDays.mapIndexed { index, day ->
+            val chip = layoutInflater.inflate(R.layout.item_day_chip, chipContainer, false) as TextView
+            chip.text = day
+            chip.isSelected = selectedIndices.contains(index)
+            chip.setTextColor(
+                ContextCompat.getColor(this,
+                    if (selectedIndices.contains(index)) R.color.day_chip_text_selected
+                    else R.color.day_chip_text_unselected
+                )
+            )
+            chip.setOnClickListener {
+                chip.isSelected = !chip.isSelected
+                chip.setTextColor(
+                    ContextCompat.getColor(this,
+                        if (chip.isSelected) R.color.day_chip_text_selected
+                        else R.color.day_chip_text_unselected
+                    )
+                )
+                if (chip.isSelected) selectedIndices.add(index) else selectedIndices.remove(index)
             }
+            chipContainer.addView(chip)
+        }
+
+        val dialog = AlertDialog.Builder(this)
+            .setTitle(getString(R.string.active_days_title))
+            .setView(dialogView)
             .setPositiveButton(getString(R.string.save)) { _, _ ->
-                // Antes de cambiar, guardar la config ANTERIOR en todas las semanas
-                // pasadas que aún no tienen snapshot — así el historial no se distorsiona
                 val oldIndices = settingsManager.activeDayIndices
                 val todayCalendar = java.util.Calendar.getInstance()
                 val iterCalendar = java.util.Calendar.getInstance().apply {
-                    // Empezar desde hace 12 meses — cubre historial razonable
                     add(java.util.Calendar.MONTH, -12)
-                    // Ir al lunes de esa semana
                     val dow = get(java.util.Calendar.DAY_OF_WEEK)
                     val back = if (dow == java.util.Calendar.SUNDAY) 6 else dow - 2
                     add(java.util.Calendar.DAY_OF_MONTH, -back)
                 }
                 val sdf = java.text.SimpleDateFormat("yyyy-MM-dd", java.util.Locale.getDefault())
 
-                // Recorrer semana a semana hasta la actual y guardar la config anterior
-                // solo en las semanas que aún no tienen snapshot
                 while (!iterCalendar.after(todayCalendar)) {
                     val weekKey = sdf.format(iterCalendar.time)
                     if (settingsManager.getWeeklyActiveDays(weekKey) == null) {
@@ -264,10 +282,6 @@ class SettingsActivity : AppCompatActivity() {
                 settingsManager.activeDayIndices = selectedIndices
                 activeDaysText.text = getActiveDaysDisplayText()
 
-                // Guardar la nueva config para la semana actual solo si los días
-                // que se están quitando aún no han ocurrido esta semana.
-                // Si algún día eliminado ya pasó esta semana, no sobreescribir —
-                // el snapshot correcto ya fue guardado por el bucle de arriba.
                 val calendar = java.util.Calendar.getInstance()
                 val todayDayOfWeek = calendar.get(java.util.Calendar.DAY_OF_WEEK)
                 val todayIndex = when (todayDayOfWeek) {
@@ -281,12 +295,7 @@ class SettingsActivity : AppCompatActivity() {
                     else -> 0
                 }
 
-                // Días que se están quitando en este cambio
                 val removedDays = oldIndices - selectedIndices
-
-                // Si algún día eliminado ya pasó esta semana (su índice < hoy), no tocar
-                // la semana actual — sus logs ya existen y el snapshot viejo es correcto.
-                // Si todos los días eliminados son futuros (índice >= hoy), sí actualizar.
                 val removedDayAlreadyPassed = removedDays.any { it < todayIndex }
 
                 if (!removedDayAlreadyPassed) {
@@ -297,16 +306,20 @@ class SettingsActivity : AppCompatActivity() {
                     settingsManager.saveWeeklyActiveDays(weekStartDate, selectedIndices)
                 }
 
-                if (settingsManager.areRemindersEnabled) {
-                    scheduleReminders()
-                }
-
+                if (settingsManager.areRemindersEnabled) scheduleReminders()
                 syncSettings()
-
                 Toast.makeText(this, getString(R.string.day_chng), Toast.LENGTH_SHORT).show()
             }
             .setNegativeButton(getString(R.string.cancel), null)
             .show()
+
+        // Botones en gris
+        dialog.getButton(AlertDialog.BUTTON_POSITIVE).setTextColor(
+            ContextCompat.getColor(this, R.color.text_secondary)
+        )
+        dialog.getButton(AlertDialog.BUTTON_NEGATIVE).setTextColor(
+            ContextCompat.getColor(this, R.color.text_secondary)
+        )
     }
 
     // Explica por qué se necesita permiso de notificaciones antes de volver a pedirlo.
