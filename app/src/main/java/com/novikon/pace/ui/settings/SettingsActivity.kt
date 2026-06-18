@@ -34,16 +34,8 @@ class SettingsActivity : AppCompatActivity() {
     private lateinit var currentLanguageText: TextView
     private lateinit var remindersSwitch: SwitchMaterial
     private lateinit var activeDaysText: TextView
-
-    // Vistas de franjas horarias
-    private lateinit var morningSwitch: SwitchMaterial
-    private lateinit var morningTimeText: TextView
-    private lateinit var afternoonSwitch: SwitchMaterial
-    private lateinit var afternoonTimeText: TextView
-    private lateinit var eveningSwitch: SwitchMaterial
-    private lateinit var eveningTimeText: TextView
-    private lateinit var allDaySwitch: SwitchMaterial
-    private lateinit var allDayTimeText: TextView
+    private lateinit var remindersContainer: LinearLayout
+    private lateinit var addReminderButton: LinearLayout
 
     // Launcher para pedir permiso de notificaciones en Android 13+.
     private val notificationPermissionLauncher = registerForActivityResult(
@@ -85,15 +77,8 @@ class SettingsActivity : AppCompatActivity() {
         currentLanguageText = findViewById(R.id.currentLanguageText)
         remindersSwitch = findViewById(R.id.remindersSwitch)
         activeDaysText = findViewById(R.id.activeDaysText)
-
-        morningSwitch = findViewById(R.id.morningSwitch)
-        morningTimeText = findViewById(R.id.morningTimeText)
-        afternoonSwitch = findViewById(R.id.afternoonSwitch)
-        afternoonTimeText = findViewById(R.id.afternoonTimeText)
-        eveningSwitch = findViewById(R.id.eveningSwitch)
-        eveningTimeText = findViewById(R.id.eveningTimeText)
-        allDaySwitch = findViewById(R.id.allDaySwitch)
-        allDayTimeText = findViewById(R.id.allDayTimeText)
+        remindersContainer = findViewById(R.id.remindersContainer)
+        addReminderButton = findViewById(R.id.addReminderButton)
     }
 
     // Rellena la pantalla con los valores actuales de tema, idioma y recordatorios.
@@ -102,17 +87,8 @@ class SettingsActivity : AppCompatActivity() {
             ThemeHelper.getThemeMode(this) == AppCompatDelegate.MODE_NIGHT_YES
         currentLanguageText.text = LanguageHelper.getLanguageDisplayName(this)
         remindersSwitch.isChecked = settingsManager.areRemindersEnabled
-
-        morningSwitch.isChecked = settingsManager.morningReminderEnabled
-        morningTimeText.text = settingsManager.morningReminderTime
-        afternoonSwitch.isChecked = settingsManager.afternoonReminderEnabled
-        afternoonTimeText.text = settingsManager.afternoonReminderTime
-        eveningSwitch.isChecked = settingsManager.eveningReminderEnabled
-        eveningTimeText.text = settingsManager.eveningReminderTime
-        allDaySwitch.isChecked = settingsManager.allDayReminderEnabled
-        allDayTimeText.text = settingsManager.allDayReminderTime
-
         activeDaysText.text = getActiveDaysDisplayText()
+        rebuildRemindersUI()
     }
 
     // Escucha cambios del usuario y guarda cada preferencia cuando se modifica.
@@ -184,62 +160,8 @@ class SettingsActivity : AppCompatActivity() {
         findViewById<android.view.View>(R.id.activeDaysOption).setOnClickListener {
             showActiveDaysDialog()
         }
-
-        // ── FRANJAS HORARIAS ──────────────────────────────────────────────────────
-        morningSwitch.setOnCheckedChangeListener { _, isChecked ->
-            settingsManager.morningReminderEnabled = isChecked
-            if (settingsManager.areRemindersEnabled) scheduleReminders()
-            syncSettings()
-        }
-        findViewById<android.view.View>(R.id.morningTimeOption).setOnClickListener {
-            showTimePicker(settingsManager.morningReminderTime, 5, 11) { time ->
-                settingsManager.morningReminderTime = time
-                morningTimeText.text = time
-                if (settingsManager.areRemindersEnabled) scheduleReminders()
-                syncSettings()
-            }
-        }
-
-        afternoonSwitch.setOnCheckedChangeListener { _, isChecked ->
-            settingsManager.afternoonReminderEnabled = isChecked
-            if (settingsManager.areRemindersEnabled) scheduleReminders()
-            syncSettings()
-        }
-        findViewById<android.view.View>(R.id.afternoonTimeOption).setOnClickListener {
-            showTimePicker(settingsManager.afternoonReminderTime, 12, 18) { time ->
-                settingsManager.afternoonReminderTime = time
-                afternoonTimeText.text = time
-                if (settingsManager.areRemindersEnabled) scheduleReminders()
-                syncSettings()
-            }
-        }
-
-        eveningSwitch.setOnCheckedChangeListener { _, isChecked ->
-            settingsManager.eveningReminderEnabled = isChecked
-            if (settingsManager.areRemindersEnabled) scheduleReminders()
-            syncSettings()
-        }
-        findViewById<android.view.View>(R.id.eveningTimeOption).setOnClickListener {
-            showTimePicker(settingsManager.eveningReminderTime, 19, 23) { time ->
-                settingsManager.eveningReminderTime = time
-                eveningTimeText.text = time
-                if (settingsManager.areRemindersEnabled) scheduleReminders()
-                syncSettings()
-            }
-        }
-
-        allDaySwitch.setOnCheckedChangeListener { _, isChecked ->
-            settingsManager.allDayReminderEnabled = isChecked
-            if (settingsManager.areRemindersEnabled) scheduleReminders()
-            syncSettings()
-        }
-        findViewById<android.view.View>(R.id.allDayTimeOption).setOnClickListener {
-            showTimePicker(settingsManager.allDayReminderTime, 0, 23) { time ->
-                settingsManager.allDayReminderTime = time
-                allDayTimeText.text = time
-                if (settingsManager.areRemindersEnabled) scheduleReminders()
-                syncSettings()
-            }
+        addReminderButton.setOnClickListener {
+            showAddReminderDialog()
         }
     }
 
@@ -439,5 +361,179 @@ class SettingsActivity : AppCompatActivity() {
             .mapNotNull { allDays.getOrNull(it) }
             .joinToString(", ")
             .ifEmpty { getString(R.string.no_days_selected) }
+    }
+
+    // Datos de cada franja
+    data class ReminderSlot(
+        val slotIndex: Int,       // 0=mañana, 1=tarde, 2=noche, 3=todo el día
+        val titleRes: Int,
+        val rangeRes: Int,
+        val minHour: Int,
+        val maxHour: Int,
+        val defaultTime: String,
+        val enabledGetter: () -> Boolean,
+        val enabledSetter: (Boolean) -> Unit,
+        val timeGetter: () -> String,
+        val timeSetter: (String) -> Unit
+    )
+
+    private fun allSlots() = listOf(
+        ReminderSlot(
+            slotIndex = 0,
+            titleRes = R.string.reminder_slot_title_morning,
+            rangeRes = R.string.reminder_slot_range_morning,
+            minHour = 5, maxHour = 11,
+            defaultTime = "08:00",
+            enabledGetter = { settingsManager.morningReminderEnabled },
+            enabledSetter = { settingsManager.morningReminderEnabled = it },
+            timeGetter = { settingsManager.morningReminderTime },
+            timeSetter = { settingsManager.morningReminderTime = it }
+        ),
+        ReminderSlot(
+            slotIndex = 1,
+            titleRes = R.string.reminder_slot_title_afternoon,
+            rangeRes = R.string.reminder_slot_range_afternoon,
+            minHour = 12, maxHour = 18,
+            defaultTime = "15:00",
+            enabledGetter = { settingsManager.afternoonReminderEnabled },
+            enabledSetter = { settingsManager.afternoonReminderEnabled = it },
+            timeGetter = { settingsManager.afternoonReminderTime },
+            timeSetter = { settingsManager.afternoonReminderTime = it }
+        ),
+        ReminderSlot(
+            slotIndex = 2,
+            titleRes = R.string.reminder_slot_title_evening,
+            rangeRes = R.string.reminder_slot_range_evening,
+            minHour = 19, maxHour = 23,
+            defaultTime = "21:00",
+            enabledGetter = { settingsManager.eveningReminderEnabled },
+            enabledSetter = { settingsManager.eveningReminderEnabled = it },
+            timeGetter = { settingsManager.eveningReminderTime },
+            timeSetter = { settingsManager.eveningReminderTime = it }
+        ),
+        ReminderSlot(
+            slotIndex = 3,
+            titleRes = R.string.reminder_slot_title_allday,
+            rangeRes = R.string.reminder_slot_range_allday,
+            minHour = 0, maxHour = 23,
+            defaultTime = "09:00",
+            enabledGetter = { settingsManager.allDayReminderEnabled },
+            enabledSetter = { settingsManager.allDayReminderEnabled = it },
+            timeGetter = { settingsManager.allDayReminderTime },
+            timeSetter = { settingsManager.allDayReminderTime = it }
+        )
+    )
+
+    private fun rebuildRemindersUI() {
+        remindersContainer.removeAllViews()
+        val activeSlots = allSlots().filter { it.enabledGetter() }
+        activeSlots.forEach { slot -> addReminderRow(slot) }
+    }
+
+    private fun addReminderRow(slot: ReminderSlot) {
+        val row = LinearLayout(this).apply {
+            orientation = LinearLayout.HORIZONTAL
+            gravity = android.view.Gravity.CENTER_VERTICAL
+            setPadding(0, 16, 0, 16)
+        }
+
+        // Parte izquierda: título + hora (clickable para cambiar hora)
+        val textContainer = LinearLayout(this).apply {
+            orientation = LinearLayout.VERTICAL
+            layoutParams = LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f)
+            isClickable = true
+            isFocusable = true
+            setBackgroundResource(android.R.attr.selectableItemBackground.let {
+                val typedValue = android.util.TypedValue()
+                theme.resolveAttribute(it, typedValue, true)
+                typedValue.resourceId
+            })
+        }
+
+        val titleView = TextView(this).apply {
+            text = getString(slot.titleRes)
+            textSize = 15f
+            setTextColor(ContextCompat.getColor(this@SettingsActivity, R.color.text_primary))
+            setTypeface(null, android.graphics.Typeface.BOLD)
+        }
+
+        val timeView = TextView(this).apply {
+            text = slot.timeGetter()
+            textSize = 13f
+            setTextColor(ContextCompat.getColor(this@SettingsActivity, R.color.text_secondary))
+            setPadding(0, 4, 0, 0)
+        }
+
+        textContainer.addView(titleView)
+        textContainer.addView(timeView)
+
+        // Click en la parte de texto abre el selector de hora
+        textContainer.setOnClickListener {
+            showTimePicker(slot.timeGetter(), slot.minHour, slot.maxHour) { newTime ->
+                slot.timeSetter(newTime)
+                timeView.text = newTime
+                if (settingsManager.areRemindersEnabled) scheduleReminders()
+                syncSettings()
+            }
+        }
+
+        // Botón eliminar (×)
+        val deleteButton = TextView(this).apply {
+            text = "×"
+            textSize = 22f
+            setTextColor(ContextCompat.getColor(this@SettingsActivity, R.color.text_secondary))
+            setPadding(24, 0, 0, 0)
+            isClickable = true
+            isFocusable = true
+            setOnClickListener {
+                slot.enabledSetter(false)
+                if (settingsManager.areRemindersEnabled) scheduleReminders()
+                syncSettings()
+                rebuildRemindersUI()
+            }
+        }
+
+        row.addView(textContainer)
+        row.addView(deleteButton)
+
+        // Divisor encima si ya hay filas
+        if (remindersContainer.childCount > 0) {
+            val divider = android.view.View(this).apply {
+                layoutParams = LinearLayout.LayoutParams(
+                    LinearLayout.LayoutParams.MATCH_PARENT, 1
+                ).also { it.setMargins(0, 4, 0, 4) }
+                setBackgroundColor(ContextCompat.getColor(this@SettingsActivity, R.color.border_color))
+            }
+            remindersContainer.addView(divider)
+        }
+
+        remindersContainer.addView(row)
+    }
+
+    private fun showAddReminderDialog() {
+        val available = allSlots().filter { !it.enabledGetter() }
+        if (available.isEmpty()) {
+            Toast.makeText(this, getString(R.string.all_reminders_added), Toast.LENGTH_SHORT).show()
+            return
+        }
+
+        val titles = available.map {
+            "${getString(it.titleRes)}  ·  ${getString(it.rangeRes)}"
+        }.toTypedArray()
+
+        AlertDialog.Builder(this)
+            .setTitle(getString(R.string.choose_reminder_slot))
+            .setItems(titles) { _, which ->
+                val slot = available[which]
+                slot.enabledSetter(true)
+                showTimePicker(slot.timeGetter(), slot.minHour, slot.maxHour) { newTime ->
+                    slot.timeSetter(newTime)
+                    if (settingsManager.areRemindersEnabled) scheduleReminders()
+                    syncSettings()
+                    rebuildRemindersUI()
+                }
+            }
+            .setNegativeButton(getString(R.string.cancel), null)
+            .show()
     }
 }

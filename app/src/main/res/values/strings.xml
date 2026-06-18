@@ -131,6 +131,17 @@
     <string name="reminder_afternoon">Tarde (12:00–19:00)</string>
     <string name="reminder_evening">Noche (19:00–23:59)</string>
     <string name="reminder_allday">Todo el día</string>
+    <string name="add_reminder">Añadir recordatorio</string>
+    <string name="reminder_slot_title_morning">Mañana</string>
+    <string name="reminder_slot_title_afternoon">Tarde</string>
+    <string name="reminder_slot_title_evening">Noche</string>
+    <string name="reminder_slot_title_allday">Todo el día</string>
+    <string name="reminder_slot_range_morning">05:00 – 12:00</string>
+    <string name="reminder_slot_range_afternoon">12:00 – 19:00</string>
+    <string name="reminder_slot_range_evening">19:00 – 23:59</string>
+    <string name="reminder_slot_range_allday">Cualquier hora</string>
+    <string name="choose_reminder_slot">¿Para qué franja?</string>
+    <string name="all_reminders_added">Ya tienes todos los recordatorios añadidos</string>
 
     <!-- ========================================================= -->
     <!-- AJUSTES: RITMO PERSONAL                                   -->

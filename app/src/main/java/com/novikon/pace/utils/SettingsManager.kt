@@ -77,7 +77,7 @@ class SettingsManager(private val context: Context) {
         set(value) = prefs.edit { putString(KEY_EVENING_TIME, value) }
 
     var allDayReminderEnabled: Boolean
-        get() = prefs.getBoolean(KEY_ALLDAY_ENABLED, false)
+        get() = prefs.getBoolean(KEY_ALLDAY_ENABLED, true)
         set(value) = prefs.edit { putBoolean(KEY_ALLDAY_ENABLED, value) }
 
     var allDayReminderTime: String

@@ -131,6 +131,17 @@
     <string name="reminder_afternoon">Afternoon (12:00–19:00)</string>
     <string name="reminder_evening">Evening (19:00–23:59)</string>
     <string name="reminder_allday">All day</string>
+    <string name="add_reminder">Add reminder</string>
+    <string name="reminder_slot_title_morning">Morning</string>
+    <string name="reminder_slot_title_afternoon">Afternoon</string>
+    <string name="reminder_slot_title_evening">Evening</string>
+    <string name="reminder_slot_title_allday">All day</string>
+    <string name="reminder_slot_range_morning">05:00 – 12:00</string>
+    <string name="reminder_slot_range_afternoon">12:00 – 19:00</string>
+    <string name="reminder_slot_range_evening">19:00 – 23:59</string>
+    <string name="reminder_slot_range_allday">Any time</string>
+    <string name="choose_reminder_slot">Which time slot?</string>
+    <string name="all_reminders_added">All reminders have already been added</string>
 
     <!-- ========================================================= -->
     <!-- AJUSTES: RITMO PERSONAL                                   -->

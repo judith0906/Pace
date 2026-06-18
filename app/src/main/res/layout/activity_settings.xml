@@ -223,7 +223,7 @@
                     android:orientation="vertical"
                     android:padding="16dp">
 
-                    <!-- Recordatorios -->
+                    <!-- Recordatorios switch principal -->
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
@@ -275,222 +275,44 @@
                         android:layout_marginTop="8dp"
                         android:layout_marginBottom="8dp" />
 
-                    <!-- Mañana (05:00–12:00) -->
+                    <!-- Contenedor dinámico de franjas añadidas -->
                     <LinearLayout
+                        android:id="@+id/remindersContainer"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical" />
+
+                    <!-- Botón añadir recordatorio -->
+                    <LinearLayout
+                        android:id="@+id/addReminderButton"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:orientation="horizontal"
                         android:gravity="center_vertical"
-                        android:paddingTop="4dp"
-                        android:paddingBottom="4dp">
+                        android:paddingTop="12dp"
+                        android:paddingBottom="4dp"
+                        android:clickable="true"
+                        android:focusable="true"
+                        android:background="?attr/selectableItemBackground">
 
-                        <LinearLayout
-                            android:id="@+id/morningTimeOption"
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            android:orientation="vertical"
-                            android:clickable="true"
-                            android:focusable="true"
-                            android:background="?attr/selectableItemBackground">
+                        <TextView
+                            android:layout_width="32dp"
+                            android:layout_height="32dp"
+                            android:text="+"
+                            android:textSize="22sp"
+                            android:textColor="@color/accent_primary"
+                            android:gravity="center"
+                            android:layout_marginEnd="12dp" />
 
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="@string/reminder_morning"
-                                android:textSize="15sp"
-                                android:textColor="@color/text_primary"
-                                android:textStyle="bold" />
-
-                            <TextView
-                                android:id="@+id/morningTimeText"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="08:00"
-                                android:textSize="13sp"
-                                android:textColor="@color/text_secondary"
-                                android:layout_marginTop="2dp" />
-
-                        </LinearLayout>
-
-                        <com.google.android.material.switchmaterial.SwitchMaterial
-                            android:id="@+id/morningSwitch"
+                        <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            app:thumbTint="@color/white"
-                            app:trackTint="@color/accent_secondary"
-                            app:trackTintMode="src_in" />
+                            android:text="@string/add_reminder"
+                            android:textSize="15sp"
+                            android:textColor="@color/accent_primary"
+                            android:textStyle="bold" />
 
                     </LinearLayout>
-
-                    <!-- Divisor -->
-                    <View
-                        android:layout_width="match_parent"
-                        android:layout_height="1dp"
-                        android:background="@color/border_color"
-                        android:layout_marginTop="4dp"
-                        android:layout_marginBottom="4dp" />
-
-                    <!-- Tarde (12:00–19:00) -->
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="horizontal"
-                        android:gravity="center_vertical"
-                        android:paddingTop="4dp"
-                        android:paddingBottom="4dp">
-
-                        <LinearLayout
-                            android:id="@+id/afternoonTimeOption"
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            android:orientation="vertical"
-                            android:clickable="true"
-                            android:focusable="true"
-                            android:background="?attr/selectableItemBackground">
-
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="@string/reminder_afternoon"
-                                android:textSize="15sp"
-                                android:textColor="@color/text_primary"
-                                android:textStyle="bold" />
-
-                            <TextView
-                                android:id="@+id/afternoonTimeText"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="15:00"
-                                android:textSize="13sp"
-                                android:textColor="@color/text_secondary"
-                                android:layout_marginTop="2dp" />
-
-                        </LinearLayout>
-
-                        <com.google.android.material.switchmaterial.SwitchMaterial
-                            android:id="@+id/afternoonSwitch"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            app:thumbTint="@color/white"
-                            app:trackTint="@color/accent_secondary"
-                            app:trackTintMode="src_in" />
-
-                    </LinearLayout>
-
-                    <!-- Divisor -->
-                    <View
-                        android:layout_width="match_parent"
-                        android:layout_height="1dp"
-                        android:background="@color/border_color"
-                        android:layout_marginTop="4dp"
-                        android:layout_marginBottom="4dp" />
-
-                    <!-- Noche (19:00–23:59) -->
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="horizontal"
-                        android:gravity="center_vertical"
-                        android:paddingTop="4dp"
-                        android:paddingBottom="4dp">
-
-                        <LinearLayout
-                            android:id="@+id/eveningTimeOption"
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            android:orientation="vertical"
-                            android:clickable="true"
-                            android:focusable="true"
-                            android:background="?attr/selectableItemBackground">
-
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="@string/reminder_evening"
-                                android:textSize="15sp"
-                                android:textColor="@color/text_primary"
-                                android:textStyle="bold" />
-
-                            <TextView
-                                android:id="@+id/eveningTimeText"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="21:00"
-                                android:textSize="13sp"
-                                android:textColor="@color/text_secondary"
-                                android:layout_marginTop="2dp" />
-
-                        </LinearLayout>
-
-                        <com.google.android.material.switchmaterial.SwitchMaterial
-                            android:id="@+id/eveningSwitch"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            app:thumbTint="@color/white"
-                            app:trackTint="@color/accent_secondary"
-                            app:trackTintMode="src_in" />
-
-                    </LinearLayout>
-
-                    <!-- Divisor -->
-                    <View
-                        android:layout_width="match_parent"
-                        android:layout_height="1dp"
-                        android:background="@color/border_color"
-                        android:layout_marginTop="4dp"
-                        android:layout_marginBottom="4dp" />
-
-                    <!-- Todo el día (hora libre) -->
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="horizontal"
-                        android:gravity="center_vertical"
-                        android:paddingTop="4dp"
-                        android:paddingBottom="4dp">
-
-                        <LinearLayout
-                            android:id="@+id/allDayTimeOption"
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            android:orientation="vertical"
-                            android:clickable="true"
-                            android:focusable="true"
-                            android:background="?attr/selectableItemBackground">
-
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="@string/reminder_allday"
-                                android:textSize="15sp"
-                                android:textColor="@color/text_primary"
-                                android:textStyle="bold" />
-
-                            <TextView
-                                android:id="@+id/allDayTimeText"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="09:00"
-                                android:textSize="13sp"
-                                android:textColor="@color/text_secondary"
-                                android:layout_marginTop="2dp" />
-
-                        </LinearLayout>
-
-                        <com.google.android.material.switchmaterial.SwitchMaterial
-                            android:id="@+id/allDaySwitch"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            app:thumbTint="@color/white"
-                            app:trackTint="@color/accent_secondary"
-                            app:trackTintMode="src_in" />
-
-                    </LinearLayout>
-
 
                 </LinearLayout>
 

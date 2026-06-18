@@ -124,6 +124,17 @@
     <string name="reminder_afternoon">Après-midi (12:00–19:00)</string>
     <string name="reminder_evening">Soir (19:00–23:59)</string>
     <string name="reminder_allday">Toute la journée</string>
+    <string name="add_reminder">Ajouter un rappel</string>
+    <string name="reminder_slot_title_morning">Matin</string>
+    <string name="reminder_slot_title_afternoon">Après-midi</string>
+    <string name="reminder_slot_title_evening">Soir</string>
+    <string name="reminder_slot_title_allday">Toute la journée</string>
+    <string name="reminder_slot_range_morning">05:00 – 12:00</string>
+    <string name="reminder_slot_range_afternoon">12:00 – 19:00</string>
+    <string name="reminder_slot_range_evening">19:00 – 23:59</string>
+    <string name="reminder_slot_range_allday">N\'importe quelle heure</string>
+    <string name="choose_reminder_slot">Quelle plage horaire ?</string>
+    <string name="all_reminders_added">Tous les rappels ont déjà été ajoutés</string>
 
     <!-- Toasts ajustes -->
     <string name="dark_on">Mode sombre activé</string>
