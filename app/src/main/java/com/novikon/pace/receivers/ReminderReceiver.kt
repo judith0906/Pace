@@ -34,14 +34,15 @@ class ReminderReceiver : BroadcastReceiver() {
     }
     override fun onReceive(context: Context, intent: Intent) {
         val dayIndex = intent.getIntExtra("day_index", -1)
+        val slotIndex = intent.getIntExtra("slot_index", -1)
+        val hour = intent.getIntExtra("hour", 9)
+        val minute = intent.getIntExtra("minute", 0)
 
-        // Mostrar la notificación
         createNotificationChannel(context)
         showNotification(context)
 
-        // Reprogramar para la semana siguiente
-        if (dayIndex >= 0) {
-            reprogramAlarm(context, dayIndex)
+        if (dayIndex >= 0 && slotIndex >= 0) {
+            reprogramAlarm(context, dayIndex, slotIndex, hour, minute)
         }
     }
 
@@ -97,9 +98,9 @@ class ReminderReceiver : BroadcastReceiver() {
     }
 
     // Reprograma la alarma para exactamente una semana después.
-// Es necesario porque setExactAndAllowWhileIdle no se repite
-// automáticamente — hay que reprogramarla manualmente cada vez.
-    private fun reprogramAlarm(context: Context, dayIndex: Int) {
+    // Es necesario porque setExactAndAllowWhileIdle no se repite
+    // automáticamente — hay que reprogramarla manualmente cada vez.
+    private fun reprogramAlarm(context: Context, dayIndex: Int, slotIndex: Int, hour: Int, minute: Int) {
         val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
 
         val calendarDay = when (dayIndex) {
@@ -116,23 +117,26 @@ class ReminderReceiver : BroadcastReceiver() {
         val calendar = Calendar.getInstance().apply {
             add(Calendar.WEEK_OF_YEAR, 1)
             set(Calendar.DAY_OF_WEEK, calendarDay)
+            set(Calendar.HOUR_OF_DAY, hour)
+            set(Calendar.MINUTE, minute)
+            set(Calendar.SECOND, 0)
+            set(Calendar.MILLISECOND, 0)
         }
 
         val intent = Intent(context, ReminderReceiver::class.java).apply {
             putExtra("day_index", dayIndex)
+            putExtra("slot_index", slotIndex)
+            putExtra("hour", hour)
+            putExtra("minute", minute)
         }
 
         val pendingIntent = PendingIntent.getBroadcast(
             context,
-            dayIndex,
+            dayIndex * 10 + slotIndex,
             intent,
             PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
         )
 
-        // setExactAndAllowWhileIdle garantiza que la alarma suene exactamente
-        // a la hora indicada, incluso en modo ahorro de batería.
-        // El if/else anterior era para compatibilidad con Android 5 y anterior,
-        // pero como el minSdk de la app es superior a Android 6, no hace falta.
         alarmManager.setExactAndAllowWhileIdle(
             AlarmManager.RTC_WAKEUP,
             calendar.timeInMillis,

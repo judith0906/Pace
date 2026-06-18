@@ -127,6 +127,10 @@
     <string name="alarm_permission_title">Permission needed</string>
     <string name="alarm_permission_message">For reminders, Pace needs permission for exact alarms. Do you want to enable it?</string>
     <string name="activate">Activate</string>
+    <string name="reminder_morning">Morning (05:00–12:00)</string>
+    <string name="reminder_afternoon">Afternoon (12:00–19:00)</string>
+    <string name="reminder_evening">Evening (19:00–23:59)</string>
+    <string name="reminder_allday">All day</string>
 
     <!-- ========================================================= -->
     <!-- AJUSTES: RITMO PERSONAL                                   -->

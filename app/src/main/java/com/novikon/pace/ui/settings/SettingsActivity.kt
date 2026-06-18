@@ -33,8 +33,17 @@ class SettingsActivity : AppCompatActivity() {
     private lateinit var darkModeSwitch: SwitchMaterial
     private lateinit var currentLanguageText: TextView
     private lateinit var remindersSwitch: SwitchMaterial
-    private lateinit var reminderTimeText: TextView
     private lateinit var activeDaysText: TextView
+
+    // Vistas de franjas horarias
+    private lateinit var morningSwitch: SwitchMaterial
+    private lateinit var morningTimeText: TextView
+    private lateinit var afternoonSwitch: SwitchMaterial
+    private lateinit var afternoonTimeText: TextView
+    private lateinit var eveningSwitch: SwitchMaterial
+    private lateinit var eveningTimeText: TextView
+    private lateinit var allDaySwitch: SwitchMaterial
+    private lateinit var allDayTimeText: TextView
 
     // Launcher para pedir permiso de notificaciones en Android 13+.
     private val notificationPermissionLauncher = registerForActivityResult(
@@ -75,8 +84,16 @@ class SettingsActivity : AppCompatActivity() {
         darkModeSwitch = findViewById(R.id.darkModeSwitch)
         currentLanguageText = findViewById(R.id.currentLanguageText)
         remindersSwitch = findViewById(R.id.remindersSwitch)
-        reminderTimeText = findViewById(R.id.reminderTimeText)
         activeDaysText = findViewById(R.id.activeDaysText)
+
+        morningSwitch = findViewById(R.id.morningSwitch)
+        morningTimeText = findViewById(R.id.morningTimeText)
+        afternoonSwitch = findViewById(R.id.afternoonSwitch)
+        afternoonTimeText = findViewById(R.id.afternoonTimeText)
+        eveningSwitch = findViewById(R.id.eveningSwitch)
+        eveningTimeText = findViewById(R.id.eveningTimeText)
+        allDaySwitch = findViewById(R.id.allDaySwitch)
+        allDayTimeText = findViewById(R.id.allDayTimeText)
     }
 
     // Rellena la pantalla con los valores actuales de tema, idioma y recordatorios.
@@ -85,7 +102,16 @@ class SettingsActivity : AppCompatActivity() {
             ThemeHelper.getThemeMode(this) == AppCompatDelegate.MODE_NIGHT_YES
         currentLanguageText.text = LanguageHelper.getLanguageDisplayName(this)
         remindersSwitch.isChecked = settingsManager.areRemindersEnabled
-        reminderTimeText.text = settingsManager.reminderTime
+
+        morningSwitch.isChecked = settingsManager.morningReminderEnabled
+        morningTimeText.text = settingsManager.morningReminderTime
+        afternoonSwitch.isChecked = settingsManager.afternoonReminderEnabled
+        afternoonTimeText.text = settingsManager.afternoonReminderTime
+        eveningSwitch.isChecked = settingsManager.eveningReminderEnabled
+        eveningTimeText.text = settingsManager.eveningReminderTime
+        allDaySwitch.isChecked = settingsManager.allDayReminderEnabled
+        allDayTimeText.text = settingsManager.allDayReminderTime
+
         activeDaysText.text = getActiveDaysDisplayText()
     }
 
@@ -155,12 +181,65 @@ class SettingsActivity : AppCompatActivity() {
             }
         }
 
-        findViewById<android.view.View>(R.id.reminderTimeOption).setOnClickListener {
-            showTimePicker()
-        }
-
         findViewById<android.view.View>(R.id.activeDaysOption).setOnClickListener {
             showActiveDaysDialog()
+        }
+
+        // ── FRANJAS HORARIAS ──────────────────────────────────────────────────────
+        morningSwitch.setOnCheckedChangeListener { _, isChecked ->
+            settingsManager.morningReminderEnabled = isChecked
+            if (settingsManager.areRemindersEnabled) scheduleReminders()
+            syncSettings()
+        }
+        findViewById<android.view.View>(R.id.morningTimeOption).setOnClickListener {
+            showTimePicker(settingsManager.morningReminderTime, 5, 11) { time ->
+                settingsManager.morningReminderTime = time
+                morningTimeText.text = time
+                if (settingsManager.areRemindersEnabled) scheduleReminders()
+                syncSettings()
+            }
+        }
+
+        afternoonSwitch.setOnCheckedChangeListener { _, isChecked ->
+            settingsManager.afternoonReminderEnabled = isChecked
+            if (settingsManager.areRemindersEnabled) scheduleReminders()
+            syncSettings()
+        }
+        findViewById<android.view.View>(R.id.afternoonTimeOption).setOnClickListener {
+            showTimePicker(settingsManager.afternoonReminderTime, 12, 18) { time ->
+                settingsManager.afternoonReminderTime = time
+                afternoonTimeText.text = time
+                if (settingsManager.areRemindersEnabled) scheduleReminders()
+                syncSettings()
+            }
+        }
+
+        eveningSwitch.setOnCheckedChangeListener { _, isChecked ->
+            settingsManager.eveningReminderEnabled = isChecked
+            if (settingsManager.areRemindersEnabled) scheduleReminders()
+            syncSettings()
+        }
+        findViewById<android.view.View>(R.id.eveningTimeOption).setOnClickListener {
+            showTimePicker(settingsManager.eveningReminderTime, 19, 23) { time ->
+                settingsManager.eveningReminderTime = time
+                eveningTimeText.text = time
+                if (settingsManager.areRemindersEnabled) scheduleReminders()
+                syncSettings()
+            }
+        }
+
+        allDaySwitch.setOnCheckedChangeListener { _, isChecked ->
+            settingsManager.allDayReminderEnabled = isChecked
+            if (settingsManager.areRemindersEnabled) scheduleReminders()
+            syncSettings()
+        }
+        findViewById<android.view.View>(R.id.allDayTimeOption).setOnClickListener {
+            showTimePicker(settingsManager.allDayReminderTime, 0, 23) { time ->
+                settingsManager.allDayReminderTime = time
+                allDayTimeText.text = time
+                if (settingsManager.areRemindersEnabled) scheduleReminders()
+                syncSettings()
+            }
         }
     }
 
@@ -195,30 +274,17 @@ class SettingsActivity : AppCompatActivity() {
     }
 
     // Permite elegir la hora exacta para enviar recordatorios diarios.
-    private fun showTimePicker() {
-        val timeParts = settingsManager.reminderTime.split(":")
-        val hour = timeParts[0].toIntOrNull() ?: 20
+    private fun showTimePicker(currentTime: String, minHour: Int, maxHour: Int, onTimeSet: (String) -> Unit) {
+        val timeParts = currentTime.split(":")
+        val hour = timeParts[0].toIntOrNull() ?: minHour
         val minute = timeParts[1].toIntOrNull() ?: 0
 
         TimePickerDialog(
             this,
             { _, selectedHour, selectedMinute ->
-                val formattedTime = String.format("%02d:%02d", selectedHour, selectedMinute)
-                settingsManager.reminderTime = formattedTime
-                reminderTimeText.text = formattedTime
-
-                if (settingsManager.areRemindersEnabled) {
-                    scheduleReminders()
-                }
-
-                // Sincronizar con Firebase — la hora cambió
-                syncSettings()
-
-                Toast.makeText(
-                    this,
-                    "${getString(R.string.hr_chng)}$formattedTime",
-                    Toast.LENGTH_SHORT
-                ).show()
+                val clampedHour = selectedHour.coerceIn(minHour, maxHour)
+                val formattedTime = String.format("%02d:%02d", clampedHour, selectedMinute)
+                onTimeSet(formattedTime)
             },
             hour,
             minute,
@@ -354,7 +420,14 @@ class SettingsActivity : AppCompatActivity() {
             context = this,
             areRemindersEnabled = settingsManager.areRemindersEnabled,
             activeDayIndices = settingsManager.activeDayIndices,
-            reminderTime = settingsManager.reminderTime
+            morningEnabled = settingsManager.morningReminderEnabled,
+            morningTime = settingsManager.morningReminderTime,
+            afternoonEnabled = settingsManager.afternoonReminderEnabled,
+            afternoonTime = settingsManager.afternoonReminderTime,
+            eveningEnabled = settingsManager.eveningReminderEnabled,
+            eveningTime = settingsManager.eveningReminderTime,
+            allDayEnabled = settingsManager.allDayReminderEnabled,
+            allDayTime = settingsManager.allDayReminderTime
         )
     }
 

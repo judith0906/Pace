@@ -216,20 +216,32 @@ class RealtimeDatabaseManager {
         themeMode: Int,
         language: String,
         remindersEnabled: Boolean,
-        reminderTime: String,
-        activeDayIndices: Set<Int>
+        activeDayIndices: Set<Int>,
+        morningEnabled: Boolean,
+        morningTime: String,
+        afternoonEnabled: Boolean,
+        afternoonTime: String,
+        eveningEnabled: Boolean,
+        eveningTime: String,
+        allDayEnabled: Boolean,
+        allDayTime: String
     ): Boolean {
         val userId = getUserId() ?: return false
 
         return suspendCancellableCoroutine { continuation ->
-            // Los Set<Int> no se pueden guardar directamente en Firebase —
-            // los serializamos como String separado por comas (ej: "0,1,2,3,4")
             val settingsMap = mapOf(
                 "themeMode" to themeMode,
                 "language" to language,
                 "remindersEnabled" to remindersEnabled,
-                "reminderTime" to reminderTime,
-                "activeDayIndices" to activeDayIndices.sorted().joinToString(",")
+                "activeDayIndices" to activeDayIndices.sorted().joinToString(","),
+                "morningEnabled" to morningEnabled,
+                "morningTime" to morningTime,
+                "afternoonEnabled" to afternoonEnabled,
+                "afternoonTime" to afternoonTime,
+                "eveningEnabled" to eveningEnabled,
+                "eveningTime" to eveningTime,
+                "allDayEnabled" to allDayEnabled,
+                "allDayTime" to allDayTime
             )
 
             database.getReference("users/$userId/settings")
@@ -271,6 +283,22 @@ class RealtimeDatabaseManager {
                             ?.let { settings["reminderTime"] = it }
                         snapshot.child("activeDayIndices").getValue(String::class.java)
                             ?.let { settings["activeDayIndices"] = it }
+                        snapshot.child("morningEnabled").getValue(Boolean::class.java)
+                            ?.let { settings["morningEnabled"] = it }
+                        snapshot.child("morningTime").getValue(String::class.java)
+                            ?.let { settings["morningTime"] = it }
+                        snapshot.child("afternoonEnabled").getValue(Boolean::class.java)
+                            ?.let { settings["afternoonEnabled"] = it }
+                        snapshot.child("afternoonTime").getValue(String::class.java)
+                            ?.let { settings["afternoonTime"] = it }
+                        snapshot.child("eveningEnabled").getValue(Boolean::class.java)
+                            ?.let { settings["eveningEnabled"] = it }
+                        snapshot.child("eveningTime").getValue(String::class.java)
+                            ?.let { settings["eveningTime"] = it }
+                        snapshot.child("allDayEnabled").getValue(Boolean::class.java)
+                            ?.let { settings["allDayEnabled"] = it }
+                        snapshot.child("allDayTime").getValue(String::class.java)
+                            ?.let { settings["allDayTime"] = it }
 
                         continuation.resume(settings)
                     }

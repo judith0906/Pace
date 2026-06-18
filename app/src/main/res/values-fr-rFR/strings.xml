@@ -120,6 +120,10 @@
     <string name="alarm_permission_title">Autorisation nécessaire</string>
     <string name="alarm_permission_message">Pour les rappels, Pace a besoin d\'autorisation pour les alarmes exactes. Voulez-vous l\'activer?</string>
     <string name="activate">Activer</string>
+    <string name="reminder_morning">Matin (05:00–12:00)</string>
+    <string name="reminder_afternoon">Après-midi (12:00–19:00)</string>
+    <string name="reminder_evening">Soir (19:00–23:59)</string>
+    <string name="reminder_allday">Toute la journée</string>
 
     <!-- Toasts ajustes -->
     <string name="dark_on">Mode sombre activé</string>

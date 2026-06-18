@@ -16,22 +16,24 @@ import com.novikon.pace.utils.ReminderScheduler
 // con el permiso RECEIVE_BOOT_COMPLETED.
 class BootReceiver : BroadcastReceiver() {
     override fun onReceive(context: Context, intent: Intent) {
-
-        // Verificar que el evento es el arranque del sistema
-        // (también capturamos QUICKBOOT_POWERON para dispositivos Huawei)
         if (intent.action == Intent.ACTION_BOOT_COMPLETED ||
             intent.action == "android.intent.action.QUICKBOOT_POWERON") {
 
-            // Leer la configuración guardada del usuario
             val settingsManager = SettingsManager(context)
 
-            // Solo reprogramar si el usuario tenía los recordatorios activados
             if (settingsManager.areRemindersEnabled) {
                 ReminderScheduler.scheduleReminders(
                     context = context,
                     areRemindersEnabled = settingsManager.areRemindersEnabled,
                     activeDayIndices = settingsManager.activeDayIndices,
-                    reminderTime = settingsManager.reminderTime
+                    morningEnabled = settingsManager.morningReminderEnabled,
+                    morningTime = settingsManager.morningReminderTime,
+                    afternoonEnabled = settingsManager.afternoonReminderEnabled,
+                    afternoonTime = settingsManager.afternoonReminderTime,
+                    eveningEnabled = settingsManager.eveningReminderEnabled,
+                    eveningTime = settingsManager.eveningReminderTime,
+                    allDayEnabled = settingsManager.allDayReminderEnabled,
+                    allDayTime = settingsManager.allDayReminderTime
                 )
             }
         }

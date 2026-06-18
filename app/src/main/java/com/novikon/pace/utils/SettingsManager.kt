@@ -30,26 +30,59 @@ class SettingsManager(private val context: Context) {
 
     companion object {
         private const val KEY_REMINDERS_ENABLED = "reminders_enabled"
-        private const val KEY_REMINDER_TIME = "reminder_time"
         private const val KEY_ACTIVE_DAY_INDICES = "active_day_indices"
         private const val KEY_FIRST_RUN = "first_run"
         private const val KEY_FIRST_INSTALL_DATE = "first_install_date"
-        // Clave exclusiva del idioma del dispositivo — no se borra al cerrar sesión,
-        // a diferencia del resto de ajustes que sí son por usuario
         private const val KEY_DEVICE_LANGUAGE = "device_language"
+
+        // Claves para cada franja horaria
+        private const val KEY_MORNING_ENABLED = "reminder_morning_enabled"
+        private const val KEY_MORNING_TIME = "reminder_morning_time"
+        private const val KEY_AFTERNOON_ENABLED = "reminder_afternoon_enabled"
+        private const val KEY_AFTERNOON_TIME = "reminder_afternoon_time"
+        private const val KEY_EVENING_ENABLED = "reminder_evening_enabled"
+        private const val KEY_EVENING_TIME = "reminder_evening_time"
+        private const val KEY_ALLDAY_ENABLED = "reminder_allday_enabled"
+        private const val KEY_ALLDAY_TIME = "reminder_allday_time"
     }
 
-    // ── RECORDATORIOS ─────────────────────────────────────────────────────────
+// ── RECORDATORIOS ─────────────────────────────────────────────────────────
 
-    // true si el usuario tiene los recordatorios activados.
     var areRemindersEnabled: Boolean
         get() = prefs.getBoolean(KEY_REMINDERS_ENABLED, false)
         set(value) = prefs.edit { putBoolean(KEY_REMINDERS_ENABLED, value) }
 
-    // Hora del recordatorio en formato "HH:mm" (ej: "20:00").
-    var reminderTime: String
-        get() = prefs.getString(KEY_REMINDER_TIME, "20:00") ?: "20:00"
-        set(value) = prefs.edit { putString(KEY_REMINDER_TIME, value) }
+    var morningReminderEnabled: Boolean
+        get() = prefs.getBoolean(KEY_MORNING_ENABLED, false)
+        set(value) = prefs.edit { putBoolean(KEY_MORNING_ENABLED, value) }
+
+    var morningReminderTime: String
+        get() = prefs.getString(KEY_MORNING_TIME, "08:00") ?: "08:00"
+        set(value) = prefs.edit { putString(KEY_MORNING_TIME, value) }
+
+    var afternoonReminderEnabled: Boolean
+        get() = prefs.getBoolean(KEY_AFTERNOON_ENABLED, false)
+        set(value) = prefs.edit { putBoolean(KEY_AFTERNOON_ENABLED, value) }
+
+    var afternoonReminderTime: String
+        get() = prefs.getString(KEY_AFTERNOON_TIME, "15:00") ?: "15:00"
+        set(value) = prefs.edit { putString(KEY_AFTERNOON_TIME, value) }
+
+    var eveningReminderEnabled: Boolean
+        get() = prefs.getBoolean(KEY_EVENING_ENABLED, false)
+        set(value) = prefs.edit { putBoolean(KEY_EVENING_ENABLED, value) }
+
+    var eveningReminderTime: String
+        get() = prefs.getString(KEY_EVENING_TIME, "21:00") ?: "21:00"
+        set(value) = prefs.edit { putString(KEY_EVENING_TIME, value) }
+
+    var allDayReminderEnabled: Boolean
+        get() = prefs.getBoolean(KEY_ALLDAY_ENABLED, false)
+        set(value) = prefs.edit { putBoolean(KEY_ALLDAY_ENABLED, value) }
+
+    var allDayReminderTime: String
+        get() = prefs.getString(KEY_ALLDAY_TIME, "09:00") ?: "09:00"
+        set(value) = prefs.edit { putString(KEY_ALLDAY_TIME, value) }
 
     // ── DÍAS ACTIVOS ──────────────────────────────────────────────────────────
 
@@ -126,8 +159,15 @@ class SettingsManager(private val context: Context) {
             themeMode = ThemeHelper.getThemeMode(context),
             language = LanguageHelper.getLanguageCode(context),
             remindersEnabled = areRemindersEnabled,
-            reminderTime = reminderTime,
-            activeDayIndices = activeDayIndices
+            activeDayIndices = activeDayIndices,
+            morningEnabled = morningReminderEnabled,
+            morningTime = morningReminderTime,
+            afternoonEnabled = afternoonReminderEnabled,
+            afternoonTime = afternoonReminderTime,
+            eveningEnabled = eveningReminderEnabled,
+            eveningTime = eveningReminderTime,
+            allDayEnabled = allDayReminderEnabled,
+            allDayTime = allDayReminderTime
         )
     }
 
@@ -154,9 +194,14 @@ class SettingsManager(private val context: Context) {
             (settings["remindersEnabled"] as? Boolean)?.let { enabled ->
                 areRemindersEnabled = enabled
             }
-            (settings["reminderTime"] as? String)?.let { time ->
-                reminderTime = time
-            }
+            (settings["morningEnabled"] as? Boolean)?.let { morningReminderEnabled = it }
+            (settings["morningTime"] as? String)?.let { morningReminderTime = it }
+            (settings["afternoonEnabled"] as? Boolean)?.let { afternoonReminderEnabled = it }
+            (settings["afternoonTime"] as? String)?.let { afternoonReminderTime = it }
+            (settings["eveningEnabled"] as? Boolean)?.let { eveningReminderEnabled = it }
+            (settings["eveningTime"] as? String)?.let { eveningReminderTime = it }
+            (settings["allDayEnabled"] as? Boolean)?.let { allDayReminderEnabled = it }
+            (settings["allDayTime"] as? String)?.let { allDayReminderTime = it }
 
             // Aplicar días activos — deserializar de "0,1,2,3,4" a Set<Int>
             (settings["activeDayIndices"] as? String)?.let { indicesStr ->

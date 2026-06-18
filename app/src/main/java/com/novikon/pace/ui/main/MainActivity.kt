@@ -394,7 +394,14 @@ class MainActivity : AppCompatActivity() {
                 context = this,
                 areRemindersEnabled = settingsManager.areRemindersEnabled,
                 activeDayIndices = settingsManager.activeDayIndices,
-                reminderTime = settingsManager.reminderTime
+                morningEnabled = settingsManager.morningReminderEnabled,
+                morningTime = settingsManager.morningReminderTime,
+                afternoonEnabled = settingsManager.afternoonReminderEnabled,
+                afternoonTime = settingsManager.afternoonReminderTime,
+                eveningEnabled = settingsManager.eveningReminderEnabled,
+                eveningTime = settingsManager.eveningReminderTime,
+                allDayEnabled = settingsManager.allDayReminderEnabled,
+                allDayTime = settingsManager.allDayReminderTime
             )
         }
     }
