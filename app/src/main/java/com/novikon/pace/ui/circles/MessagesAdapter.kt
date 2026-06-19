@@ -209,7 +209,8 @@ class MessagesAdapter(
     ) : RecyclerView.ViewHolder(itemView) {
         private val tvTitle: TextView = itemView.findViewById(R.id.tv_event_title)
         private val tvSchedule: TextView = itemView.findViewById(R.id.tv_event_schedule)
-        private val tvParticipants: TextView = itemView.findViewById(R.id.tv_event_participants)
+        private val tvJoined: TextView = itemView.findViewById(R.id.tv_event_joined)
+        private val tvDeclined: TextView = itemView.findViewById(R.id.tv_event_declined)
         private val btnJoin: MaterialButton = itemView.findViewById(R.id.btn_event_join)
         private val btnDecline: MaterialButton = itemView.findViewById(R.id.btn_event_decline)
         fun bind(message: Message) {
@@ -232,7 +233,15 @@ class MessagesAdapter(
                 message.eventDeclinedNames.joinToString(", ")
             }
 
-            tvParticipants.text = context.getString(R.string.event_participants_format, joined, declined)
+            tvJoined.text = if (message.eventJoinedNames.isEmpty())
+                context.getString(R.string.event_none_placeholder)
+            else
+                message.eventJoinedNames.joinToString(", ")
+
+            tvDeclined.text = if (message.eventDeclinedNames.isEmpty())
+                context.getString(R.string.event_none_placeholder)
+            else
+                message.eventDeclinedNames.joinToString(", ")
 
             val isCreator = message.eventCreatedBy == currentUserId
             val alreadyJoined = message.eventJoinedIds.contains(currentUserId)

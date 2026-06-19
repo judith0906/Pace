@@ -466,7 +466,6 @@
     <!-- Textos dinámicos nuevos para adapters/managers -->
     <string name="event_title_format">Événement : %1$s</string>
     <string name="event_datetime_format">Date et heure : %1$s</string>
-    <string name="event_participants_format">Participe : %1$s\nRefuse : %2$s</string>
     <string name="event_default_name">Événement</string>
     <string name="event_photo_label">Photo</string>
 
@@ -636,4 +635,6 @@
     <string name="delete_message_success">Message supprimé</string>
     <string name="delete_message_error">Impossible de supprimer le message</string>
 
+    <string name="event_joined_label_short">Participent</string>
+    <string name="event_declined_label_short">Déclinent</string>
 </resources>

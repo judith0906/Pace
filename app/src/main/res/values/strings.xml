@@ -463,7 +463,6 @@
     <!-- ========================================================= -->
     <string name="event_title_format">Evento: %1$s</string>
     <string name="event_datetime_format">Fecha y hora: %1$s</string>
-    <string name="event_participants_format">Van: %1$s\nDeclinan: %2$s</string>
     <string name="event_default_name">Evento</string>
     <string name="event_photo_label">Foto</string>
 
@@ -632,4 +631,7 @@
     <string name="delete_message_confirm_body">¿Seguro que quieres eliminar este mensaje?</string>
     <string name="delete_message_success">Mensaje eliminado</string>
     <string name="delete_message_error">No se pudo eliminar el mensaje</string>
+
+    <string name="event_joined_label_short">Van</string>
+    <string name="event_declined_label_short">Declinan</string>
 </resources>

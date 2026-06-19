@@ -168,31 +168,61 @@ class SettingsActivity : AppCompatActivity() {
     // Muestra selector de idioma y aplica el cambio inmediatamente.
     private fun showLanguageDialog() {
         val languages = Language.values()
-        val languageNames = languages.map { it.displayName }.toTypedArray()
-        val currentIndex = languages.indexOfFirst {
-            it.code == LanguageHelper.getLanguageCode(this)
+        val currentCode = LanguageHelper.getLanguageCode(this)
+
+        val dialogView = layoutInflater.inflate(R.layout.dialog_language_picker, null)
+        val container = dialogView.findViewById<LinearLayout>(R.id.languageChipContainer)
+
+        var selectedLanguage = languages.firstOrNull { it.code == currentCode } ?: languages[0]
+        val chipViews = mutableListOf<TextView>()
+
+        languages.forEach { language ->
+            val chip = layoutInflater.inflate(R.layout.item_day_chip, container, false) as TextView
+            chip.text = language.displayName
+            chip.isSelected = language.code == currentCode
+            chip.setTextColor(
+                ContextCompat.getColor(this,
+                    if (chip.isSelected) R.color.day_chip_text_selected
+                    else R.color.day_chip_text_unselected
+                )
+            )
+            chip.setOnClickListener {
+                selectedLanguage = language
+                chipViews.forEach { c ->
+                    c.isSelected = false
+                    c.setTextColor(ContextCompat.getColor(this, R.color.day_chip_text_unselected))
+                }
+                chip.isSelected = true
+                chip.setTextColor(ContextCompat.getColor(this, R.color.day_chip_text_selected))
+            }
+            container.addView(chip)
+            chipViews.add(chip)
         }
 
-        AlertDialog.Builder(this)
+        val dialog = AlertDialog.Builder(this)
             .setTitle(getString(R.string.select_language))
-            .setSingleChoiceItems(languageNames, currentIndex) { dialog, which ->
-                val selectedLanguage = languages[which]
-
-                LanguageHelper.changeLanguage(this, selectedLanguage.code)
-                // Sincronizar con Firebase — el idioma cambió
-                syncSettings()
-
-                Toast.makeText(
-                    this,
-                    "${getString(R.string.idm_chng)}${selectedLanguage.displayName}",
-                    Toast.LENGTH_SHORT
-                ).show()
-
-                dialog.dismiss()
-                recreate()
+            .setView(dialogView)
+            .setPositiveButton(getString(R.string.save)) { _, _ ->
+                if (selectedLanguage.code != currentCode) {
+                    LanguageHelper.changeLanguage(this, selectedLanguage.code)
+                    syncSettings()
+                    Toast.makeText(
+                        this,
+                        "${getString(R.string.idm_chng)}${selectedLanguage.displayName}",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                    recreate()
+                }
             }
             .setNegativeButton(getString(R.string.cancel), null)
             .show()
+
+        dialog.getButton(AlertDialog.BUTTON_POSITIVE).setTextColor(
+            ContextCompat.getColor(this, R.color.text_secondary)
+        )
+        dialog.getButton(AlertDialog.BUTTON_NEGATIVE).setTextColor(
+            ContextCompat.getColor(this, R.color.text_secondary)
+        )
     }
 
     // Permite elegir la hora exacta para enviar recordatorios diarios.

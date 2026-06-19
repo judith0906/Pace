@@ -2,7 +2,6 @@ package com.novikon.pace.ui.circles
 
 import android.Manifest
 import android.app.DatePickerDialog
-import android.app.TimePickerDialog
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.os.Bundle
@@ -14,6 +13,7 @@ import android.view.View
 import android.view.WindowManager
 import android.widget.EditText
 import android.widget.ImageView
+import android.widget.NumberPicker
 import android.widget.Spinner
 import android.widget.TextView
 import android.widget.Toast
@@ -402,19 +402,48 @@ class CircleChatActivity : AppCompatActivity() {
             }
 
             btnPickTime.setOnClickListener {
-                val now = Calendar.getInstance()
-                TimePickerDialog(
-                    this@CircleChatActivity,
-                    { _, hour, minute ->
+                val currentHour = calendar.get(Calendar.HOUR_OF_DAY)
+                val currentMinute = calendar.get(Calendar.MINUTE)
+
+                val dialogView = layoutInflater.inflate(R.layout.dialog_time_picker, null)
+                val hourPicker = dialogView.findViewById<NumberPicker>(R.id.hourPicker)
+                val minutePicker = dialogView.findViewById<NumberPicker>(R.id.minutePicker)
+
+                val hours = (0..23).map { String.format("%02d", it) }.toTypedArray()
+                hourPicker.minValue = 0
+                hourPicker.maxValue = 23
+                hourPicker.displayedValues = hours
+                hourPicker.value = currentHour
+                hourPicker.wrapSelectorWheel = true
+
+                val minutes = (0..59).map { String.format("%02d", it) }.toTypedArray()
+                minutePicker.minValue = 0
+                minutePicker.maxValue = 59
+                minutePicker.displayedValues = minutes
+                minutePicker.value = currentMinute
+                minutePicker.wrapSelectorWheel = true
+
+                val timeDialog = AlertDialog.Builder(this@CircleChatActivity)
+                    .setView(dialogView)
+                    .setPositiveButton(getString(R.string.save)) { _, _ ->
+                        val hour = hourPicker.value
+                        val minute = minutePicker.value
                         calendar.set(Calendar.HOUR_OF_DAY, hour)
                         calendar.set(Calendar.MINUTE, minute)
                         calendar.set(Calendar.SECOND, 0)
                         calendar.set(Calendar.MILLISECOND, 0)
                         hasTime = true
                         tvSelectedTime.text = String.format(Locale.getDefault(), "%02d:%02d", hour, minute)
-                    },
-                    now.get(Calendar.HOUR_OF_DAY), now.get(Calendar.MINUTE), true
-                ).show()
+                    }
+                    .setNegativeButton(getString(R.string.cancel), null)
+                    .show()
+
+                timeDialog.getButton(AlertDialog.BUTTON_POSITIVE).setTextColor(
+                    ContextCompat.getColor(this@CircleChatActivity, R.color.text_secondary)
+                )
+                timeDialog.getButton(AlertDialog.BUTTON_NEGATIVE).setTextColor(
+                    ContextCompat.getColor(this@CircleChatActivity, R.color.text_secondary)
+                )
             }
 
             AlertDialog.Builder(this@CircleChatActivity)
@@ -459,7 +488,14 @@ class CircleChatActivity : AppCompatActivity() {
                     }
                 }
                 .setNegativeButton(getString(R.string.cancel), null)
-                .show()
+                .show().also { d ->
+                    d.getButton(AlertDialog.BUTTON_POSITIVE).setTextColor(
+                        ContextCompat.getColor(this@CircleChatActivity, R.color.text_secondary)
+                    )
+                    d.getButton(AlertDialog.BUTTON_NEGATIVE).setTextColor(
+                        ContextCompat.getColor(this@CircleChatActivity, R.color.text_secondary)
+                    )
+                }
         }
     }
 
