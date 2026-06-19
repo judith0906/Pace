@@ -69,9 +69,10 @@ class SessionManager(private val context: Context) {
     fun markAllDevicesLoggedOut(onComplete: () -> Unit) {
         prefs.edit().putBoolean(KEY_USER_LOGGED_OUT, true).apply()
 
+        val currentDeviceId = getDeviceId()
         CoroutineScope(Dispatchers.IO).launch {
-            databaseManager.removeAllDevices()  // primero Firebase, auth aún válido
-            onComplete()                         // luego lo que venga después
+            databaseManager.removeAllDevicesExcept(currentDeviceId)
+            onComplete()
         }
     }
 
@@ -161,6 +162,22 @@ class SessionManager(private val context: Context) {
             Build.MODEL.startsWith(Build.MANUFACTURER, ignoreCase = true) -> Build.MODEL
             else -> "${Build.MANUFACTURER} ${Build.MODEL}"
         }
+    }
+
+    private var deviceRemovalListener: com.google.firebase.database.ValueEventListener? = null
+
+    fun startSessionListener(onForcedLogout: () -> Unit) {
+        val deviceId = getDeviceId()
+        deviceRemovalListener = databaseManager.listenForDeviceRemoval(deviceId) {
+            forceLogout()
+            onForcedLogout()
+        }
+    }
+
+    fun stopSessionListener() {
+        val listener = deviceRemovalListener ?: return
+        databaseManager.stopListeningForDeviceRemoval(getDeviceId(), listener)
+        deviceRemovalListener = null
     }
 
     // Devuelve la versión de Android del dispositivo (ej: "Android 14").

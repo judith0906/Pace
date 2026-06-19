@@ -149,15 +149,14 @@
                         android:layout_marginTop="8dp"
                         android:layout_marginBottom="8dp" />
 
-                    <!-- Zona horaria -->
                     <LinearLayout
-                        android:id="@+id/timezoneOption"
+                        android:id="@+id/changeEmailOption"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:orientation="horizontal"
                         android:gravity="center_vertical"
-                        android:paddingTop="8dp"
-                        android:paddingBottom="8dp"
+                        android:paddingTop="12dp"
+                        android:paddingBottom="12dp"
                         android:clickable="true"
                         android:focusable="true"
                         android:background="?attr/selectableItemBackground">
@@ -171,21 +170,26 @@
                             <TextView
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:text="@string/timezone"
-                                android:textSize="16sp"
-                                android:textColor="@color/text_secondary"
+                                android:text="@string/change_email"
+                                android:textSize="15sp"
+                                android:textColor="@color/text_primary"
                                 android:textStyle="bold" />
 
                             <TextView
-                                android:id="@+id/currentTimezoneText"
+                                android:id="@+id/currentEmailText"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:text=""
                                 android:textSize="13sp"
                                 android:textColor="@color/text_secondary"
                                 android:layout_marginTop="2dp" />
 
                         </LinearLayout>
+
+                        <ImageView
+                            android:layout_width="20dp"
+                            android:layout_height="20dp"
+                            android:src="@drawable/ic_chevron_right"
+                            android:alpha="0.4" />
 
                     </LinearLayout>
 
@@ -334,98 +338,6 @@
                     android:layout_height="wrap_content"
                     android:orientation="vertical"
                     android:padding="16dp">
-
-                    <!-- Quién puede invitarte a círculos -->
-                    <LinearLayout
-                        android:id="@+id/whoCanInviteOption"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="horizontal"
-                        android:gravity="center_vertical"
-                        android:paddingTop="8dp"
-                        android:paddingBottom="8dp"
-                        android:clickable="true"
-                        android:focusable="true"
-                        android:background="?attr/selectableItemBackground">
-
-                        <LinearLayout
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            android:orientation="vertical">
-
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="@string/who_can_invite_circles"
-                                android:textSize="16sp"
-                                android:textColor="@color/text_primary"
-                                android:textStyle="bold" />
-
-                        </LinearLayout>
-
-                        <ImageView
-                            android:layout_width="20dp"
-                            android:layout_height="20dp"
-                            android:src="@drawable/ic_arrow_right"
-                            android:contentDescription="Configurar"
-                            app:tint="@color/icon_color" />
-
-                    </LinearLayout>
-
-                    <!-- Divisor -->
-                    <View
-                        android:layout_width="match_parent"
-                        android:layout_height="1dp"
-                        android:background="@color/border_color"
-                        android:layout_marginTop="8dp"
-                        android:layout_marginBottom="8dp" />
-
-                    <!-- Quién puede ver tus hábitos -->
-                    <LinearLayout
-                        android:id="@+id/whoCanSeeHabitsOption"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="horizontal"
-                        android:gravity="center_vertical"
-                        android:paddingTop="8dp"
-                        android:paddingBottom="8dp"
-                        android:clickable="true"
-                        android:focusable="true"
-                        android:background="?attr/selectableItemBackground">
-
-                        <LinearLayout
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            android:orientation="vertical">
-
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="@string/who_can_see_habits"
-                                android:textSize="16sp"
-                                android:textColor="@color/text_primary"
-                                android:textStyle="bold" />
-
-                        </LinearLayout>
-
-                        <ImageView
-                            android:layout_width="20dp"
-                            android:layout_height="20dp"
-                            android:src="@drawable/ic_arrow_right"
-                            android:contentDescription="Configurar"
-                            app:tint="@color/icon_color" />
-
-                    </LinearLayout>
-
-                    <!-- Divisor -->
-                    <View
-                        android:layout_width="match_parent"
-                        android:layout_height="1dp"
-                        android:background="@color/border_color"
-                        android:layout_marginTop="8dp"
-                        android:layout_marginBottom="8dp" />
 
                     <!-- Bloquear usuarios -->
                     <LinearLayout

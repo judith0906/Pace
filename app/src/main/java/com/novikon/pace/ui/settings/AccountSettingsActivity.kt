@@ -9,6 +9,7 @@ import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.textfield.TextInputEditText
@@ -38,7 +39,7 @@ class AccountSettingsActivity : AppCompatActivity() {
 
     private lateinit var backButton: ImageButton
     private lateinit var currentNameText: TextView
-    private lateinit var currentTimezoneText: TextView
+    private lateinit var currentEmailText: TextView
     private lateinit var auth: FirebaseAuth
     private lateinit var database: FirebaseDatabase
     private lateinit var habitsManager: HabitsManager
@@ -79,12 +80,12 @@ class AccountSettingsActivity : AppCompatActivity() {
         initializeViews()
         setupListeners()
         loadUserName()
-        loadSystemTimezone()
     }
     private fun initializeViews() {
         backButton = findViewById(R.id.backButton)
         currentNameText = findViewById(R.id.currentNameText)
-        currentTimezoneText = findViewById(R.id.currentTimezoneText)
+        currentEmailText = findViewById(R.id.currentEmailText)
+        currentEmailText.text = auth.currentUser?.email ?: ""
     }
     private fun setupListeners() {
         backButton.setOnClickListener { finish() }
@@ -93,8 +94,9 @@ class AccountSettingsActivity : AppCompatActivity() {
             showChangeNameDialog()
         }
 
-        // Zona horaria informativa
-        findViewById<View>(R.id.timezoneOption).setOnClickListener { }
+        findViewById<View>(R.id.changeEmailOption).setOnClickListener {
+            showChangeEmailDialog()
+        }
 
         findViewById<View>(R.id.signOutAllDevicesOption).setOnClickListener {
             showSignOutAllDevicesDialog()
@@ -102,14 +104,6 @@ class AccountSettingsActivity : AppCompatActivity() {
 
         findViewById<View>(R.id.viewActiveDevicesOption).setOnClickListener {
             startActivity(Intent(this, ActiveDevicesActivity::class.java))
-        }
-
-        findViewById<View>(R.id.whoCanInviteOption).setOnClickListener {
-            showPrivacyDialog(getString(R.string.who_can_invite_circles))
-        }
-
-        findViewById<View>(R.id.whoCanSeeHabitsOption).setOnClickListener {
-            showPrivacyDialog(getString(R.string.who_can_see_habits))
         }
 
         findViewById<View>(R.id.blockUsersOption).setOnClickListener {
@@ -140,20 +134,6 @@ class AccountSettingsActivity : AppCompatActivity() {
                     currentNameText.text = user.displayName ?: getString(R.string.default_user)
                 }
             })
-    }
-    private fun loadSystemTimezone() {
-        val tz = TimeZone.getDefault()
-        val offsetMs = tz.rawOffset
-        val offsetHours = offsetMs / 3_600_000
-        val offsetMinutes = Math.abs((offsetMs % 3_600_000) / 60_000)
-
-        val gmtOffset = when {
-            offsetMinutes > 0 -> "GMT%+d:%02d".format(offsetHours, offsetMinutes)
-            else -> "GMT%+d".format(offsetHours)
-        }
-
-        val readableName = tz.id.replace("_", " ")
-        currentTimezoneText.text = "$readableName ($gmtOffset)"
     }
     private fun showChangeNameDialog() {
         val dialogView = layoutInflater.inflate(R.layout.dialog_input, null)
@@ -194,25 +174,6 @@ class AccountSettingsActivity : AppCompatActivity() {
             .addOnFailureListener { e ->
                 Toast.makeText(this, "${getString(R.string.error)}${e.message}", Toast.LENGTH_LONG).show()
             }
-    }
-    private fun showPrivacyDialog(title: String) {
-        val options = arrayOf(
-            getString(R.string.everyone),
-            getString(R.string.friends_only),
-            getString(R.string.nobody)
-        )
-
-        AlertDialog.Builder(this)
-            .setTitle(title)
-            .setItems(options) { _, which ->
-                val selected = options[which]
-                Toast.makeText(
-                    this,
-                    getString(R.string.privacy_selected_format, selected),
-                    Toast.LENGTH_SHORT
-                ).show()
-            }
-            .show()
     }
     private fun showBlockedUsersDialog() {
         val dialogView = layoutInflater.inflate(R.layout.dialog_blocked_users, null)
@@ -272,17 +233,13 @@ class AccountSettingsActivity : AppCompatActivity() {
             .show()
     }
     private fun signOutAllDevices() {
-        habitsManager.clearLocalData()
-
         sessionManager.markAllDevicesLoggedOut {
             runOnUiThread {
-                auth.signOut()
-                Toast.makeText(this, getString(R.string.signed_out_all), Toast.LENGTH_SHORT).show()
-                val intent = Intent(this, LoginActivity::class.java).apply {
-                    flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-                }
-                startActivity(intent)
-                finish()
+                Toast.makeText(
+                    this,
+                    getString(R.string.signed_out_all),
+                    Toast.LENGTH_SHORT
+                ).show()
             }
         }
     }
@@ -411,6 +368,49 @@ class AccountSettingsActivity : AppCompatActivity() {
                     "${getString(R.string.error)}${e.message}",
                     Toast.LENGTH_LONG
                 ).show()
+            }
+    }
+
+    private fun showChangeEmailDialog() {
+        val user = auth.currentUser ?: return
+        val isGoogleUser = user.providerData.any { it.providerId == "google.com" }
+
+        if (isGoogleUser) {
+            Toast.makeText(this, getString(R.string.change_email_google_not_allowed), Toast.LENGTH_LONG).show()
+            return
+        }
+
+        val dialogView = layoutInflater.inflate(R.layout.dialog_input, null)
+        val emailInput = dialogView.findViewById<TextInputEditText>(R.id.dialogInput)
+        emailInput.hint = getString(R.string.new_email)
+        emailInput.inputType = android.text.InputType.TYPE_CLASS_TEXT or
+                android.text.InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS
+
+        val dialog = AlertDialog.Builder(this)
+            .setTitle(getString(R.string.change_email))
+            .setView(dialogView)
+            .setPositiveButton(getString(R.string.save)) { _, _ ->
+                val newEmail = emailInput.text.toString().trim()
+                if (newEmail.isNotEmpty()) changeEmail(user, newEmail)
+            }
+            .setNegativeButton(getString(R.string.cancel), null)
+            .show()
+
+        dialog.getButton(AlertDialog.BUTTON_POSITIVE).setTextColor(
+            ContextCompat.getColor(this, R.color.text_secondary)
+        )
+        dialog.getButton(AlertDialog.BUTTON_NEGATIVE).setTextColor(
+            ContextCompat.getColor(this, R.color.text_secondary)
+        )
+    }
+
+    private fun changeEmail(user: com.google.firebase.auth.FirebaseUser, newEmail: String) {
+        user.verifyBeforeUpdateEmail(newEmail)
+            .addOnSuccessListener {
+                Toast.makeText(this, getString(R.string.change_email_verification_sent), Toast.LENGTH_LONG).show()
+            }
+            .addOnFailureListener { e ->
+                Toast.makeText(this, "${getString(R.string.error)}${e.message}", Toast.LENGTH_LONG).show()
             }
     }
 

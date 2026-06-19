@@ -463,6 +463,34 @@ class RealtimeDatabaseManager {
         }
     }
 
+    suspend fun removeAllDevicesExcept(currentDeviceId: String): Boolean {
+        val userId = getUserId() ?: return false
+
+        return suspendCancellableCoroutine { continuation ->
+            database.getReference("users/$userId/devices")
+                .addListenerForSingleValueEvent(object : ValueEventListener {
+                    override fun onDataChange(snapshot: DataSnapshot) {
+                        val updates = mutableMapOf<String, Any?>()
+                        snapshot.children.forEach { child ->
+                            if (child.key != currentDeviceId) {
+                                updates["users/$userId/devices/${child.key}"] = null
+                            }
+                        }
+                        if (updates.isEmpty()) {
+                            continuation.resume(true)
+                            return
+                        }
+                        database.reference.updateChildren(updates)
+                            .addOnSuccessListener { continuation.resume(true) }
+                            .addOnFailureListener { continuation.resume(false) }
+                    }
+                    override fun onCancelled(error: DatabaseError) {
+                        continuation.resume(false)
+                    }
+                })
+        }
+    }
+
     // Guarda la fecha de primera instalación en Firebase para que sobreviva
     // a desinstalaciones. Solo se llama una vez — cuando se establece por primera vez.
     suspend fun saveFirstInstallDate(date: String): Boolean {
@@ -490,5 +518,30 @@ class RealtimeDatabaseManager {
                     }
                 })
         }
+    }
+
+    fun listenForDeviceRemoval(deviceId: String, onRemoved: () -> Unit): com.google.firebase.database.ValueEventListener {
+        val userId = getUserId() ?: return object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {}
+            override fun onCancelled(error: DatabaseError) {}
+        }
+
+        val ref = database.getReference("users/$userId/devices/$deviceId")
+        val listener = object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                if (!snapshot.exists()) {
+                    onRemoved()
+                }
+            }
+            override fun onCancelled(error: DatabaseError) {}
+        }
+        ref.addValueEventListener(listener)
+        return listener
+    }
+
+    fun stopListeningForDeviceRemoval(deviceId: String, listener: com.google.firebase.database.ValueEventListener) {
+        val userId = getUserId() ?: return
+        database.getReference("users/$userId/devices/$deviceId")
+            .removeEventListener(listener)
     }
 }

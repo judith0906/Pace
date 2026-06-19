@@ -640,4 +640,9 @@
 
     <string name="date_header_today">Aujourd\'hui</string>
     <string name="date_header_yesterday">Hier</string>
+
+    <string name="change_email">Changer l\'e-mail</string>
+    <string name="new_email">Nouvelle adresse e-mail</string>
+    <string name="change_email_verification_sent">Nous vous avons envoyé un e-mail de vérification. Confirmez le changement depuis votre nouvelle adresse.</string>
+    <string name="change_email_google_not_allowed">Les comptes Google ne peuvent pas modifier leur e-mail ici.</string>
 </resources>

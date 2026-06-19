@@ -636,4 +636,9 @@
 
     <string name="date_header_today">Today</string>
     <string name="date_header_yesterday">Yesterday</string>
+
+    <string name="change_email">Change email</string>
+    <string name="new_email">New email address</string>
+    <string name="change_email_verification_sent">We\'ve sent a verification email. Confirm the change from your new address.</string>
+    <string name="change_email_google_not_allowed">Google accounts cannot change their email here.</string>
 </resources>

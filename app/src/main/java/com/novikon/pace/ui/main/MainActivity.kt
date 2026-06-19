@@ -39,6 +39,7 @@ import com.novikon.pace.models.Circle
 import com.novikon.pace.repositories.HabitsRepository
 import com.novikon.pace.ui.circles.CirclesAdapter
 import com.novikon.pace.ui.circles.CircleChatActivity
+import com.novikon.pace.ui.login.LoginActivity
 import com.novikon.pace.utils.applySystemBarInsets
 
 // Pantalla principal: orquesta navegacion, preview de habitos y estado de sesion.
@@ -96,6 +97,16 @@ class MainActivity : AppCompatActivity() {
         sessionManager = SessionManager(this)
         // Actualizar timestamp de última actividad al arrancar
         sessionManager.updateLastActive()
+        sessionManager.startSessionListener {
+            runOnUiThread {
+                sessionManager.clearSession()
+                val intent = Intent(this, LoginActivity::class.java).apply {
+                    flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+                }
+                startActivity(intent)
+                finish()
+            }
+        }
         habitsManager = HabitsManager(this)
         settingsManager = SettingsManager(this)
         database = FirebaseDatabase.getInstance()
@@ -415,5 +426,10 @@ class MainActivity : AppCompatActivity() {
             lifecycleScope.launch { loadAndDisplayHabits() }
             loadAndDisplayCirclesPreview()
         }
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        sessionManager.stopSessionListener()
     }
 }

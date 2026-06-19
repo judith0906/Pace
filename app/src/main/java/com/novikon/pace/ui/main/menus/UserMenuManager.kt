@@ -330,7 +330,66 @@ class UserMenuManager(
                 }
             }
             .setNegativeButton(activity.getString(R.string.cancel), null)
-            .show()
+            val dialog = AlertDialog.Builder(activity)
+                .setTitle(activity.getString(R.string.change_password))
+                .setView(dialogView)
+                .setPositiveButton(activity.getString(R.string.save)) { _, _ ->
+                    val currentPassword = currentPasswordInput.text.toString()
+                    val newPassword = newPasswordInput.text.toString()
+                    val confirmPassword = confirmPasswordInput.text.toString()
+
+                    if (newPassword != confirmPassword) {
+                        Toast.makeText(activity, activity.getString(R.string.password_mismatch), Toast.LENGTH_SHORT).show()
+                        return@setPositiveButton
+                    }
+
+                    val user = Firebase.auth.currentUser
+                    val email = user?.email
+
+                    if (email != null) {
+                        val credential = EmailAuthProvider.getCredential(email, currentPassword)
+                        user.reauthenticate(credential)
+                            .addOnSuccessListener {
+                                user.updatePassword(newPassword)
+                                    .addOnSuccessListener {
+                                        Toast.makeText(
+                                            activity,
+                                            activity.getString(R.string.password_changed_success),
+                                            Toast.LENGTH_SHORT
+                                        ).show()
+                                    }
+                                    .addOnFailureListener { e ->
+                                        Toast.makeText(
+                                            activity,
+                                            "${activity.getString(R.string.error)}${e.message}",
+                                            Toast.LENGTH_LONG
+                                        ).show()
+                                    }
+                            }
+                            .addOnFailureListener {
+                                Toast.makeText(
+                                    activity,
+                                    activity.getString(R.string.current_password_incorrect),
+                                    Toast.LENGTH_SHORT
+                                ).show()
+                            }
+                    } else {
+                        Toast.makeText(
+                            activity,
+                            activity.getString(R.string.google_account_no_password),
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    }
+                }
+                .setNegativeButton(activity.getString(R.string.cancel), null)
+                .show()
+
+            dialog.getButton(AlertDialog.BUTTON_POSITIVE).setTextColor(
+                androidx.core.content.ContextCompat.getColor(activity, R.color.text_secondary)
+            )
+            dialog.getButton(AlertDialog.BUTTON_NEGATIVE).setTextColor(
+                androidx.core.content.ContextCompat.getColor(activity, R.color.text_secondary)
+            )
     }
 
     // Pide confirmación antes de cerrar la sesión.

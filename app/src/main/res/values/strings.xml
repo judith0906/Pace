@@ -637,4 +637,9 @@
 
     <string name="date_header_today">Hoy</string>
     <string name="date_header_yesterday">Ayer</string>
+
+    <string name="change_email">Cambiar correo</string>
+    <string name="new_email">Nuevo correo electrónico</string>
+    <string name="change_email_verification_sent">Te hemos enviado un correo de verificación. Confirma el cambio desde tu nueva dirección.</string>
+    <string name="change_email_google_not_allowed">Las cuentas de Google no pueden cambiar el correo desde aquí.</string>
 </resources>
