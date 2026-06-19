@@ -51,7 +51,6 @@ dependencies {
     // Librerías Android básicas
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
-    implementation(libs.material)
     implementation(libs.androidx.activity)
     implementation(libs.androidx.constraintlayout)
 
@@ -65,7 +64,7 @@ dependencies {
     // Google Sign-In
     implementation("com.google.android.gms:play-services-auth:20.7.0")
     // Material Design
-    implementation("com.google.android.material:material:1.11.0")
+    implementation("com.google.android.material:material:1.12.0")
     // DrawerLayout
     implementation("androidx.drawerlayout:drawerlayout:1.2.0")
     // WorkManager para notificaciones programadas

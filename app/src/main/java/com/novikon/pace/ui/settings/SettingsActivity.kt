@@ -1,12 +1,12 @@
 package com.novikon.pace.ui.settings
 
 import android.Manifest
-import android.app.TimePickerDialog
 import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
 import android.widget.ImageButton
 import android.widget.LinearLayout
+import android.widget.NumberPicker
 import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
@@ -198,20 +198,46 @@ class SettingsActivity : AppCompatActivity() {
     // Permite elegir la hora exacta para enviar recordatorios diarios.
     private fun showTimePicker(currentTime: String, minHour: Int, maxHour: Int, onTimeSet: (String) -> Unit) {
         val timeParts = currentTime.split(":")
-        val hour = timeParts[0].toIntOrNull() ?: minHour
-        val minute = timeParts[1].toIntOrNull() ?: 0
+        val currentHour = timeParts[0].toIntOrNull()?.coerceIn(minHour, maxHour) ?: minHour
+        val currentMinute = timeParts[1].toIntOrNull() ?: 0
 
-        TimePickerDialog(
-            this,
-            { _, selectedHour, selectedMinute ->
-                val clampedHour = selectedHour.coerceIn(minHour, maxHour)
-                val formattedTime = String.format("%02d:%02d", clampedHour, selectedMinute)
+        val dialogView = layoutInflater.inflate(R.layout.dialog_time_picker, null)
+        val hourPicker = dialogView.findViewById<NumberPicker>(R.id.hourPicker)
+        val minutePicker = dialogView.findViewById<NumberPicker>(R.id.minutePicker)
+
+        // Configurar horas según rango de la franja
+        val hours = (minHour..maxHour).map { String.format("%02d", it) }.toTypedArray()
+        hourPicker.minValue = 0
+        hourPicker.maxValue = hours.size - 1
+        hourPicker.displayedValues = hours
+        hourPicker.value = (currentHour - minHour).coerceIn(0, hours.size - 1)
+        hourPicker.wrapSelectorWheel = false
+
+        // Configurar minutos 00-59
+        val minutes = (0..59).map { String.format("%02d", it) }.toTypedArray()
+        minutePicker.minValue = 0
+        minutePicker.maxValue = 59
+        minutePicker.displayedValues = minutes
+        minutePicker.value = currentMinute
+        minutePicker.wrapSelectorWheel = true
+
+        val dialog = AlertDialog.Builder(this)
+            .setView(dialogView)
+            .setPositiveButton(getString(R.string.save)) { _, _ ->
+                val selectedHour = minHour + hourPicker.value
+                val selectedMinute = minutePicker.value
+                val formattedTime = String.format("%02d:%02d", selectedHour, selectedMinute)
                 onTimeSet(formattedTime)
-            },
-            hour,
-            minute,
-            true
-        ).show()
+            }
+            .setNegativeButton(getString(R.string.cancel), null)
+            .show()
+
+        dialog.getButton(AlertDialog.BUTTON_POSITIVE).setTextColor(
+            ContextCompat.getColor(this, R.color.text_secondary)
+        )
+        dialog.getButton(AlertDialog.BUTTON_NEGATIVE).setTextColor(
+            ContextCompat.getColor(this, R.color.text_secondary)
+        )
     }
 
     // Permite seleccionar qué días de la semana recibir recordatorios.
@@ -521,7 +547,7 @@ class SettingsActivity : AppCompatActivity() {
             "${getString(it.titleRes)}  ·  ${getString(it.rangeRes)}"
         }.toTypedArray()
 
-        AlertDialog.Builder(this)
+        val dialog = AlertDialog.Builder(this, R.style.PaceAlertDialog)
             .setTitle(getString(R.string.choose_reminder_slot))
             .setItems(titles) { _, which ->
                 val slot = available[which]
@@ -535,5 +561,9 @@ class SettingsActivity : AppCompatActivity() {
             }
             .setNegativeButton(getString(R.string.cancel), null)
             .show()
+
+        dialog.getButton(AlertDialog.BUTTON_NEGATIVE).setTextColor(
+            ContextCompat.getColor(this, R.color.text_secondary)
+        )
     }
 }
