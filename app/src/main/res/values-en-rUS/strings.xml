@@ -633,4 +633,7 @@
     <string name="delete_message_error">Could not delete the message</string>
     <string name="event_joined_label_short">Going</string>
     <string name="event_declined_label_short">Declining</string>
+
+    <string name="date_header_today">Today</string>
+    <string name="date_header_yesterday">Yesterday</string>
 </resources>

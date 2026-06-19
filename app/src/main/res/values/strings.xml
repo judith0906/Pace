@@ -634,4 +634,7 @@
 
     <string name="event_joined_label_short">Van</string>
     <string name="event_declined_label_short">Declinan</string>
+
+    <string name="date_header_today">Hoy</string>
+    <string name="date_header_yesterday">Ayer</string>
 </resources>

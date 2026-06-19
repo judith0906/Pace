@@ -31,6 +31,10 @@ class MessagesAdapter(
     private val onPhotoClick: (String) -> Unit = {}
 ) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
+    sealed class ChatItem {
+        data class MessageItem(val message: Message) : ChatItem()
+        data class DateHeader(val dateText: String) : ChatItem()
+    }
     companion object {
         private const val VIEW_TYPE_SENT = 1
         private const val VIEW_TYPE_RECEIVED = 2
@@ -38,6 +42,7 @@ class MessagesAdapter(
         private const val VIEW_TYPE_EVENT = 4
         private const val VIEW_TYPE_EVENT_START = 5
         private const val VIEW_TYPE_PHOTO = 6
+        private const val VIEW_TYPE_DATE_HEADER = 7
 
         private const val EVENT_CAPTURE_WINDOW_MS = 60 * 60 * 1000L
         private fun formatTime(timestamp: Long): String {
@@ -65,39 +70,89 @@ class MessagesAdapter(
         }
     }
 
-    private val messages = mutableListOf<Message>()
+    private val items = mutableListOf<ChatItem>()
+    private fun formatDateHeader(timestamp: Long): String {
+        val msgCal = java.util.Calendar.getInstance().apply { timeInMillis = timestamp }
+        val todayCal = java.util.Calendar.getInstance()
+        val yesterdayCal = java.util.Calendar.getInstance().apply { add(java.util.Calendar.DAY_OF_YEAR, -1) }
+
+        return when {
+            msgCal.get(java.util.Calendar.YEAR) == todayCal.get(java.util.Calendar.YEAR) &&
+                    msgCal.get(java.util.Calendar.DAY_OF_YEAR) == todayCal.get(java.util.Calendar.DAY_OF_YEAR) ->
+                itemView_context?.getString(R.string.date_header_today) ?: SimpleDateFormat("dd/MM/yyyy", Locale.getDefault()).format(Date(timestamp))
+
+            msgCal.get(java.util.Calendar.YEAR) == yesterdayCal.get(java.util.Calendar.YEAR) &&
+                    msgCal.get(java.util.Calendar.DAY_OF_YEAR) == yesterdayCal.get(java.util.Calendar.DAY_OF_YEAR) ->
+                itemView_context?.getString(R.string.date_header_yesterday) ?: SimpleDateFormat("dd/MM/yyyy", Locale.getDefault()).format(Date(timestamp))
+
+            else -> SimpleDateFormat("dd/MM/yyyy", Locale.getDefault()).format(Date(timestamp))
+        }
+    }
+    private var itemView_context: Context? = null
     private val ioExecutor = Executors.newCachedThreadPool()
     private val mainHandler = Handler(Looper.getMainLooper())
     fun addMessage(message: Message) {
-        messages.add(message)
-        notifyItemInserted(messages.size - 1)
+        // Comprobar si hay que insertar separador de fecha
+        val lastMessage = items.filterIsInstance<ChatItem.MessageItem>().lastOrNull()?.message
+        val needsHeader = if (lastMessage == null) {
+            true
+        } else {
+            val lastCal = java.util.Calendar.getInstance().apply { timeInMillis = lastMessage.timestamp }
+            val newCal = java.util.Calendar.getInstance().apply { timeInMillis = message.timestamp }
+            lastCal.get(java.util.Calendar.DAY_OF_YEAR) != newCal.get(java.util.Calendar.DAY_OF_YEAR) ||
+                    lastCal.get(java.util.Calendar.YEAR) != newCal.get(java.util.Calendar.YEAR)
+        }
+
+        if (needsHeader && message.timestamp > 0L) {
+            val dateText = formatDateHeader(message.timestamp)
+            items.add(ChatItem.DateHeader(dateText))
+            notifyItemInserted(items.size - 1)
+        }
+
+        items.add(ChatItem.MessageItem(message))
+        notifyItemInserted(items.size - 1)
     }
+
     fun removeMessage(messageId: String) {
-        val idx = messages.indexOfFirst { it.id == messageId }
+        val idx = items.indexOfFirst { it is ChatItem.MessageItem && it.message.id == messageId }
         if (idx == -1) return
-        messages.removeAt(idx)
+        items.removeAt(idx)
         notifyItemRemoved(idx)
+        // Si el item anterior era un DateHeader y el siguiente también lo es (o no existe), eliminar el header huérfano
+        if (idx > 0 && items.getOrNull(idx - 1) is ChatItem.DateHeader) {
+            if (idx >= items.size || items[idx] is ChatItem.DateHeader) {
+                items.removeAt(idx - 1)
+                notifyItemRemoved(idx - 1)
+            }
+        }
     }
+
     fun updateMessage(message: Message) {
-        val idx = messages.indexOfFirst { it.id == message.id }
+        val idx = items.indexOfFirst { it is ChatItem.MessageItem && it.message.id == message.id }
         if (idx == -1) return
-        messages[idx] = message
+        items[idx] = ChatItem.MessageItem(message)
         notifyItemChanged(idx)
     }
+
     fun refreshTemporalStates() {
         notifyDataSetChanged()
     }
     override fun getItemViewType(position: Int): Int {
-        val msg = messages[position]
-        return when (msg.type) {
-            "EVENT" -> VIEW_TYPE_EVENT
-            "EVENT_START" -> VIEW_TYPE_EVENT_START
-            "PHOTO" -> VIEW_TYPE_PHOTO
-            "SYSTEM" -> VIEW_TYPE_SYSTEM
-            else -> {
-                if (msg.senderId == "system") VIEW_TYPE_SYSTEM
-                else if (msg.senderId == currentUserId) VIEW_TYPE_SENT
-                else VIEW_TYPE_RECEIVED
+        return when (val item = items[position]) {
+            is ChatItem.DateHeader -> VIEW_TYPE_DATE_HEADER
+            is ChatItem.MessageItem -> {
+                val msg = item.message
+                when (msg.type) {
+                    "EVENT" -> VIEW_TYPE_EVENT
+                    "EVENT_START" -> VIEW_TYPE_EVENT_START
+                    "PHOTO" -> VIEW_TYPE_PHOTO
+                    "SYSTEM" -> VIEW_TYPE_SYSTEM
+                    else -> {
+                        if (msg.senderId == "system") VIEW_TYPE_SYSTEM
+                        else if (msg.senderId == currentUserId) VIEW_TYPE_SENT
+                        else VIEW_TYPE_RECEIVED
+                    }
+                }
             }
         }
     }
@@ -105,6 +160,7 @@ class MessagesAdapter(
 // onCreateViewHolder: infla el layout de cada item y crea su ViewHolder.
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
         val inflater = LayoutInflater.from(parent.context)
+        itemView_context = parent.context
         return when (viewType) {
             VIEW_TYPE_SENT -> SentMessageViewHolder(
                 inflater.inflate(R.layout.item_message_sent, parent, false),
@@ -130,6 +186,10 @@ class MessagesAdapter(
                 mainHandler,
                 onPhotoClick
             )
+            VIEW_TYPE_DATE_HEADER -> DateHeaderViewHolder(
+                LayoutInflater.from(parent.context)
+                    .inflate(R.layout.item_message_system, parent, false)
+            )
             else -> SystemMessageViewHolder(
                 inflater.inflate(R.layout.item_message_system, parent, false)
             )
@@ -137,20 +197,25 @@ class MessagesAdapter(
     }
 
 // onBindViewHolder: vincula los datos del elemento actual con su vista.
-    override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
-        val message = messages[position]
-        when (holder) {
-            is SentMessageViewHolder -> holder.bind(message)
-            is ReceivedMessageViewHolder -> holder.bind(message)
-            is SystemMessageViewHolder -> holder.bind(message)
-            is EventMessageViewHolder -> holder.bind(message)
-            is EventStartViewHolder -> holder.bind(message)
-            is PhotoMessageViewHolder -> holder.bind(message, currentUserId)
+override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
+    when (val item = items[position]) {
+        is ChatItem.DateHeader -> (holder as DateHeaderViewHolder).bind(item.dateText)
+        is ChatItem.MessageItem -> {
+            val message = item.message
+            when (holder) {
+                is SentMessageViewHolder -> holder.bind(message)
+                is ReceivedMessageViewHolder -> holder.bind(message)
+                is SystemMessageViewHolder -> holder.bind(message)
+                is EventMessageViewHolder -> holder.bind(message)
+                is EventStartViewHolder -> holder.bind(message)
+                is PhotoMessageViewHolder -> holder.bind(message, currentUserId)
+            }
         }
     }
+}
 
 // getItemCount: devuelve la cantidad total de elementos a renderizar.
-    override fun getItemCount(): Int = messages.size
+    override fun getItemCount(): Int = items.size
 
 // ViewHolder de mensaje enviado: muestra contenido publicado por el usuario actual.
     class SentMessageViewHolder(
@@ -337,6 +402,13 @@ class MessagesAdapter(
                     }
                 }
             }
+        }
+    }
+
+    class DateHeaderViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+        private val tvText: TextView = itemView.findViewById(R.id.tv_system_message)
+        fun bind(dateText: String) {
+            tvText.text = dateText
         }
     }
 }
