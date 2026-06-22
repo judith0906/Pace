@@ -10,7 +10,7 @@
         android:layout_height="wrap_content"
         android:orientation="vertical">
 
-        <!-- Nombre del grupo: editable inline con botón lápiz al lado del botón eliminar (solo admin) -->
+        <!-- Nombre del grupo -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -30,7 +30,6 @@
                 android:imeOptions="actionDone"
                 android:inputType="textCapSentences" />
 
-            <!-- Botón lápiz: solo visible para el admin. Activa la edición inline del nombre. -->
             <ImageButton
                 android:id="@+id/btn_edit_name"
                 android:layout_width="36dp"
@@ -41,41 +40,61 @@
                 android:visibility="gone"
                 app:tint="@color/icon_color" />
 
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/btn_delete_group"
-                android:layout_width="wrap_content"
-                android:layout_height="40dp"
-                android:text="@string/delete_group"
-                android:textColor="@color/white"
-                android:visibility="gone"
-                app:backgroundTint="@color/error_red" />
         </LinearLayout>
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+        <!-- Divisor -->
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="@color/border_color"
             android:layout_marginTop="12dp"
-            android:text="@string/group_join_code_label" />
+            android:layout_marginBottom="12dp" />
 
-        <TextView
-            android:id="@+id/tv_join_code"
-            android:layout_width="wrap_content"
+        <!-- Código de invitación (solo admin) -->
+        <LinearLayout
+            android:id="@+id/layout_join_code"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textSize="18sp"
-            android:textStyle="bold" />
+            android:orientation="vertical"
+            android:visibility="gone">
 
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/group_join_code_label"
+                android:textColor="@color/text_secondary"
+                android:textSize="12sp" />
+
+            <TextView
+                android:id="@+id/tv_join_code"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                android:layout_marginTop="2dp" />
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="@color/border_color"
+                android:layout_marginTop="12dp"
+                android:layout_marginBottom="12dp" />
+
+        </LinearLayout>
+
+        <!-- Participantes y slider max (solo admin) -->
         <TextView
             android:id="@+id/tv_members_summary"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="12dp" />
+            android:textColor="@color/text_secondary"
+            android:textSize="13sp" />
 
-        <!-- Slider de máximo de miembros: solo visible para el admin, igual que en crear círculo -->
         <LinearLayout
             android:id="@+id/layout_admin_max"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="12dp"
+            android:layout_marginTop="8dp"
             android:orientation="vertical"
             android:visibility="gone">
 
@@ -84,9 +103,9 @@
                 android:layout_height="wrap_content"
                 android:text="@string/group_max_members"
                 android:textColor="@color/text_secondary"
-                android:textSize="13sp" />
+                android:textSize="12sp"
+                android:layout_marginTop="4dp" />
 
-            <!-- Valor actual del slider, se actualiza en tiempo real al deslizar -->
             <TextView
                 android:id="@+id/tv_max_value"
                 android:layout_width="wrap_content"
@@ -103,46 +122,58 @@
                 android:layout_height="wrap_content"
                 android:valueFrom="3"
                 android:valueTo="6"
-                android:stepSize="1" />
+                android:stepSize="1"
+                app:trackColorActive="@color/text_secondary"
+                app:trackColorInactive="@color/border_color"
+                app:thumbColor="@color/text_secondary"
+                app:tickColorActive="@color/white"
+                app:tickColorInactive="@color/text_secondary" />
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btn_save_max"
+                style="@style/Widget.MaterialComponents.Button.TextButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="end"
                 android:text="@string/save"
-                android:textColor="@color/white"
-                app:backgroundTint="@color/accent_primary" />
+                android:textColor="@color/text_secondary" />
 
         </LinearLayout>
 
+        <!-- Divisor -->
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="@color/border_color"
+            android:layout_marginTop="12dp"
+            android:layout_marginBottom="12dp" />
+
+        <!-- Miembros -->
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
             android:text="@string/group_members_label"
-            android:textStyle="bold" />
+            android:textStyle="bold"
+            android:textSize="14sp" />
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/rv_members"
             android:layout_width="match_parent"
-            android:layout_height="220dp" />
+            android:layout_height="220dp"
+            android:layout_marginTop="8dp" />
 
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/btn_leave_group"
+        <!-- Divisor -->
+        <View
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:text="@string/leave_group"
-            android:textColor="@color/white"
-            android:visibility="gone"
-            app:backgroundTint="@color/error_red" />
+            android:layout_height="1dp"
+            android:background="@color/border_color"
+            android:layout_marginTop="12dp"
+            android:layout_marginBottom="12dp" />
 
-        <!-- Galería de fotos del círculo al estilo WhatsApp -->
+        <!-- Galería -->
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="20dp"
             android:text="@string/group_gallery_title"
             android:textStyle="bold"
             android:textSize="14sp" />
@@ -161,6 +192,40 @@
             android:layout_width="match_parent"
             android:layout_height="200dp"
             android:layout_marginTop="8dp" />
+
+        <!-- Divisor -->
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="@color/border_color"
+            android:layout_marginTop="16dp"
+            android:layout_marginBottom="8dp" />
+
+        <!-- Botón eliminar círculo (solo admin) -->
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btn_delete_group"
+            style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+            android:layout_width="wrap_content"
+            android:layout_height="36dp"
+            android:layout_gravity="center_horizontal"
+            android:text="@string/delete_group"
+            android:textSize="13sp"
+            android:visibility="gone"
+            app:strokeColor="@color/error_red"
+            android:textColor="@color/error_red" />
+
+        <!-- Botón salir del grupo (solo miembro) -->
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btn_leave_group"
+            style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+            android:layout_width="wrap_content"
+            android:layout_height="36dp"
+            android:layout_gravity="center_horizontal"
+            android:text="@string/leave_group"
+            android:textSize="13sp"
+            android:visibility="gone"
+            app:strokeColor="@color/error_red"
+            android:textColor="@color/error_red" />
 
     </LinearLayout>
 </ScrollView>

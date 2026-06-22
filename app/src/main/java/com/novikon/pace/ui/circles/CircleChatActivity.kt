@@ -153,6 +153,15 @@ class CircleChatActivity : AppCompatActivity() {
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         menuInflater.inflate(R.menu.menu_circle_chat, menu)
+        val item = menu.findItem(R.id.action_group_info)
+        val spannable = android.text.SpannableString(item.title)
+        spannable.setSpan(
+            android.text.style.ForegroundColorSpan(
+                ContextCompat.getColor(this, R.color.text_secondary)
+            ),
+            0, spannable.length, 0
+        )
+        item.title = spannable
         return true
     }
 
@@ -608,6 +617,7 @@ class CircleChatActivity : AppCompatActivity() {
             val btnEditName = view.findViewById<android.widget.ImageButton>(R.id.btn_edit_name)
             val btnDeleteGroup = view.findViewById<MaterialButton>(R.id.btn_delete_group)
             val tvJoinCode = view.findViewById<TextView>(R.id.tv_join_code)
+            val layoutJoinCode = view.findViewById<View>(R.id.layout_join_code)
             val tvMembersSummary = view.findViewById<TextView>(R.id.tv_members_summary)
             val layoutAdminMax = view.findViewById<View>(R.id.layout_admin_max)
             val tvMaxValue = view.findViewById<TextView>(R.id.tv_max_value)
@@ -617,11 +627,6 @@ class CircleChatActivity : AppCompatActivity() {
             val btnLeaveGroup = view.findViewById<MaterialButton>(R.id.btn_leave_group)
 
             etGroupName.setText(info.name)
-            tvJoinCode.text = if (isAdmin) {
-                if (info.joinCode.isBlank()) "-" else info.joinCode
-            } else {
-                getString(R.string.hidden_for_members)
-            }
 
             tvMembersSummary.text = getString(
                 R.string.group_members_summary,
@@ -640,35 +645,17 @@ class CircleChatActivity : AppCompatActivity() {
                         .setPositiveButton(getString(R.string.yes)) { _, _ ->
                             lifecycleScope.launch {
                                 val result = circlesManager.blockUserWithPolicy(circleId, member.userId)
-
                                 if (!result.success) {
-                                    Toast.makeText(
-                                        this@CircleChatActivity,
-                                        getString(R.string.block_user_error),
-                                        Toast.LENGTH_SHORT
-                                    ).show()
+                                    Toast.makeText(this@CircleChatActivity, getString(R.string.block_user_error), Toast.LENGTH_SHORT).show()
                                     return@launch
                                 }
-
                                 if (result.blockerLeftGroup) {
-                                    Toast.makeText(
-                                        this@CircleChatActivity,
-                                        getString(R.string.block_and_left_group_success),
-                                        Toast.LENGTH_SHORT
-                                    ).show()
+                                    Toast.makeText(this@CircleChatActivity, getString(R.string.block_and_left_group_success), Toast.LENGTH_SHORT).show()
                                     finish()
                                 } else if (result.blockedUserRemoved) {
-                                    Toast.makeText(
-                                        this@CircleChatActivity,
-                                        getString(R.string.block_and_remove_success),
-                                        Toast.LENGTH_SHORT
-                                    ).show()
+                                    Toast.makeText(this@CircleChatActivity, getString(R.string.block_and_remove_success), Toast.LENGTH_SHORT).show()
                                 } else {
-                                    Toast.makeText(
-                                        this@CircleChatActivity,
-                                        getString(R.string.user_blocked),
-                                        Toast.LENGTH_SHORT
-                                    ).show()
+                                    Toast.makeText(this@CircleChatActivity, getString(R.string.user_blocked), Toast.LENGTH_SHORT).show()
                                 }
                             }
                         }
@@ -681,12 +668,11 @@ class CircleChatActivity : AppCompatActivity() {
                 btnEditName.visibility = View.VISIBLE
                 btnDeleteGroup.visibility = View.VISIBLE
                 layoutAdminMax.visibility = View.VISIBLE
+                layoutJoinCode.visibility = View.VISIBLE
+                tvJoinCode.text = if (info.joinCode.isBlank()) "-" else info.joinCode
 
-                // Slider de máximo de miembros: inicializar con el valor actual, igual rango que al crear
                 sliderMaxMembers.value = info.maxParticipants.toFloat().coerceIn(3f, 6f)
                 tvMaxValue.text = info.maxParticipants.toString()
-
-                // Actualizar el texto del valor en tiempo real al deslizar
                 sliderMaxMembers.addOnChangeListener { _, value, _ ->
                     tvMaxValue.text = value.toInt().toString()
                 }
@@ -703,27 +689,23 @@ class CircleChatActivity : AppCompatActivity() {
                     }
                 }
 
-                // Botón lápiz: alternar entre modo edición y modo guardado
                 var editing = false
                 btnEditName.setOnClickListener {
                     editing = !editing
                     etGroupName.isEnabled = editing
                     if (editing) {
-                        // Activar edición: poner foco y mostrar teclado
                         etGroupName.requestFocus()
                         etGroupName.setSelection(etGroupName.text?.length ?: 0)
                         val imm = getSystemService(android.content.Context.INPUT_METHOD_SERVICE)
                                 as android.view.inputmethod.InputMethodManager
                         imm.showSoftInput(etGroupName, android.view.inputmethod.InputMethodManager.SHOW_IMPLICIT)
-                        btnEditName.setImageResource(R.drawable.ic_send) // icono de confirmar
+                        btnEditName.setImageResource(R.drawable.ic_send)
                     } else {
-                        // Confirmar y guardar el nuevo nombre
                         val newName = etGroupName.text.toString().trim()
                         if (newName.isNotBlank()) {
                             lifecycleScope.launch {
                                 val ok = circlesManager.updateCircleName(circleId, newName)
                                 if (ok) {
-                                    // Actualizar toolbar de la actividad al instante
                                     circleName = newName
                                     supportActionBar?.title = newName
                                 }
@@ -737,7 +719,7 @@ class CircleChatActivity : AppCompatActivity() {
                         val imm = getSystemService(android.content.Context.INPUT_METHOD_SERVICE)
                                 as android.view.inputmethod.InputMethodManager
                         imm.hideSoftInputFromWindow(etGroupName.windowToken, 0)
-                        btnEditName.setImageResource(R.drawable.ic_edit) // volver al icono lápiz
+                        btnEditName.setImageResource(R.drawable.ic_edit)
                     }
                 }
 
@@ -781,15 +763,12 @@ class CircleChatActivity : AppCompatActivity() {
                 }
             }
 
-            // Carga las imágenes del círculo para la galería del dialog de info
+            // Galería
             val galleryRv = view.findViewById<RecyclerView>(R.id.rv_photo_gallery)
             val galleryEmpty = view.findViewById<TextView>(R.id.tv_gallery_empty)
             val galleryPhotos = mutableListOf<String>()
-
             galleryRv.layoutManager = androidx.recyclerview.widget.GridLayoutManager(this@CircleChatActivity, 3)
-            val galleryAdapter = CirclePhotoGalleryAdapter(galleryPhotos) { url ->
-                showFullscreenImage(url)
-            }
+            val galleryAdapter = CirclePhotoGalleryAdapter(galleryPhotos) { url -> showFullscreenImage(url) }
             galleryRv.adapter = galleryAdapter
 
             lifecycleScope.launch {
@@ -807,11 +786,15 @@ class CircleChatActivity : AppCompatActivity() {
 
             if (isFinishing || isDestroyed) return@launch
 
-            AlertDialog.Builder(this@CircleChatActivity)
+            val dialog = AlertDialog.Builder(this@CircleChatActivity)
                 .setTitle(getString(R.string.group_info))
                 .setView(view)
                 .setPositiveButton(getString(R.string.close), null)
                 .show()
+
+            dialog.getButton(AlertDialog.BUTTON_POSITIVE).setTextColor(
+                ContextCompat.getColor(this@CircleChatActivity, R.color.text_secondary)
+            )
         }
     }
 
