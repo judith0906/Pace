@@ -8,5 +8,6 @@ data class Circle(
     val createdAt: Long = 0L,
     val memberCount: Int = 0,
     val lastMessage: String = "",
-    val lastMessageTime: Long = 0L
+    val lastMessageTime: Long = 0L,
+    val memberPhotoUrls: List<String?> = emptyList()
 )

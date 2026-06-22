@@ -338,60 +338,71 @@ class CirclesRealtimeManager(
         }
     }
     private suspend fun getCircleById(circleId: String): Circle? {
-        return suspendCancellableCoroutine { cont ->
+        val snapshot = suspendCancellableCoroutine<DataSnapshot?> { cont ->
             database.getReference("circles/$circleId")
                 .addListenerForSingleValueEvent(object : ValueEventListener {
                     override fun onDataChange(snapshot: DataSnapshot) {
-                        if (!snapshot.exists()) {
-                            cont.resume(null)
-                            return
-                        }
-
-                        val name = snapshot.child("name").getValue(String::class.java) ?: ""
-                        val createdBy = snapshot.child("createdBy").getValue(String::class.java) ?: ""
-                        val createdAt = snapshot.child("createdAt").getValue(Long::class.java) ?: 0L
-                        val memberCount = snapshot.child("members").childrenCount.toInt()
-
-                        var lastMessage = ""
-                        var lastMessageTime = 0L
-                        val lastMsg = snapshot.child("messages").children.lastOrNull()
-                        if (lastMsg != null) {
-                            val templateKey = lastMsg.child("messageTemplateKey").getValue(String::class.java)
-                            val templateParams = lastMsg.child("messageTemplateParams").children
-                                .mapNotNull { it.getValue(String::class.java) }
-                                .toTypedArray()
-
-                            lastMessage = if (!templateKey.isNullOrBlank()) {
-                                val resId = context.resources.getIdentifier(templateKey, "string", context.packageName)
-                                if (resId != 0) {
-                                    if (templateParams.isNotEmpty()) context.getString(resId, *templateParams)
-                                    else context.getString(resId)
-                                } else {
-                                    lastMsg.child("text").getValue(String::class.java) ?: ""
-                                }
-                            } else {
-                                lastMsg.child("text").getValue(String::class.java) ?: ""
-                            }
-                            lastMessageTime = lastMsg.child("timestamp").getValue(Long::class.java) ?: 0L
-                        }
-
-                        cont.resume(
-                            Circle(
-                                id = circleId,
-                                name = name,
-                                createdBy = createdBy,
-                                createdAt = createdAt,
-                                memberCount = memberCount,
-                                lastMessage = lastMessage,
-                                lastMessageTime = lastMessageTime
-                            )
-                        )
+                        cont.resume(if (snapshot.exists()) snapshot else null)
                     }
                     override fun onCancelled(error: DatabaseError) {
                         cont.resume(null)
                     }
                 })
+        } ?: return null
+
+        val name = snapshot.child("name").getValue(String::class.java) ?: ""
+        val createdBy = snapshot.child("createdBy").getValue(String::class.java) ?: ""
+        val createdAt = snapshot.child("createdAt").getValue(Long::class.java) ?: 0L
+        val memberCount = snapshot.child("members").childrenCount.toInt()
+
+        var lastMessage = ""
+        var lastMessageTime = 0L
+        val lastMsg = snapshot.child("messages").children.lastOrNull()
+        if (lastMsg != null) {
+            val templateKey = lastMsg.child("messageTemplateKey").getValue(String::class.java)
+            val templateParams = lastMsg.child("messageTemplateParams").children
+                .mapNotNull { it.getValue(String::class.java) }
+                .toTypedArray()
+
+            lastMessage = if (!templateKey.isNullOrBlank()) {
+                val resId = context.resources.getIdentifier(templateKey, "string", context.packageName)
+                if (resId != 0) {
+                    if (templateParams.isNotEmpty()) context.getString(resId, *templateParams)
+                    else context.getString(resId)
+                } else {
+                    lastMsg.child("text").getValue(String::class.java) ?: ""
+                }
+            } else {
+                lastMsg.child("text").getValue(String::class.java) ?: ""
+            }
+            lastMessageTime = lastMsg.child("timestamp").getValue(Long::class.java) ?: 0L
         }
+
+        val memberIds = snapshot.child("members").children.mapNotNull { it.key }
+        val photoUrls = mutableListOf<String?>()
+        for (uid in memberIds.take(5)) {
+            val url = suspendCancellableCoroutine<String?> { c ->
+                database.getReference("users/$uid/profile/photoUrl")
+                    .addListenerForSingleValueEvent(object : ValueEventListener {
+                        override fun onDataChange(s: DataSnapshot) {
+                            c.resume(s.getValue(String::class.java))
+                        }
+                        override fun onCancelled(e: DatabaseError) { c.resume(null) }
+                    })
+            }
+            photoUrls.add(if (!url.isNullOrBlank()) url else null)
+        }
+
+        return Circle(
+            id = circleId,
+            name = name,
+            createdBy = createdBy,
+            createdAt = createdAt,
+            memberCount = memberCount,
+            lastMessage = lastMessage,
+            lastMessageTime = lastMessageTime,
+            memberPhotoUrls = photoUrls
+        )
     }
     suspend fun getMemberDisplayNames(userIds: List<String>): List<CircleMember> {
         val me = getUserId()
