@@ -27,6 +27,7 @@ import com.novikon.pace.data.HabitsManager
 import com.novikon.pace.helpers.LanguageHelper
 import com.novikon.pace.helpers.ThemeHelper
 import com.novikon.pace.ui.login.LoginActivity
+import com.novikon.pace.ui.stats.StatsActivity
 import com.novikon.pace.utils.SessionManager
 import com.novikon.pace.utils.applySystemBarInsets
 import kotlinx.coroutines.launch
@@ -111,7 +112,7 @@ class AccountSettingsActivity : AppCompatActivity() {
         }
 
         findViewById<View>(R.id.downloadDataOption).setOnClickListener {
-            Toast.makeText(this, getString(R.string.coming_soon), Toast.LENGTH_SHORT).show()
+            startActivity(Intent(this, StatsActivity::class.java))
         }
 
         findViewById<View>(R.id.deleteAccountOption).setOnClickListener {

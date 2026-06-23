@@ -642,4 +642,22 @@
     <string name="new_email">Nuevo correo electrónico</string>
     <string name="change_email_verification_sent">Te hemos enviado un correo de verificación. Confirma el cambio desde tu nueva dirección.</string>
     <string name="change_email_google_not_allowed">Las cuentas de Google no pueden cambiar el correo desde aquí.</string>
+
+    <!-- ========================================================= -->
+    <!-- AJUSTES DE CUENTA: STATS                                  -->
+    <!-- ========================================================= -->
+    <string name="my_stats">Mis estadísticas</string>
+    <string name="stats_tab_report">Informe</string>
+    <string name="stats_tab_advice">Consejos</string>
+    <string name="stats_summary_title">Resumen</string>
+    <string name="stats_current_streak">Racha actual</string>
+    <string name="stats_max_streak">Racha máxima</string>
+    <string name="stats_monthly_consistency">Constancia mes</string>
+    <string name="stats_category_title">Por categoría</string>
+    <string name="stats_monthly_title">Tu mes en un vistazo</string>
+    <string name="stats_yearly_title">Evolución anual</string>
+    <string name="stats_top5_title">Top 5 hábitos</string>
+    <string name="stats_download_pdf">Descargar informe PDF</string>
+    <string name="stats_refresh_advice">Actualizar análisis</string>
+    <string name="stats_star_habit">Tu hábito estrella: %1$s %2$s</string>
 </resources>

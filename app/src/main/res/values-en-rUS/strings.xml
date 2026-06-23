@@ -641,4 +641,23 @@
     <string name="new_email">New email address</string>
     <string name="change_email_verification_sent">We\'ve sent a verification email. Confirm the change from your new address.</string>
     <string name="change_email_google_not_allowed">Google accounts cannot change their email here.</string>
+
+    <!-- ========================================================= -->
+    <!-- AJUSTES DE CUENTA: STATS                                  -->
+    <!-- ========================================================= -->
+
+    <string name="my_stats">My statistics</string>
+    <string name="stats_tab_report">Report</string>
+    <string name="stats_tab_advice">Advice</string>
+    <string name="stats_summary_title">Summary</string>
+    <string name="stats_current_streak">Current streak</string>
+    <string name="stats_max_streak">Max streak</string>
+    <string name="stats_monthly_consistency">Monthly consistency</string>
+    <string name="stats_category_title">By category</string>
+    <string name="stats_monthly_title">Your month at a glance</string>
+    <string name="stats_yearly_title">Annual evolution</string>
+    <string name="stats_top5_title">Top 5 habits</string>
+    <string name="stats_download_pdf">Download PDF report</string>
+    <string name="stats_refresh_advice">Refresh analysis</string>
+    <string name="stats_star_habit">Your star habit: %1$s %2$s</string>
 </resources>
