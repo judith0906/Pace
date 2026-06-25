@@ -5,7 +5,9 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.LinearLayout
 import android.widget.TextView
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import com.github.mikephil.charting.charts.BarChart
@@ -32,6 +34,7 @@ class StatsReportFragment : Fragment() {
     private lateinit var barChartMonthly: BarChart
     private lateinit var lineChartYearly: LineChart
     private lateinit var barChartTop5: HorizontalBarChart
+    private lateinit var legendContainer: LinearLayout
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -47,6 +50,7 @@ class StatsReportFragment : Fragment() {
         barChartMonthly = view.findViewById(R.id.barChartMonthly)
         lineChartYearly = view.findViewById(R.id.lineChartYearly)
         barChartTop5 = view.findViewById(R.id.barChartTop5)
+        legendContainer = view.findViewById(R.id.legendContainer)
 
         view.findViewById<View>(R.id.btn_download_pdf).setOnClickListener {
             // PDF — siguiente paso
@@ -132,19 +136,53 @@ class StatsReportFragment : Fragment() {
                 override fun getFormattedValue(value: Float) =
                     String.format(Locale.getDefault(), "%.0f%%", value)
             }
+            sliceSpace = 2f
         }
 
         pieChart.apply {
             this.data = PieData(dataSet)
             description.isEnabled = false
             isDrawHoleEnabled = true
-            holeRadius = 40f
+            holeRadius = 38f
             setHoleColor(Color.TRANSPARENT)
-            legend.isEnabled = true
-            legend.textSize = 11f
             setEntryLabelColor(Color.TRANSPARENT)
+            setEntryLabelTextSize(0f)
+            legend.isEnabled = false
             animateY(800)
             invalidate()
+        }
+
+// Leyenda manual
+        legendContainer.removeAllViews()
+        categoryPercentages.entries.forEachIndexed { index, (cat, pct) ->
+            val color = categoryColors[cat] ?: Color.GRAY
+            val label = categoryLabels[cat] ?: cat.name
+
+            val row = LinearLayout(requireContext()).apply {
+                orientation = LinearLayout.HORIZONTAL
+                gravity = android.view.Gravity.CENTER_VERTICAL
+                setPadding(0, 4, 0, 4)
+            }
+
+            val dot = android.view.View(requireContext()).apply {
+                layoutParams = LinearLayout.LayoutParams(16, 16).also {
+                    it.marginEnd = 8
+                }
+                background = android.graphics.drawable.GradientDrawable().apply {
+                    shape = android.graphics.drawable.GradientDrawable.OVAL
+                    setColor(color)
+                }
+            }
+
+            val text = TextView(requireContext()).apply {
+                text = String.format("%.0f%% %s", pct, label)
+                textSize = 11f
+                setTextColor(ContextCompat.getColor(requireContext(), R.color.text_primary))
+            }
+
+            row.addView(dot)
+            row.addView(text)
+            legendContainer.addView(row)
         }
     }
 
@@ -241,10 +279,15 @@ class StatsReportFragment : Fragment() {
     private fun setupTop5Chart(top5: List<Pair<String, Int>>) {
         if (top5.isEmpty()) return
 
-        val entries = top5.reversed().mapIndexed { i, (_, count) ->
+        val reversed = top5.reversed()
+        val entries = reversed.mapIndexed { i, (_, count) ->
             BarEntry(i.toFloat(), count.toFloat())
         }
-        val labels = top5.reversed().map { it.first }
+
+        // Solo el emoji para el eje
+        val emojiLabels = reversed.map { pair ->
+            pair.first.split(" ").firstOrNull() ?: pair.first
+        }
 
         val dataSet = BarDataSet(entries, "").apply {
             color = Color.parseColor("#495057")
@@ -254,23 +297,41 @@ class StatsReportFragment : Fragment() {
             }
         }
 
+        val barData = BarData(dataSet)
+        barData.barWidth = 0.5f
+
         barChartTop5.apply {
-            data = BarData(dataSet).apply { barWidth = 0.5f }
+            data = barData
             description.isEnabled = false
             legend.isEnabled = false
             setDrawGridBackground(false)
+            setExtraOffsets(10f, 0f, 20f, 0f)
             xAxis.apply {
-                valueFormatter = IndexAxisValueFormatter(labels)
+                valueFormatter = IndexAxisValueFormatter(emojiLabels)
                 position = XAxis.XAxisPosition.BOTTOM
                 setDrawGridLines(false)
                 granularity = 1f
-                textSize = 10f
+                textSize = 14f
+                labelCount = emojiLabels.size
             }
             axisLeft.apply {
                 axisMinimum = 0f
                 setDrawGridLines(false)
             }
             axisRight.isEnabled = false
+
+            // Al pulsar una barra → Snackbar con el nombre completo
+            setOnChartValueSelectedListener(object : com.github.mikephil.charting.listener.OnChartValueSelectedListener {
+                override fun onValueSelected(e: com.github.mikephil.charting.data.Entry?, h: com.github.mikephil.charting.highlight.Highlight?) {
+                    val index = e?.x?.toInt() ?: return
+                    val fullName = reversed.getOrNull(index)?.first ?: return
+                    com.google.android.material.snackbar.Snackbar
+                        .make(barChartTop5, fullName, com.google.android.material.snackbar.Snackbar.LENGTH_SHORT)
+                        .show()
+                }
+                override fun onNothingSelected() {}
+            })
+
             animateX(600)
             invalidate()
         }

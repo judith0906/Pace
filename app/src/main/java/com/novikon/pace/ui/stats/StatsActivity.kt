@@ -7,6 +7,7 @@ import androidx.viewpager2.adapter.FragmentStateAdapter
 import com.google.android.material.tabs.TabLayoutMediator
 import com.novikon.pace.R
 import com.novikon.pace.databinding.ActivityStatsBinding
+import com.novikon.pace.utils.applySystemBarInsets
 
 class StatsActivity : AppCompatActivity() {
 
@@ -16,6 +17,7 @@ class StatsActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivityStatsBinding.inflate(layoutInflater)
         setContentView(binding.root)
+        applySystemBarInsets()
 
         setSupportActionBar(binding.toolbar)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
