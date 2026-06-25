@@ -660,4 +660,13 @@
     <string name="stats_download_pdf">Download PDF report</string>
     <string name="stats_refresh_advice">Refresh analysis</string>
     <string name="stats_star_habit">Your star habit: %1$s %2$s</string>
+
+    <string name="stats_share_pdf">Share PDF report</string>
+    <string name="pdf_tagline">Your habits companion</string>
+    <string name="pdf_from">From</string>
+    <string name="pdf_advice_placeholder">Personalized advice coming soon</string>
+    <string name="pdf_summary_section">Schematic summary</string>
+    <string name="pdf_general_advice">General advice</string>
+    <string name="pdf_specific_tips">Specific tips</string>
+    <string name="pdf_generated_on">Generated on</string>
 </resources>

@@ -544,4 +544,19 @@ class RealtimeDatabaseManager {
         database.getReference("users/$userId/devices/$deviceId")
             .removeEventListener(listener)
     }
+
+    suspend fun getUserDisplayName(): String? {
+        val userId = getUserId() ?: return null
+        return suspendCancellableCoroutine { continuation ->
+            database.getReference("users/$userId/profile/displayName")
+                .addListenerForSingleValueEvent(object : ValueEventListener {
+                    override fun onDataChange(snapshot: DataSnapshot) {
+                        continuation.resume(snapshot.getValue(String::class.java))
+                    }
+                    override fun onCancelled(error: DatabaseError) {
+                        continuation.resume(null)
+                    }
+                })
+        }
+    }
 }

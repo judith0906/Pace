@@ -663,4 +663,13 @@
     <string name="stats_download_pdf">Télécharger le rapport PDF</string>
     <string name="stats_refresh_advice">Actualiser l\'analyse</string>
     <string name="stats_star_habit">Votre habitude vedette : %1$s %2$s</string>
+
+    <string name="stats_share_pdf">Partager le rapport PDF</string>
+    <string name="pdf_tagline">Votre compagnon d\'habitudes</string>
+    <string name="pdf_from">Depuis</string>
+    <string name="pdf_advice_placeholder">Conseils personnalisés bientôt disponibles</string>
+    <string name="pdf_summary_section">Résumé schématique</string>
+    <string name="pdf_general_advice">Conseil général</string>
+    <string name="pdf_specific_tips">Conseils spécifiques</string>
+    <string name="pdf_generated_on">Généré le</string>
 </resources>

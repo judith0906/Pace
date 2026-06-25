@@ -660,4 +660,13 @@
     <string name="stats_download_pdf">Descargar informe PDF</string>
     <string name="stats_refresh_advice">Actualizar análisis</string>
     <string name="stats_star_habit">Tu hábito estrella: %1$s %2$s</string>
+
+    <string name="stats_share_pdf">Compartir informe PDF</string>
+    <string name="pdf_tagline">Tu compañero de hábitos</string>
+    <string name="pdf_from">Desde</string>
+    <string name="pdf_advice_placeholder">Consejos personalizados próximamente</string>
+    <string name="pdf_summary_section">Resumen esquemático</string>
+    <string name="pdf_general_advice">Consejo general</string>
+    <string name="pdf_specific_tips">Pautas específicas</string>
+    <string name="pdf_generated_on">Generado el</string>
 </resources>

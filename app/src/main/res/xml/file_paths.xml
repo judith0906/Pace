@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Rutas permitidas para el FileProvider de fotos de la cámara -->
 <paths>
     <cache-path name="camera_photos" path="camera/" />
+    <cache-path name="pdf_cache" path="." />
+    <external-files-path name="downloads" path="Downloads/" />
 </paths>
