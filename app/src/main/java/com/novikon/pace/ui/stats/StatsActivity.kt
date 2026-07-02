@@ -7,9 +7,12 @@ import androidx.viewpager2.adapter.FragmentStateAdapter
 import com.google.android.material.tabs.TabLayoutMediator
 import com.novikon.pace.R
 import com.novikon.pace.databinding.ActivityStatsBinding
+import com.novikon.pace.models.AdviceContent
 import com.novikon.pace.utils.applySystemBarInsets
 
 class StatsActivity : AppCompatActivity() {
+
+    var adviceContent: AdviceContent? = null
 
     private lateinit var binding: ActivityStatsBinding
 

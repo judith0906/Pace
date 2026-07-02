@@ -1,5 +1,6 @@
 package com.novikon.pace.ui.stats
 
+import android.graphics.Bitmap
 import android.graphics.Color
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -20,6 +21,7 @@ import com.github.mikephil.charting.formatter.IndexAxisValueFormatter
 import com.github.mikephil.charting.formatter.ValueFormatter
 import com.novikon.pace.R
 import com.novikon.pace.data.RealtimeDatabaseManager
+import com.novikon.pace.models.AdviceContent
 import com.novikon.pace.models.HabitCategory
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -94,18 +96,23 @@ class StatsReportFragment : Fragment() {
             tvStarHabit.visibility = View.GONE
         }
 
-        // ── GRÁFICA TARTA (por categoría) ─────────────────────────────────────
+        // ── GRÁFICA TARTA (por categoría) — esta es la que se ve en la APP ──────
         setupPieChart(data.categoryPercentages)
 
-        // ── GRÁFICA BARRAS (constancia mensual) ───────────────────────────────
+        // ── GRÁFICA BARRAS (constancia mensual) — la que se ve en la APP ────────
         setupMonthlyBarChart(data.monthlyDays)
 
-        // ── GRÁFICA LÍNEA (evolución anual) ───────────────────────────────────
+        // ── GRÁFICA LÍNEA (evolución anual) — la que se ve en la APP ────────────
         setupYearlyLineChart(data.yearlyConsistency)
 
-        // ── TOP 5 HÁBITOS ─────────────────────────────────────────────────────
+        // ── TOP 5 HÁBITOS — la que se ve en la APP ───────────────────────────────
         setupTop5Chart(data.top5Habits)
     }
+
+    // ═══════════════════════════════════════════════════════════════════════
+    // CHARTS DE PANTALLA (los que ve el usuario en la app, con animaciones,
+    // listener de clicks, etc.). NO SE DEBEN TOCAR desde la generación del PDF.
+    // ═══════════════════════════════════════════════════════════════════════
 
     private fun setupPieChart(categoryPercentages: Map<HabitCategory, Float>) {
         if (categoryPercentages.isEmpty()) return
@@ -159,7 +166,7 @@ class StatsReportFragment : Fragment() {
             invalidate()
         }
 
-// Leyenda manual
+        // Leyenda manual
         legendContainer.removeAllViews()
         categoryPercentages.entries.forEachIndexed { index, (cat, pct) ->
             val color = categoryColors[cat] ?: Color.GRAY
@@ -344,17 +351,209 @@ class StatsReportFragment : Fragment() {
         }
     }
 
+    // ═══════════════════════════════════════════════════════════════════════
+    // CHARTS PARA EL PDF (instancias NUEVAS e independientes, nunca las de
+    // pantalla). Cada build*ForPdf() crea un chart desde cero con los mismos
+    // datos y estilo que su gemelo de arriba, pero sin animaciones (no hacen
+    // falta offscreen) y sin tocar en ningún momento la View real.
+    // ═══════════════════════════════════════════════════════════════════════
+
+    /**
+     * Renderiza un chart de MPAndroidChart "offscreen" a la resolución exacta deseada.
+     * Debe llamarse desde el hilo principal (Main), nunca desde IO, porque measure/layout/draw
+     * son operaciones de View.
+     *
+     * IMPORTANTE: el chart que le pases aquí debe ser una instancia recién creada con
+     * build*ForPdf() — si le pasas una View que ya está en pantalla (ej. barChartMonthly),
+     * measure()+layout() le cambiarán el tamaño REAL en la app y se quedará encogida.
+     *
+     * scale = factor de sobre-muestreo para que se vea nítido incluso impreso (2.5f = alta resolución)
+     */
+    private fun <T : com.github.mikephil.charting.charts.Chart<*>> renderChartOffscreen(
+        chart: T,
+        widthPt: Int,
+        heightPt: Int,
+        scale: Float = 2.5f
+    ): Bitmap {
+        val w = (widthPt * scale).toInt()
+        val h = (heightPt * scale).toInt()
+
+        chart.measure(
+            View.MeasureSpec.makeMeasureSpec(w, View.MeasureSpec.EXACTLY),
+            View.MeasureSpec.makeMeasureSpec(h, View.MeasureSpec.EXACTLY)
+        )
+        chart.layout(0, 0, w, h)
+
+        val bmp = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888)
+        val canvas = android.graphics.Canvas(bmp)
+        canvas.drawColor(Color.WHITE) // evita fondo negro/transparente al imprimir
+        chart.draw(canvas)
+        return bmp
+    }
+
+    /** Gemelo offscreen de setupPieChart(), pero como instancia nueva para el PDF. */
+    private fun buildPieChartForPdf(categoryPercentages: Map<HabitCategory, Float>): PieChart {
+        val categoryColors = mapOf(
+            HabitCategory.PHYSICAL to Color.parseColor("#4CAF50"),
+            HabitCategory.MENTAL to Color.parseColor("#2196F3"),
+            HabitCategory.STUDY to Color.parseColor("#FF9800"),
+            HabitCategory.ROUTINE to Color.parseColor("#9C27B0"),
+            HabitCategory.BAD_HABITS to Color.parseColor("#F44336"),
+            HabitCategory.WELLBEING to Color.parseColor("#00BCD4"),
+            HabitCategory.CUSTOM to Color.parseColor("#607D8B")
+        )
+        val categoryLabels = mapOf(
+            HabitCategory.PHYSICAL to getString(R.string.category_physical),
+            HabitCategory.MENTAL to getString(R.string.category_mental),
+            HabitCategory.STUDY to getString(R.string.category_study),
+            HabitCategory.ROUTINE to getString(R.string.category_routine),
+            HabitCategory.BAD_HABITS to getString(R.string.category_bad_habits),
+            HabitCategory.WELLBEING to getString(R.string.category_wellbeing),
+            HabitCategory.CUSTOM to getString(R.string.category_custom)
+        )
+
+        val entries = categoryPercentages.map { (cat, pct) -> PieEntry(pct, categoryLabels[cat] ?: cat.name) }
+        val colors = categoryPercentages.keys.map { categoryColors[it] ?: Color.GRAY }
+
+        val dataSet = PieDataSet(entries, "").apply {
+            this.colors = colors
+            valueTextSize = 11f
+            valueTextColor = Color.WHITE
+            valueFormatter = object : ValueFormatter() {
+                override fun getFormattedValue(value: Float) = String.format(Locale.getDefault(), "%.0f%%", value)
+            }
+            sliceSpace = 2f
+        }
+
+        val chart = PieChart(requireContext())
+        chart.apply {
+            data = PieData(dataSet)
+            description.isEnabled = false
+            isDrawHoleEnabled = true
+            holeRadius = 38f
+            setHoleColor(Color.TRANSPARENT)
+            setEntryLabelColor(Color.TRANSPARENT)
+            setEntryLabelTextSize(0f)
+            legend.isEnabled = false
+            // Sin animateY(): en un chart offscreen no se ve, y capturar el bitmap
+            // mientras "animaría" puede dar un frame incompleto.
+        }
+        return chart
+    }
+
+    /** Gemelo offscreen de setupMonthlyBarChart(), como instancia nueva para el PDF. */
+    private fun buildMonthlyBarChartForPdf(monthlyDays: Map<Int, Boolean>): BarChart {
+        val entries = monthlyDays.entries.sortedBy { it.key }.mapIndexed { i, entry ->
+            BarEntry(i.toFloat(), if (entry.value) 1f else 0f)
+        }
+        val labels = monthlyDays.keys.sorted().map { it.toString() }
+
+        val dataSet = BarDataSet(entries, "").apply {
+            colors = monthlyDays.entries.sortedBy { it.key }
+                .map { if (it.value) Color.parseColor("#4CAF50") else Color.parseColor("#E0E0E0") }
+            setDrawValues(false)
+        }
+
+        val chart = BarChart(requireContext())
+        chart.apply {
+            data = BarData(dataSet).apply { barWidth = 0.8f }
+            description.isEnabled = false
+            legend.isEnabled = false
+            setDrawGridBackground(false)
+            xAxis.apply {
+                valueFormatter = IndexAxisValueFormatter(labels)
+                position = XAxis.XAxisPosition.BOTTOM
+                setDrawGridLines(false)
+                granularity = 1f
+                textSize = 9f
+            }
+            axisLeft.apply {
+                axisMinimum = 0f
+                axisMaximum = 1.2f
+                setDrawLabels(false)
+                setDrawGridLines(false)
+            }
+            axisRight.isEnabled = false
+        }
+        return chart
+    }
+
+    /** Gemelo offscreen de setupYearlyLineChart(), como instancia nueva para el PDF. */
+    private fun buildYearlyLineChartForPdf(yearlyConsistency: Map<Int, Float>): LineChart {
+        val monthLabels = listOf("En", "Feb", "Mar", "Abr", "May", "Jun", "Jul", "Ago", "Sep", "Oct", "Nov", "Dic")
+        val entries = yearlyConsistency.entries.sortedBy { it.key }.mapIndexed { i, entry -> Entry(i.toFloat(), entry.value) }
+        val labels = yearlyConsistency.keys.sorted().map { monthLabels.getOrElse(it - 1) { it.toString() } }
+
+        val dataSet = LineDataSet(entries, "").apply {
+            color = Color.parseColor("#495057")
+            setCircleColor(Color.parseColor("#495057"))
+            lineWidth = 2f
+            circleRadius = 4f
+            setDrawFilled(true)
+            fillColor = Color.parseColor("#E8E9EA")
+            fillAlpha = 100
+            setDrawValues(false)
+            mode = LineDataSet.Mode.CUBIC_BEZIER
+        }
+
+        val chart = LineChart(requireContext())
+        chart.apply {
+            data = LineData(dataSet)
+            description.isEnabled = false
+            legend.isEnabled = false
+            setDrawGridBackground(false)
+            xAxis.apply {
+                valueFormatter = IndexAxisValueFormatter(labels)
+                position = XAxis.XAxisPosition.BOTTOM
+                setDrawGridLines(false)
+                granularity = 1f
+                textSize = 9f
+            }
+            axisLeft.apply {
+                axisMinimum = 0f
+                axisMaximum = 100f
+                valueFormatter = object : ValueFormatter() {
+                    override fun getFormattedValue(value: Float) = "${value.toInt()}%"
+                }
+            }
+            axisRight.isEnabled = false
+        }
+        return chart
+    }
+
+    // ═══════════════════════════════════════════════════════════════════════
+    // GENERACIÓN DEL PDF
+    // ═══════════════════════════════════════════════════════════════════════
+
     private fun generateAndSharePdf() {
         val currentData = statsData ?: return
+        val advice = (activity as? StatsActivity)?.adviceContent
+
+        // 1) Generar TODOS los bitmaps en Main, usando instancias NUEVAS de cada
+        //    chart (build*ForPdf), nunca las Views que están en pantalla.
+        val pieChartPdf = buildPieChartForPdf(currentData.categoryPercentages)
+        val pieBmp = renderChartOffscreen(pieChartPdf, widthPt = 190, heightPt = 190) // cuadrado, ratio real del donut
+
+        val monthlyChartPdf = buildMonthlyBarChartForPdf(currentData.monthlyDays)
+        val monthlyBmp = renderChartOffscreen(monthlyChartPdf, widthPt = 250, heightPt = 150)
+
+        val yearlyChartPdf = buildYearlyLineChartForPdf(currentData.yearlyConsistency)
+        val yearlyBmp = renderChartOffscreen(yearlyChartPdf, widthPt = 250, heightPt = 150)
+
+        // 2) Construir el PDF en IO, pasándole los bitmaps ya listos (nunca Views)
         lifecycleScope.launch(kotlinx.coroutines.Dispatchers.IO) {
-            val pdfFile = buildPdf(currentData)
-            withContext(kotlinx.coroutines.Dispatchers.Main) {
-                sharePdf(pdfFile)
-            }
+            val pdfFile = buildPdf(currentData, advice, pieBmp, monthlyBmp, yearlyBmp)
+            withContext(kotlinx.coroutines.Dispatchers.Main) { sharePdf(pdfFile) }
         }
     }
 
-    private fun buildPdf(data: StatsData): java.io.File {
+    private fun buildPdf(
+        data: StatsData,
+        advice: AdviceContent?,
+        pieBmp: Bitmap,
+        monthlyBmp: Bitmap,
+        yearlyBmp: Bitmap
+    ): java.io.File {
         val document = android.graphics.pdf.PdfDocument()
         val pageWidth = 595
         val pageHeight = 842
@@ -362,6 +561,11 @@ class StatsReportFragment : Fragment() {
 
         val sdf = java.text.SimpleDateFormat("dd/MM/yyyy", java.util.Locale.getDefault())
         val today = sdf.format(java.util.Date())
+
+        // Márgenes de seguridad para evitar recortes en visores (Xiaomi, etc.)
+        val margin = 24f // ~17pt margen en todos los lados
+        val safeWidth = pageWidth - 2 * margin
+        val safeHeight = pageHeight - 2 * margin
 
         // Colores
         val colorDark = android.graphics.Color.parseColor("#212529")
@@ -444,15 +648,68 @@ class StatsReportFragment : Fragment() {
         }
 
         fun drawSectionHeader(c: android.graphics.Canvas, text: String, yPos: Float) {
-            c.drawText(text, 30f, yPos, boldPaint(15f, colorAccent))
-            c.drawLine(30f, yPos + 5f, pageWidth - 30f, yPos + 5f, android.graphics.Paint().apply {
+            c.drawText(text, margin, yPos, boldPaint(15f, colorAccent))
+            c.drawLine(margin, yPos + 5f, pageWidth - margin, yPos + 5f, android.graphics.Paint().apply {
                 color = android.graphics.Color.parseColor("#DEE2E6"); strokeWidth = 0.5f
             })
         }
 
-        val colLeft = 30f
-        val colRight = pageWidth / 2f + 10f
-        val colWidth = pageWidth / 2f - 40f
+        // Dibuja la leyenda del pie chart en el PDF (réplica de setupPieChart líneas 169-200)
+        fun drawPieLegend(
+            c: android.graphics.Canvas,
+            x: Float,
+            y: Float,
+            maxWidth: Float,
+            maxHeight: Float,
+            categoryPercentages: Map<HabitCategory, Float>,
+            colorDark: Int,
+            colorSecondary: Int
+        ) {
+            val categoryColors = mapOf(
+                HabitCategory.PHYSICAL to android.graphics.Color.parseColor("#4CAF50"),
+                HabitCategory.MENTAL to android.graphics.Color.parseColor("#2196F3"),
+                HabitCategory.STUDY to android.graphics.Color.parseColor("#FF9800"),
+                HabitCategory.ROUTINE to android.graphics.Color.parseColor("#9C27B0"),
+                HabitCategory.BAD_HABITS to android.graphics.Color.parseColor("#F44336"),
+                HabitCategory.WELLBEING to android.graphics.Color.parseColor("#00BCD4"),
+                HabitCategory.CUSTOM to android.graphics.Color.parseColor("#607D8B")
+            )
+            val categoryLabels = mapOf(
+                HabitCategory.PHYSICAL to getString(R.string.category_physical),
+                HabitCategory.MENTAL to getString(R.string.category_mental),
+                HabitCategory.STUDY to getString(R.string.category_study),
+                HabitCategory.ROUTINE to getString(R.string.category_routine),
+                HabitCategory.BAD_HABITS to getString(R.string.category_bad_habits),
+                HabitCategory.WELLBEING to getString(R.string.category_wellbeing),
+                HabitCategory.CUSTOM to getString(R.string.category_custom)
+            )
+
+            val sortedEntries = categoryPercentages.entries.sortedByDescending { it.value }
+            var currentY = y
+            val rowHeight = 18f
+            val dotSize = 12f
+            val gap = 6f
+
+            for ((cat, pct) in sortedEntries) {
+                if (currentY + rowHeight > y + maxHeight) break
+                val color = categoryColors[cat] ?: android.graphics.Color.GRAY
+                val label = categoryLabels[cat] ?: cat.name
+                val text = String.format("%.0f%% %s", pct, label)
+                val textPaint = regularPaint(9f, colorDark)
+                val dotPaint = android.graphics.Paint().apply {
+                    this.color = color
+                    style = android.graphics.Paint.Style.FILL
+                    isAntiAlias = true
+                }
+                c.drawCircle(x + dotSize / 2f, currentY + rowHeight / 2f, dotSize / 2f, dotPaint)
+                c.drawText(text, x + dotSize + gap, currentY + rowHeight * 0.75f, textPaint)
+                currentY += rowHeight
+            }
+        }
+
+        val colLeft = margin
+        val colRight = margin + safeWidth / 2f + 10f
+        val colWidth = safeWidth / 2f - 20f
         val marginTop = 40f
 
         // ── PÁGINA 2: RESUMEN + CATEGORÍA ────────────────────────────────────
@@ -474,33 +731,52 @@ class StatsReportFragment : Fragment() {
         canvas.drawText(getString(R.string.stats_monthly_consistency), colLeft + 14f, y + 112f, regularPaint(11f, colorSecondary))
         canvas.drawText("${data.monthlyConsistency}%", colLeft + 14f, y + 128f, boldPaint(18f, colorDark))
 
-        // Card consejos derecha — placeholder
-        drawCard(canvas, colRight, y, colWidth, 130f)
-        canvas.drawText("💡 ${getString(R.string.pdf_advice_placeholder)}", colRight + 14f, y + 25f, regularPaint(10f, colorSecondary))
+        // Card consejos derecha — resumen (texto envuelto con StaticLayout, altura dinámica)
+        val summaryText = advice?.summaryAdvice ?: getString(R.string.pdf_advice_placeholder)
+        val summaryPaint = regularPaint(9f, colorSecondary)
+        val summaryMaxW = (colWidth - 28f).toInt()
+        val summaryH = measureWrappedTextHeight(summaryText, summaryMaxW, summaryPaint)
+        val summaryCardH = maxOf(130f, summaryH + 40f)
+
+        drawCard(canvas, colRight, y, colWidth, summaryCardH)
+        drawWrappedText(canvas, summaryText, colRight + 14f, y + 20f, summaryMaxW, summaryPaint)
 
         y += 150f
         drawSectionHeader(canvas, getString(R.string.stats_category_title), y)
         y += 20f
 
-        // Card categoría izquierda con gráfica
-        drawCard(canvas, colLeft, y, colWidth, 200f)
-        val pieBmp = pieChart.getChartBitmap()
-        val scaledPie = android.graphics.Bitmap.createScaledBitmap(pieBmp, colWidth.toInt() - 20, 190, true)
-        canvas.drawBitmap(scaledPie, colLeft + 10f, y + 5f, null)
+        // Card categoría izquierda: dividir en leyenda (izq 50%) + gráfica (der 50%)
+        // igual que en la pantalla (layout_weight="1" en LinearLayout horizontal)
+        val catCardW = colWidth
+        val catCardH = 180f // reducir altura para que no quede alargado
+        drawCard(canvas, colLeft, y, catCardW, catCardH)
 
-        // Card consejos categoría derecha — placeholder
-        drawCard(canvas, colRight, y, colWidth, 200f)
-        canvas.drawText("💡 ${getString(R.string.pdf_advice_placeholder)}", colRight + 14f, y + 25f, regularPaint(10f, colorSecondary))
+        val halfW = (catCardW - 20f) / 2f // ancho útil por mitad (con padding 10 cada lado)
+        val legendX = colLeft + 10f
+        val chartX = colLeft + 10f + halfW + 10f // 10 padding + halfW + 10 gap
+        val chartMaxH = catCardH - 10f
+        // Hacer la gráfica cuadrada (ancho = alto) para que no se deforme
+        val chartSize = minOf(halfW, chartMaxH)
+        val chartY = y + 5f + (chartMaxH - chartSize) / 2f // centrar verticalmente
 
-        y += 220f
+        // Dibujar leyenda manual (réplica de setupPieChart líneas 169-200)
+        drawPieLegend(canvas, legendX, y + 10f, halfW, chartMaxH, data.categoryPercentages, colorDark, colorSecondary)
 
-        // Lista categorías compacta
-        data.categoryPercentages.entries.sortedByDescending { it.value }.forEachIndexed { i, (cat, pct) ->
-            if (i < 4) {
-                canvas.drawText("• ${getCategoryLabel(cat)}: ${String.format("%.0f%%", pct)}",
-                    colLeft + 10f, y + (i * 16f), regularPaint(10f, colorDark))
-            }
-        }
+        // Dibujar gráfica en la mitad derecha (cuadrada, centrada)
+        val scaledPie = android.graphics.Bitmap.createScaledBitmap(pieBmp, chartSize.toInt(), chartSize.toInt(), true)
+        canvas.drawBitmap(scaledPie, chartX, chartY, null)
+
+        // Card consejos categoría derecha
+        val categoryText = advice?.categoryAdvice ?: getString(R.string.pdf_advice_placeholder)
+        val categoryPaint = regularPaint(9f, colorSecondary)
+        val categoryMaxW = (colWidth - 28f).toInt()
+        val categoryH = measureWrappedTextHeight(categoryText, categoryMaxW, categoryPaint)
+        val categoryCardH = maxOf(catCardH, categoryH + 40f)
+
+        drawCard(canvas, colRight, y, colWidth, categoryCardH)
+        drawWrappedText(canvas, categoryText, colRight + 14f, y + 20f, categoryMaxW, categoryPaint)
+
+        y += catCardH + 20f
 
         document.finishPage(page)
 
@@ -514,38 +790,60 @@ class StatsReportFragment : Fragment() {
         drawSectionHeader(canvas, getString(R.string.stats_monthly_title), y)
         y += 20f
 
+        // AHORA usa monthlyBmp (offscreen, parámetro), no barChartMonthly.getChartBitmap()
         drawCard(canvas, colLeft, y, colWidth, 170f)
-        val monthlyBmp = barChartMonthly.getChartBitmap()
         val scaledMonthly = android.graphics.Bitmap.createScaledBitmap(monthlyBmp, colWidth.toInt() - 20, 160, true)
         canvas.drawBitmap(scaledMonthly, colLeft + 10f, y + 5f, null)
 
-        drawCard(canvas, colRight, y, colWidth, 170f)
-        canvas.drawText("💡 ${getString(R.string.pdf_advice_placeholder)}", colRight + 14f, y + 25f, regularPaint(10f, colorSecondary))
+        val monthlyText = advice?.monthlyEvaluation ?: getString(R.string.pdf_advice_placeholder)
+        val monthlyPaint = regularPaint(9f, colorSecondary)
+        val monthlyMaxW = (colWidth - 28f).toInt()
+        val monthlyH = measureWrappedTextHeight(monthlyText, monthlyMaxW, monthlyPaint)
+        val monthlyCardH = maxOf(170f, monthlyH + 40f)
+
+        drawCard(canvas, colRight, y, colWidth, monthlyCardH)
+        drawWrappedText(canvas, monthlyText, colRight + 14f, y + 20f, monthlyMaxW, monthlyPaint)
 
         y += 190f
         drawSectionHeader(canvas, getString(R.string.stats_yearly_title), y)
         y += 20f
 
+        // AHORA usa yearlyBmp (offscreen, parámetro), no lineChartYearly.getChartBitmap()
         drawCard(canvas, colLeft, y, colWidth, 170f)
-        val yearlyBmp = lineChartYearly.getChartBitmap()
         val scaledYearly = android.graphics.Bitmap.createScaledBitmap(yearlyBmp, colWidth.toInt() - 20, 160, true)
         canvas.drawBitmap(scaledYearly, colLeft + 10f, y + 5f, null)
 
-        drawCard(canvas, colRight, y, colWidth, 170f)
-        canvas.drawText("💡 ${getString(R.string.pdf_advice_placeholder)}", colRight + 14f, y + 25f, regularPaint(10f, colorSecondary))
+        // NOTA: esto usa advice?.summaryAdvice, el mismo texto que en el resumen de la
+        // página 2. Probablemente quieras otro campo (ej. generalAdvice) — revísalo.
+        val yearlyText = advice?.summaryAdvice ?: getString(R.string.pdf_advice_placeholder)
+        val yearlyPaint = regularPaint(9f, colorSecondary)
+        val yearlyMaxW = (colWidth - 28f).toInt()
+        val yearlyH = measureWrappedTextHeight(yearlyText, yearlyMaxW, yearlyPaint)
+        val yearlyCardH = maxOf(170f, yearlyH + 40f)
+
+        drawCard(canvas, colRight, y, colWidth, yearlyCardH)
+        drawWrappedText(canvas, yearlyText, colRight + 14f, y + 20f, yearlyMaxW, yearlyPaint)
 
         y += 190f
         drawSectionHeader(canvas, getString(R.string.stats_top5_title), y)
         y += 20f
 
+        // El Top 5 aquí se dibuja como lista de texto, no como chart, así que no
+        // necesita bitmap offscreen.
         drawCard(canvas, colLeft, y, colWidth, 160f)
         data.top5Habits.forEachIndexed { i, (name, count) ->
             canvas.drawText("${i + 1}. $name", colLeft + 14f, y + 25f + (i * 24f), boldPaint(11f, colorDark))
             canvas.drawText("$count veces", colLeft + colWidth - 60f, y + 25f + (i * 24f), regularPaint(10f, colorSecondary))
         }
 
-        drawCard(canvas, colRight, y, colWidth, 160f)
-        canvas.drawText("💡 ${getString(R.string.pdf_advice_placeholder)}", colRight + 14f, y + 25f, regularPaint(10f, colorSecondary))
+        val top5Text = advice?.top5Advice ?: getString(R.string.pdf_advice_placeholder)
+        val top5Paint = regularPaint(9f, colorSecondary)
+        val top5MaxW = (colWidth - 28f).toInt()
+        val top5H = measureWrappedTextHeight(top5Text, top5MaxW, top5Paint)
+        val top5CardH = maxOf(160f, top5H + 40f)
+
+        drawCard(canvas, colRight, y, colWidth, top5CardH)
+        drawWrappedText(canvas, top5Text, colRight + 14f, y + 20f, top5MaxW, top5Paint)
 
         document.finishPage(page)
 
@@ -559,7 +857,7 @@ class StatsReportFragment : Fragment() {
         drawSectionHeader(canvas, getString(R.string.pdf_summary_section), y)
         y += 20f
 
-        drawCard(canvas, colLeft, y, pageWidth - 60f, 100f)
+        drawCard(canvas, colLeft, y, safeWidth, 100f)
         canvas.drawText("${getString(R.string.stats_current_streak)}: ${data.currentStreak} días  |  ${getString(R.string.stats_max_streak)}: ${data.maxStreak} días", colLeft + 14f, y + 30f, regularPaint(11f, colorDark))
         canvas.drawText("${getString(R.string.stats_monthly_consistency)}: ${data.monthlyConsistency}%", colLeft + 14f, y + 55f, regularPaint(11f, colorDark))
         if (data.starHabitName.isNotBlank()) {
@@ -570,21 +868,33 @@ class StatsReportFragment : Fragment() {
         drawSectionHeader(canvas, getString(R.string.pdf_general_advice), y)
         y += 20f
 
-        drawCard(canvas, colLeft, y, pageWidth - 60f, 80f)
-        canvas.drawText("💡 ${getString(R.string.pdf_advice_placeholder)}", colLeft + 14f, y + 30f, regularPaint(11f, colorSecondary))
+        val generalText = advice?.generalAdvice ?: getString(R.string.pdf_advice_placeholder)
+        val generalPaint = regularPaint(10f, colorSecondary)
+        val generalMaxW = (safeWidth - 28f).toInt()
+        val generalH = measureWrappedTextHeight(generalText, generalMaxW, generalPaint)
+        val generalCardH = maxOf(80f, generalH + 40f)
+
+        drawCard(canvas, colLeft, y, safeWidth, generalCardH)
+        drawWrappedText(canvas, generalText, colLeft + 14f, y + 20f, generalMaxW, generalPaint)
 
         y += 100f
         drawSectionHeader(canvas, getString(R.string.pdf_specific_tips), y)
         y += 20f
 
-        drawCard(canvas, colLeft, y, pageWidth - 60f, 200f)
-        canvas.drawText("${getString(R.string.pdf_advice_placeholder)}", colLeft + 14f, y + 30f, regularPaint(11f, colorSecondary))
+        val specificText = advice?.specificTips ?: getString(R.string.pdf_advice_placeholder)
+        val specificPaint = regularPaint(10f, colorSecondary)
+        val specificMaxW = (safeWidth - 28f).toInt()
+        val specificH = measureWrappedTextHeight(specificText, specificMaxW, specificPaint)
+        val specificCardH = maxOf(200f, specificH + 40f)
+
+        drawCard(canvas, colLeft, y, safeWidth, specificCardH)
+        drawWrappedText(canvas, specificText, colLeft + 14f, y + 20f, specificMaxW, specificPaint)
 
         // Footer
         val footerP = regularPaint(9f, colorSecondary)
         val footerText = "Pace · ${getString(R.string.pdf_generated_on)} $today"
         val footerW = footerP.measureText(footerText)
-        canvas.drawText(footerText, (pageWidth - footerW) / 2f, pageHeight - 20f, footerP)
+        canvas.drawText(footerText, (pageWidth - footerW) / 2f, pageHeight - margin - 10f, footerP)
 
         document.finishPage(page)
 
@@ -640,6 +950,43 @@ class StatsReportFragment : Fragment() {
             val destFile = java.io.File(downloadsDir, file.name)
             file.copyTo(destFile, overwrite = true)
         }
+    }
+
+    /**
+     * Dibuja texto ajustado al ancho disponible (word-wrap real vía StaticLayout)
+     * y devuelve la altura total que ha ocupado, para poder calcular el alto
+     * de la card ANTES de pintarla (ver measureWrappedTextHeight).
+     */
+    private fun drawWrappedText(
+        canvas: android.graphics.Canvas,
+        text: String,
+        x: Float,
+        y: Float,
+        maxWidth: Int,
+        paint: android.graphics.Paint,
+        lineSpacingExtra: Float = 4f
+    ): Float {
+        val staticLayout = android.text.StaticLayout.Builder
+            .obtain(text, 0, text.length, android.text.TextPaint(paint), maxWidth)
+            .setLineSpacing(lineSpacingExtra, 1f)
+            .setIncludePad(false)
+            .build()
+
+        canvas.save()
+        canvas.translate(x, y)
+        staticLayout.draw(canvas)
+        canvas.restore()
+
+        return staticLayout.height.toFloat()
+    }
+
+    /** Mide la altura que ocuparía el texto envuelto SIN dibujarlo. */
+    private fun measureWrappedTextHeight(text: String, maxWidth: Int, paint: android.graphics.Paint): Float {
+        return android.text.StaticLayout.Builder
+            .obtain(text, 0, text.length, android.text.TextPaint(paint), maxWidth)
+            .setIncludePad(false)
+            .build()
+            .height.toFloat()
     }
 
     private fun getCategoryLabel(cat: com.novikon.pace.models.HabitCategory): String {

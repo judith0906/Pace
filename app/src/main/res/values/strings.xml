@@ -669,4 +669,16 @@
     <string name="pdf_general_advice">Consejo general</string>
     <string name="pdf_specific_tips">Pautas específicas</string>
     <string name="pdf_generated_on">Generado el</string>
+
+    <!-- ========================================================= -->
+    <!-- CONSEJOS: Títulos de sección                              -->
+    <!-- ========================================================= -->
+    <string name="advice_summary">Resumen</string>
+    <string name="advice_category">Por categoría</string>
+    <string name="advice_top5">Top 5 hábitos</string>
+    <string name="advice_monthly">Evaluación del mes</string>
+    <string name="advice_general">Consejo general</string>
+    <string name="advice_specific">Pautas específicas</string>
+    <string name="advice_error">No se pudieron generar los consejos.\nComprueba tu conexión y vuelve a intentarlo.</string>
+    <string name="advice_no_key">API key de Gemini no configurada.\nAñade GEMINI_API_KEY en local.properties.</string>
 </resources>

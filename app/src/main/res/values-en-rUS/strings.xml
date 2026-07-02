@@ -669,4 +669,16 @@
     <string name="pdf_general_advice">General advice</string>
     <string name="pdf_specific_tips">Specific tips</string>
     <string name="pdf_generated_on">Generated on</string>
+
+    <!-- ========================================================= -->
+    <!-- ADVICE: Section titles                                    -->
+    <!-- ========================================================= -->
+    <string name="advice_summary">Summary</string>
+    <string name="advice_category">By category</string>
+    <string name="advice_top5">Top 5 habits</string>
+    <string name="advice_monthly">Monthly evaluation</string>
+    <string name="advice_general">General advice</string>
+    <string name="advice_specific">Specific tips</string>
+    <string name="advice_error">Could not generate advice.\nCheck your connection and try again.</string>
+    <string name="advice_no_key">Gemini API key not configured.\nAdd GEMINI_API_KEY in local.properties.</string>
 </resources>
