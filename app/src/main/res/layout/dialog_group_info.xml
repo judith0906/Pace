@@ -65,13 +65,39 @@
                 android:textColor="@color/text_secondary"
                 android:textSize="12sp" />
 
-            <TextView
-                android:id="@+id/tv_join_code"
-                android:layout_width="wrap_content"
+            <LinearLayout
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:textSize="18sp"
-                android:textStyle="bold"
-                android:layout_marginTop="2dp" />
+                android:orientation="horizontal"
+                android:layout_marginTop="8dp"
+                android:gravity="center_vertical">
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btn_invite_code"
+                    style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                    android:layout_width="0dp"
+                    android:layout_height="40dp"
+                    android:layout_weight="30"
+                    android:text="@string/btn_invite_code"
+                    android:textSize="12sp"
+                    android:textAllCaps="false"
+                    app:strokeColor="@color/border_color"
+                    android:textColor="@color/text_primary" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btn_invite_link"
+                    style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                    android:layout_width="0dp"
+                    android:layout_height="40dp"
+                    android:layout_weight="30"
+                    android:text="@string/btn_invite_link"
+                    android:textSize="12sp"
+                    android:textAllCaps="false"
+                    android:layout_marginStart="8dp"
+                    app:strokeColor="@color/border_color"
+                    android:textColor="@color/text_primary" />
+
+            </LinearLayout>
 
             <View
                 android:layout_width="match_parent"

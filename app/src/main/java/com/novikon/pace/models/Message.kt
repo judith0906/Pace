@@ -34,6 +34,9 @@ data class Message(
     val captureAllowedIds: List<String> = emptyList(),
     val photoUrl: String = "",
 
+    val eventDuration: String = "",          // duración del hábito (ej: "30 min")
+    val eventDurationMs: Long = 0L,          // duración en milisegundos para ventana de captura
+
     val messageTemplateKey: String = "",
     val messageTemplateParams: List<String> = emptyList()
 )

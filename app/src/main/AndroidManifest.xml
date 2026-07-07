@@ -105,6 +105,21 @@
         <activity android:name=".ui.stats.StatsActivity"
             android:exported="false" />
 
+        <activity
+            android:name=".ui.circles.DeepLinkActivity"
+            android:exported="true"
+            android:launchMode="singleTask"
+            android:theme="@style/Theme.Pace.Splash">
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data
+                    android:scheme="pace"
+                    android:host="join" />
+            </intent-filter>
+        </activity>
+
         <receiver
             android:name=".receivers.ReminderReceiver"
             android:enabled="true"

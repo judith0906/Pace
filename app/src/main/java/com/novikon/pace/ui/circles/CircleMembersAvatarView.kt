@@ -52,9 +52,11 @@ class CircleMembersAvatarView @JvmOverloads constructor(
         android.util.Log.d("AVATAR", "placeholderBitmap = $placeholderBitmap")
     }
 
-    // Cancela todas las peticiones Glide activas  ← NUEVO
+    // Cancela todas las peticiones Glide activas
     private fun cancelPendingLoads() {
-        activeTargets.forEach { Glide.with(context).clear(it) }
+        try {
+            activeTargets.forEach { Glide.with(context.applicationContext).clear(it) }
+        } catch (_: Exception) { }
         activeTargets.clear()
     }
 

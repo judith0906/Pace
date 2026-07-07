@@ -684,4 +684,28 @@
     <string name="advice_specific">Conseils spécifiques</string>
     <string name="advice_error">Impossible de générer les conseils.\nVérifie ta connexion et réessaie.</string>
     <string name="advice_no_key">Clé API Gemini non configurée.\nAjoute GEMINI_API_KEY dans local.properties.</string>
+
+    <!-- ========================================================= -->
+    <!-- DEEP LINKS / INVITATIONS                                   -->
+    <!-- ========================================================= -->
+    <string name="deeplink_invalid_code">Code d\'invitation invalide</string>
+    <string name="deeplink_login_required">Connecte-toi pour rejoindre le cercle</string>
+
+    <string name="btn_invite_code">Code d\'invitation</string>
+    <string name="btn_invite_link">Lien d\'invitation</string>
+
+    <string name="invite_code_title">Partage ce code</string>
+    <string name="invite_code_subtitle">Envoie-le à qui tu veux inviter dans ton cercle</string>
+    <string name="invite_code_copy">Copier le code</string>
+    <string name="invite_code_share">Partager</string>
+    <string name="invite_code_copied">Code copié dans le presse-papiers</string>
+
+    <string name="invite_link_title">Partage le lien</string>
+    <string name="invite_link_subtitle">Envoie-le par WhatsApp, email ou où tu veux</string>
+    <string name="invite_link_copy">Copier le lien</string>
+    <string name="invite_link_share">Partager</string>
+    <string name="invite_link_copied">Lien copié dans le presse-papiers</string>
+
+    <string name="invite_share_message">Hé ! %1$s t\'invite à rejoindre %2$s sur Pace. Clique sur le lien pour rejoindre la bande !\n\n%3$s\n\nSi tu n\'as pas Pace, cherche-le sur Google Play.</string>
+    <string name="invite_share_code_message">Hé ! %1$s t\'invite à rejoindre %2$s sur Pace. Utilise ce code pour te joindre : %3$s</string>
 </resources>

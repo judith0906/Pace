@@ -14,5 +14,6 @@ data class Habit(
     val duration: String,                    // tiempo estimado (ej: "30 min", "Todo el día")
     val category: HabitCategory,             // categoría a la que pertenece
     val timeOfDay: TimeOfDay = TimeOfDay.ALL_DAY, // franja horaria en la que se realiza
+    val color: String = "#F5F5F5",           // color de fondo de la tarjeta (hex)
     val isCustom: Boolean = false            // true si lo creó el usuario, false si es predefinido
 )

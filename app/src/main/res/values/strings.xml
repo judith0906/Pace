@@ -681,4 +681,32 @@
     <string name="advice_specific">Pautas específicas</string>
     <string name="advice_error">No se pudieron generar los consejos.\nComprueba tu conexión y vuelve a intentarlo.</string>
     <string name="advice_no_key">API key de Gemini no configurada.\nAñade GEMINI_API_KEY en local.properties.</string>
+
+    <!-- ========================================================= -->
+    <!-- DEEP LINKS / INVITACIONES                                  -->
+    <!-- ========================================================= -->
+    <string name="deeplink_invalid_code">Código de invitación no válido</string>
+    <string name="deeplink_login_required">Inicia sesión para unirte al círculo</string>
+
+    <!-- Botones de invitación en info del grupo -->
+    <string name="btn_invite_code">Código de invitación</string>
+    <string name="btn_invite_link">Enlace de invitación</string>
+
+    <!-- Diálogo de código -->
+    <string name="invite_code_title">Comparte este código</string>
+    <string name="invite_code_subtitle">Envíalo a quien quieras invitar a tu círculo</string>
+    <string name="invite_code_copy">Copiar código</string>
+    <string name="invite_code_share">Compartir</string>
+    <string name="invite_code_copied">Código copiado al portapapeles</string>
+
+    <!-- Diálogo de enlace -->
+    <string name="invite_link_title">Comparte el enlace</string>
+    <string name="invite_link_subtitle">Envíalo por WhatsApp, email o donde quieras</string>
+    <string name="invite_link_copy">Copiar enlace</string>
+    <string name="invite_link_share">Compartir</string>
+    <string name="invite_link_copied">Enlace copiado al portapapeles</string>
+
+    <!-- Mensaje de invitación -->
+    <string name="invite_share_message">¡Hey! %1$s te está invitando a formar parte de %2$s en Pace. Dale al enlace para unirte a la banda!\n\n%3$s\n\nSi no tienes Pace instalado, búscalo en Google Play.</string>
+    <string name="invite_share_code_message">¡Hey! %1$s te está invitando a formar parte de %2$s en Pace. Usa este código para unirte: %3$s</string>
 </resources>

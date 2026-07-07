@@ -2,6 +2,7 @@ package com.novikon.pace.ui.circles
 
 import android.Manifest
 import android.app.DatePickerDialog
+import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.os.Bundle
@@ -616,7 +617,8 @@ class CircleChatActivity : AppCompatActivity() {
             val etGroupName = view.findViewById<EditText>(R.id.tv_group_name)
             val btnEditName = view.findViewById<android.widget.ImageButton>(R.id.btn_edit_name)
             val btnDeleteGroup = view.findViewById<MaterialButton>(R.id.btn_delete_group)
-            val tvJoinCode = view.findViewById<TextView>(R.id.tv_join_code)
+            val btnInviteCode = view.findViewById<MaterialButton>(R.id.btn_invite_code)
+            val btnInviteLink = view.findViewById<MaterialButton>(R.id.btn_invite_link)
             val layoutJoinCode = view.findViewById<View>(R.id.layout_join_code)
             val tvMembersSummary = view.findViewById<TextView>(R.id.tv_members_summary)
             val layoutAdminMax = view.findViewById<View>(R.id.layout_admin_max)
@@ -669,7 +671,11 @@ class CircleChatActivity : AppCompatActivity() {
                 btnDeleteGroup.visibility = View.VISIBLE
                 layoutAdminMax.visibility = View.VISIBLE
                 layoutJoinCode.visibility = View.VISIBLE
-                tvJoinCode.text = if (info.joinCode.isBlank()) "-" else info.joinCode
+
+                val joinCode = info.joinCode
+                btnInviteCode.isEnabled = joinCode.isNotBlank()
+                btnInviteCode.setOnClickListener { showInviteCodeDialog(joinCode) }
+                btnInviteLink.setOnClickListener { showInviteLinkDialog(joinCode, info.name) }
 
                 sliderMaxMembers.value = info.maxParticipants.toFloat().coerceIn(3f, 6f)
                 tvMaxValue.text = info.maxParticipants.toString()
@@ -796,6 +802,79 @@ class CircleChatActivity : AppCompatActivity() {
                 ContextCompat.getColor(this@CircleChatActivity, R.color.text_secondary)
             )
         }
+    }
+
+    private fun showInviteCodeDialog(code: String) {
+        val dialogView = layoutInflater.inflate(R.layout.dialog_invite_code, null)
+        val tvCode = dialogView.findViewById<TextView>(R.id.tv_invite_code)
+        val btnCopy = dialogView.findViewById<MaterialButton>(R.id.btn_copy_code)
+        val btnShare = dialogView.findViewById<MaterialButton>(R.id.btn_share_code)
+
+        tvCode.text = code
+
+        btnCopy.setOnClickListener {
+            val clipboard = getSystemService(CLIPBOARD_SERVICE) as android.content.ClipboardManager
+            val clip = android.content.ClipData.newPlainText("invite_code", code)
+            clipboard.setPrimaryClip(clip)
+            Toast.makeText(this, getString(R.string.invite_code_copied), Toast.LENGTH_SHORT).show()
+        }
+
+        btnShare.setOnClickListener {
+            val shareText = getString(R.string.invite_share_code_message, circlesManager.getUserName(), circleName, code)
+            val intent = Intent(Intent.ACTION_SEND).apply {
+                type = "text/plain"
+                putExtra(Intent.EXTRA_TEXT, shareText)
+            }
+            startActivity(Intent.createChooser(intent, null))
+        }
+
+        AlertDialog.Builder(this)
+            .setTitle(getString(R.string.invite_code_title))
+            .setView(dialogView)
+            .setPositiveButton(getString(R.string.close), null)
+            .show()
+    }
+
+    private fun showInviteLinkDialog(code: String, circleName: String) {
+        val dialogView = layoutInflater.inflate(R.layout.dialog_invite_link, null)
+        val tvMessage = dialogView.findViewById<TextView>(R.id.tv_invite_message)
+        val tvLink = dialogView.findViewById<TextView>(R.id.tv_invite_link)
+        val btnCopy = dialogView.findViewById<MaterialButton>(R.id.btn_copy_link)
+        val btnShare = dialogView.findViewById<MaterialButton>(R.id.btn_share_link)
+
+        val senderName = circlesManager.getUserName()
+        val inviteLink = createInviteLink(code, circleName, senderName)
+        val fullMessage = getString(R.string.invite_share_message, senderName, circleName, inviteLink)
+
+        tvMessage.text = fullMessage
+        tvLink.text = inviteLink
+
+        btnCopy.setOnClickListener {
+            val clipboard = getSystemService(CLIPBOARD_SERVICE) as android.content.ClipboardManager
+            val clip = android.content.ClipData.newPlainText("invite_link", inviteLink)
+            clipboard.setPrimaryClip(clip)
+            Toast.makeText(this, getString(R.string.invite_link_copied), Toast.LENGTH_SHORT).show()
+        }
+
+        btnShare.setOnClickListener {
+            val intent = Intent(Intent.ACTION_SEND).apply {
+                type = "text/plain"
+                putExtra(Intent.EXTRA_TEXT, fullMessage)
+            }
+            startActivity(Intent.createChooser(intent, null))
+        }
+
+        AlertDialog.Builder(this)
+            .setTitle(getString(R.string.invite_link_title))
+            .setView(dialogView)
+            .setPositiveButton(getString(R.string.close), null)
+            .show()
+    }
+
+    private fun createInviteLink(code: String, circleName: String, senderName: String): String {
+        val encodedSender = java.net.URLEncoder.encode(senderName, "UTF-8")
+        val encodedCircle = java.net.URLEncoder.encode(circleName, "UTF-8")
+        return "https://pace-novikon.web.app/join/$code?from=$encodedSender&circle=$encodedCircle"
     }
 
     // Pide confirmación y borra un mensaje propio del chat.

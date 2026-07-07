@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Únete a Pace</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 100vh;
+        background: #F8F9FA;
+        color: #212529;
+    }
+    .container {
+        text-align: center;
+        padding: 2rem;
+        max-width: 400px;
+    }
+    .logo {
+        font-size: 2.5rem;
+        font-weight: bold;
+        margin-bottom: 1rem;
+    }
+    .message {
+        font-size: 1.1rem;
+        color: #6C757D;
+        margin-bottom: 2rem;
+        line-height: 1.5;
+    }
+    .btn {
+        display: inline-block;
+        padding: 14px 32px;
+        background: #495057;
+        color: white;
+        text-decoration: none;
+        border-radius: 10px;
+        font-weight: bold;
+        font-size: 1rem;
+        margin-bottom: 1rem;
+        transition: background 0.2s;
+    }
+    .btn:hover { background: #343a40; }
+    .btn-secondary {
+        background: transparent;
+        color: #495057;
+        border: 2px solid #495057;
+    }
+    .btn-secondary:hover { background: #E9ECEF; }
+    .loading {
+        font-size: 0.9rem;
+        color: #6C757D;
+        margin-top: 1rem;
+    }
+  </style>
+</head>
+<body>
+<div class="container">
+  <div class="logo">Pace</div>
+  <p class="message" id="message">Cargando...</p>
+  <div id="buttons" style="display:none;">
+    <a id="btnOpen" class="btn" href="#">Abrir en Pace</a>
+    <br>
+    <a id="btnStore" class="btn btn-secondary" href="#">Descargar Pace</a>
+  </div>
+  <p class="loading" id="loading">Abriendo Pace...</p>
+</div>
+
+<script>
+  // Extraer código del path: /join/617190 → 617190
+  const pathParts = window.location.pathname.split('/');
+  const code = pathParts[pathParts.length - 1];
+
+  // Extraer parámetros de query: ?from=Carlos&circle=Gym
+  const params = new URLSearchParams(window.location.search);
+  const sender = params.get('from') || 'Alguien';
+  const circle = params.get('circle') || 'un círculo';
+
+  const deepLink = `pace://join?c=${code}`;
+  const playStoreUrl = `https://play.google.com/store/apps/details?id=com.novikon.pace`;
+
+  // Mostrar mensaje personalizado
+  document.getElementById('message').innerHTML =
+      `<strong>${sender}</strong> te invita a unirte a <strong>${circle}</strong> en Pace`;
+
+  // Configurar botones
+  document.getElementById('btnOpen').href = deepLink;
+  document.getElementById('btnStore').href = playStoreUrl;
+
+  // Intentar abrir la app automáticamente
+  let appOpened = false;
+
+  window.addEventListener('visibilitychange', () => {
+      if (document.hidden) {
+          appOpened = true;
+      }
+  });
+
+  // Intentar abrir la app
+  window.location.href = deepLink;
+
+  // Si después de 2 segundos la app no se abrió, mostrar botones
+  setTimeout(() => {
+      if (!appOpened) {
+          document.getElementById('loading').style.display = 'none';
+          document.getElementById('buttons').style.display = 'block';
+      }
+  }, 2000);
+
+  // Backup: si el usuario vuelve a la página (app no instalada)
+  window.addEventListener('pageshow', () => {
+      document.getElementById('loading').style.display = 'none';
+      document.getElementById('buttons').style.display = 'block';
+  });
+</script>
+</body>
+</html>

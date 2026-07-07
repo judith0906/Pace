@@ -61,10 +61,20 @@ class CirclesActivity : AppCompatActivity() {
         }
 
         loadCircles()
+        processPendingJoinCode()
     }
     override fun onResume() {
         super.onResume()
         loadCircles()
+    }
+
+    private fun processPendingJoinCode() {
+        val prefs = getSharedPreferences("deep_link", MODE_PRIVATE)
+        val pendingCode = prefs.getString(DeepLinkActivity.PENDING_JOIN_CODE, null)
+        if (pendingCode != null) {
+            prefs.edit().remove(DeepLinkActivity.PENDING_JOIN_CODE).apply()
+            joinByCode(pendingCode)
+        }
     }
     private fun loadCircles() {
         lifecycleScope.launch {
