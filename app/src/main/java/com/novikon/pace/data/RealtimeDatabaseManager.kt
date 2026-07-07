@@ -54,6 +54,7 @@ class RealtimeDatabaseManager {
                     "duration" to habit.duration,
                     "category" to habit.category.name,
                     "timeOfDay" to habit.timeOfDay.name,
+                    "color" to habit.color,
                     "isCustom" to habit.isCustom
                 )
             }
@@ -104,6 +105,7 @@ class RealtimeDatabaseManager {
                                         // para que el hábito no desaparezca de la lista
                                         TimeOfDay.ALL_DAY
                                     },
+                                    color = habitSnapshot.child("color").getValue(String::class.java) ?: "#F5F5F5",
                                     isCustom = habitSnapshot.child("isCustom").getValue(Boolean::class.java) ?: false
                                 )
                                 habits.add(habit)

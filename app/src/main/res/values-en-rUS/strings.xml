@@ -169,6 +169,12 @@
     <string name="time_evening">🌙 Evening</string>
     <string name="time_all_day">📅 All day</string>
     <string name="time_of_day_title">When will you do %s?</string>
+    <string name="time_of_day">Time of day</string>
+    <string name="duration">Duration</string>
+    <string name="duration_hint">e.g. 30 min, 1 hour</string>
+    <string name="habit_color_label">Card color</string>
+    <string name="habit_edit">Edit habit</string>
+    <string name="event_duration_label">Duration: %1$s</string>
 
     <!-- ========================================================= -->
     <!-- HABITOS: SELECCION                                        -->

@@ -44,7 +44,9 @@ class MessagesAdapter(
         private const val VIEW_TYPE_PHOTO = 6
         private const val VIEW_TYPE_DATE_HEADER = 7
 
-        private const val EVENT_CAPTURE_WINDOW_MS = 60 * 60 * 1000L
+        private fun getCaptureWindowMs(message: Message): Long {
+            return if (message.eventDurationMs > 0L) message.eventDurationMs else 60 * 60 * 1000L
+        }
         private fun formatTime(timestamp: Long): String {
             if (timestamp == 0L) return ""
             return SimpleDateFormat("HH:mm", Locale.getDefault()).format(Date(timestamp))
@@ -273,6 +275,7 @@ override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         private val onDeclineEvent: (Message) -> Unit
     ) : RecyclerView.ViewHolder(itemView) {
         private val tvTitle: TextView = itemView.findViewById(R.id.tv_event_title)
+        private val tvDuration: TextView = itemView.findViewById(R.id.tv_event_duration)
         private val tvSchedule: TextView = itemView.findViewById(R.id.tv_event_schedule)
         private val tvJoined: TextView = itemView.findViewById(R.id.tv_event_joined)
         private val tvDeclined: TextView = itemView.findViewById(R.id.tv_event_declined)
@@ -281,6 +284,12 @@ override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         fun bind(message: Message) {
             val context = itemView.context
             tvTitle.text = context.getString(R.string.event_title_format, message.eventHabitName)
+            if (message.eventDuration.isNotBlank()) {
+                tvDuration.visibility = View.VISIBLE
+                tvDuration.text = context.getString(R.string.event_duration_label, message.eventDuration)
+            } else {
+                tvDuration.visibility = View.GONE
+            }
             tvSchedule.text = context.getString(
                 R.string.event_datetime_format,
                 formatDateTime(message.eventScheduledAt)
@@ -342,7 +351,8 @@ override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
 
             val now = System.currentTimeMillis()
             val canCaptureByMember = message.captureAllowedIds.contains(currentUserId)
-            val withinCaptureWindow = message.timestamp > 0L && now <= (message.timestamp + EVENT_CAPTURE_WINDOW_MS)
+            val captureEnd = message.eventScheduledAt + getCaptureWindowMs(message)
+            val withinCaptureWindow = message.eventScheduledAt > 0L && now <= captureEnd
             val canCapture = canCaptureByMember && withinCaptureWindow
 
             btnCapture.visibility = View.VISIBLE

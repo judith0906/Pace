@@ -37,4 +37,63 @@
 
     <!-- Colores especiales -->
     <color name="error_red">#D32F2F</color>        <!-- Para "Cerrar sesión" -->
+
+    <!-- Colores para personalización de tarjetas de hábitos -->
+    <color name="habit_color_rose">#FFCDD2</color>
+    <color name="habit_color_pink">#F8BBD0</color>
+    <color name="habit_color_purple">#E1BEE7</color>
+    <color name="habit_color_indigo">#C5CAE9</color>
+    <color name="habit_color_blue">#BBDEFB</color>
+    <color name="habit_color_cyan">#B3E5FC</color>
+    <color name="habit_color_green">#C8E6C9</color>
+    <color name="habit_color_lime">#DCEDC8</color>
+    <color name="habit_color_yellow">#FFF9C4</color>
+    <color name="habit_color_orange">#FFE0B2</color>
+    <color name="habit_color_brown">#D7CCC8</color>
+    <color name="habit_color_gray">#F5F5F5</color>
+
+    <integer-array name="habit_colors">
+        <item>@color/habit_color_rose</item>
+        <item>@color/habit_color_pink</item>
+        <item>@color/habit_color_purple</item>
+        <item>@color/habit_color_indigo</item>
+        <item>@color/habit_color_blue</item>
+        <item>@color/habit_color_cyan</item>
+        <item>@color/habit_color_green</item>
+        <item>@color/habit_color_lime</item>
+        <item>@color/habit_color_yellow</item>
+        <item>@color/habit_color_orange</item>
+        <item>@color/habit_color_brown</item>
+        <item>@color/habit_color_gray</item>
+    </integer-array>
+
+    <string-array name="habit_color_labels">
+        <item>Rosa</item>
+        <item>Rosa claro</item>
+        <item>Púrpura</item>
+        <item>Índigo</item>
+        <item>Azul</item>
+        <item>Celeste</item>
+        <item>Verde</item>
+        <item>Verde lima</item>
+        <item>Amarillo</item>
+        <item>Naranja</item>
+        <item>Marrón</item>
+        <item>Gris</item>
+    </string-array>
+
+    <string-array name="habit_color_hex">
+        <item>#FFCDD2</item>
+        <item>#F8BBD0</item>
+        <item>#E1BEE7</item>
+        <item>#C5CAE9</item>
+        <item>#BBDEFB</item>
+        <item>#B3E5FC</item>
+        <item>#C8E6C9</item>
+        <item>#DCEDC8</item>
+        <item>#FFF9C4</item>
+        <item>#FFE0B2</item>
+        <item>#D7CCC8</item>
+        <item>#F5F5F5</item>
+    </string-array>
 </resources>

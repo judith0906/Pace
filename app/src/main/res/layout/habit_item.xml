@@ -57,6 +57,15 @@
 
             </LinearLayout>
 
+            <ImageButton
+                android:id="@+id/editHabitButton"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:scaleType="centerInside"
+                android:src="@drawable/ic_more_vert"
+                android:contentDescription="@string/habit_edit" />
+
         </LinearLayout>
 
         <!-- Botones de acción -->

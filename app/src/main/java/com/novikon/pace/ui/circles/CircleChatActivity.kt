@@ -476,11 +476,14 @@ class CircleChatActivity : AppCompatActivity() {
                         return@setPositiveButton
                     }
 
-                    val habitName = "${habits[index].emoji} ${habits[index].name}"
+                    val selectedHabit = habits[index]
+                    val habitName = "${selectedHabit.emoji} ${selectedHabit.name}"
+                    val eventDuration = selectedHabit.duration
+                    val eventDurationMs = com.novikon.pace.utils.DurationParser.parseToMillis(selectedHabit.duration)
 
                     lifecycleScope.launch {
                         val tzId = java.util.TimeZone.getDefault().id
-                        val ok = eventsManager.createEvent(circleId, habitName, scheduledAt, tzId)
+                        val ok = eventsManager.createEvent(circleId, habitName, scheduledAt, tzId, eventDuration, eventDurationMs)
                 if (ok) {
                     // Programar el Worker para que el evento arranque a su hora
                     // aunque ningún usuario esté en el chat en ese momento
@@ -550,7 +553,9 @@ class CircleChatActivity : AppCompatActivity() {
     private fun onCaptureMomentClicked(message: Message) {
         val now = System.currentTimeMillis()
         val isAllowedUser = message.captureAllowedIds.contains(circlesManager.getUserId())
-        val stillInWindow = message.timestamp > 0L && now <= (message.timestamp + 60 * 60 * 1000L)
+        val captureEnd = message.eventScheduledAt +
+            if (message.eventDurationMs > 0L) message.eventDurationMs else 60 * 60 * 1000L
+        val stillInWindow = message.eventScheduledAt > 0L && now <= captureEnd
 
         if (!isAllowedUser || !stillInWindow) {
             Toast.makeText(this, getString(R.string.event_capture_not_available), Toast.LENGTH_SHORT).show()

@@ -169,6 +169,12 @@
     <string name="time_evening">🌙 Noche</string>
     <string name="time_all_day">📅 Todo el día</string>
     <string name="time_of_day_title">¿Cuándo harás %s?</string>
+    <string name="time_of_day">Franja horaria</string>
+    <string name="duration">Duración</string>
+    <string name="duration_hint">ej: 30 min, 1 hora</string>
+    <string name="habit_color_label">Color de la tarjeta</string>
+    <string name="habit_edit">Editar hábito</string>
+    <string name="event_duration_label">Duración: %1$s</string>
 
     <!-- ========================================================= -->
     <!-- HABITOS: SELECCION                                        -->

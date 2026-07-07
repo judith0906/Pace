@@ -26,4 +26,18 @@
 
     <!-- Colores especiales -->
     <color name="error_red">#EF5350</color>
+
+    <!-- Colores para personalización de tarjetas de hábitos (modo oscuro) -->
+    <color name="habit_color_rose">#5C2A2A</color>
+    <color name="habit_color_pink">#5C2A3E</color>
+    <color name="habit_color_purple">#3E2A5C</color>
+    <color name="habit_color_indigo">#2A3E5C</color>
+    <color name="habit_color_blue">#2A4A5C</color>
+    <color name="habit_color_cyan">#2A4A4A</color>
+    <color name="habit_color_green">#2A4A2A</color>
+    <color name="habit_color_lime">#3E4A2A</color>
+    <color name="habit_color_yellow">#4A4A2A</color>
+    <color name="habit_color_orange">#5C3E2A</color>
+    <color name="habit_color_brown">#3E2A2A</color>
+    <color name="habit_color_gray">#2C2C2C</color>
 </resources>

@@ -1,10 +1,13 @@
 package com.novikon.pace.adapters
 
 import android.content.Context
+import android.graphics.Color
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageButton
 import android.widget.TextView
+import androidx.cardview.widget.CardView
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.button.MaterialButton
 import com.novikon.pace.R
@@ -24,7 +27,8 @@ class DailyHabitAdapter(
     private val context: Context,
     private var habits: List<Habit>,
     private val habitStatus: Map<String, Boolean>,  // id del hábito → true si está hecho
-    private val onHabitStatusChanged: (String, Boolean) -> Unit
+    private val onHabitStatusChanged: (String, Boolean) -> Unit,
+    private val onEditHabit: ((Habit) -> Unit)? = null
 ) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     companion object {
@@ -117,6 +121,12 @@ class DailyHabitAdapter(
         }
     }
 
+    fun updateHabits(newHabits: List<Habit>) {
+        habits = newHabits
+        organizeHabits()
+        notifyDataSetChanged()
+    }
+
     // getItemCount: devuelve la cantidad total de elementos a renderizar.
     override fun getItemCount(): Int = items.size
 
@@ -132,10 +142,17 @@ class DailyHabitAdapter(
         private val habitTime: TextView = view.findViewById(R.id.habitTime)
         private val notDoneButton: MaterialButton = view.findViewById(R.id.notDoneButton)
         private val doneButton: MaterialButton = view.findViewById(R.id.doneButton)
+        private val editHabitButton: ImageButton = view.findViewById(R.id.editHabitButton)
         fun bind(habit: Habit, isDone: Boolean) {
             habitEmoji.text = habit.emoji
             habitName.text = habit.name
             habitTime.text = habit.duration
+
+            try {
+                (itemView as CardView).setCardBackgroundColor(Color.parseColor(habit.color))
+            } catch (_: Exception) {
+                (itemView as CardView).setCardBackgroundColor(Color.parseColor("#F5F5F5"))
+            }
 
             updateButtonStates(isDone)
 
@@ -147,6 +164,10 @@ class DailyHabitAdapter(
             doneButton.setOnClickListener {
                 updateButtonStates(true)
                 onHabitStatusChanged(habit.id, true)
+            }
+
+            editHabitButton.setOnClickListener {
+                onEditHabit?.invoke(habit)
             }
         }
 

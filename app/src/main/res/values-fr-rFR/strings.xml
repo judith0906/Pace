@@ -190,6 +190,12 @@
     <string name="habits_saved">Habitudes sauvegardées</string>
     <string name="habits_saved_locally">Habitudes sauvegardées localement</string>
     <string name="time_of_day_title">Quand est-ce que tu feras %s ?</string>
+    <string name="time_of_day">Période de la journée</string>
+    <string name="duration">Durée</string>
+    <string name="duration_hint">ex: 30 min, 1 heure</string>
+    <string name="habit_color_label">Couleur de la carte</string>
+    <string name="habit_edit">Modifier l\'habitude</string>
+    <string name="event_duration_label">Durée : %1$s</string>
     <string name="delete_habit_title">Supprimer l\'habitude</string>
     <string name="delete_habit_message">Êtes-vous sûr de vouloir supprimer "%s" ? Cette action est irréversible.</string>
     <string name="delete">Supprimer</string>

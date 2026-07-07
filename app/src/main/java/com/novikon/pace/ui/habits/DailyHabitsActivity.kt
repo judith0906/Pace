@@ -121,7 +121,9 @@ class DailyHabitsActivity : AppCompatActivity() {
         selectedHabits = selectedHabits.map { habit ->
             if (!habit.isCustom) {
                 predefinedMap[habit.id]?.copy(
-                    timeOfDay = habit.timeOfDay
+                    timeOfDay = habit.timeOfDay,
+                    duration = habit.duration,
+                    color = habit.color
                 ) ?: habit
             } else {
                 habit
@@ -161,19 +163,42 @@ class DailyHabitsActivity : AppCompatActivity() {
         withContext(Dispatchers.Main) {
             // Crear el adapter con la lista completa de hábitos —
             // organizeHabits() los agrupará internamente por franja horaria
-            habitAdapter = DailyHabitAdapter(this@DailyHabitsActivity, selectedHabits, habitStatus) { habitId, isDone ->
-                // logHabit es suspend — necesita lifecycleScope
-                lifecycleScope.launch {
-                    habitsManager.logHabit(habitId, currentDate, isDone)
-                }
-                habitStatus[habitId] = isDone
-                updateProgress()
-            }
+            habitAdapter = DailyHabitAdapter(
+                context = this@DailyHabitsActivity,
+                habits = selectedHabits,
+                habitStatus = habitStatus,
+                onHabitStatusChanged = { habitId, isDone ->
+                    lifecycleScope.launch {
+                        habitsManager.logHabit(habitId, currentDate, isDone)
+                    }
+                    habitStatus[habitId] = isDone
+                    updateProgress()
+                },
+                onEditHabit = { habit -> showHabitCustomizationSheet(habit) }
+            )
 
             habitsRecyclerView.adapter = habitAdapter
             updateProgress()
         }
     }
+    private fun showHabitCustomizationSheet(habit: Habit) {
+        val sheet = HabitCustomizationSheet(habit) { updatedHabit ->
+            val index = selectedHabits.indexOfFirst { it.id == habit.id }
+            if (index != -1) {
+                selectedHabits = selectedHabits.toMutableList().also {
+                    it[index] = updatedHabit
+                }
+                lifecycleScope.launch {
+                    habitsManager.saveSelectedHabits(selectedHabits)
+                    withContext(Dispatchers.Main) {
+                        habitAdapter.updateHabits(selectedHabits)
+                    }
+                }
+            }
+        }
+        sheet.show(supportFragmentManager, "HabitCustomizationSheet")
+    }
+
     private fun setupListeners() {
         backButton.setOnClickListener {
             finish()

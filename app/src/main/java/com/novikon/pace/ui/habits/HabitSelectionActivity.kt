@@ -49,11 +49,11 @@ class HabitSelectionActivity : AppCompatActivity() {
     // Set con los ids de los hábitos seleccionados
     private val selectedHabitIds = mutableSetOf<String>()
 
-    // Mapa de overrides de franja horaria elegidos por el usuario.
-    // Solo contiene entradas para los hábitos en los que el usuario
-    // eligió una franja explícitamente — los que no están aquí
-    // conservan el timeOfDay original del repositorio.
-    private val timeOfDayOverrides = mutableMapOf<String, TimeOfDay>()
+    // Mapa de overrides de personalización elegidos por el usuario.
+    // Solo contiene entradas para los hábitos que el usuario personalizó —
+    // los que no están aquí conservan los valores originales del repositorio.
+    // Guarda el Habit completo con los campos sobreescritos (timeOfDay, duration, color).
+    private val habitOverrides = mutableMapOf<String, Habit>()
 
 // onCreate: inicializa la pantalla y prepara vistas/eventos iniciales.
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -97,12 +97,21 @@ class HabitSelectionActivity : AppCompatActivity() {
         val savedHabits = habitsManager.getSelectedHabitsAsync()
         savedHabits.forEach { savedHabit ->
             selectedHabitIds.add(savedHabit.id)
-            // Restaurar los overrides de franja que el usuario ya había elegido —
-            // solo los guardamos si difieren del valor original del repositorio,
-            // así al volver a esta pantalla los hábitos ya muestran la franja correcta
+            // Restaurar los overrides que el usuario ya había elegido —
+            // si difieren del valor original, los guardamos para que al volver
+            // a esta pantalla los hábitos ya muestren sus valores personalizados
             val original = allHabits.find { it.id == savedHabit.id }
-            if (original != null && savedHabit.timeOfDay != original.timeOfDay) {
-                timeOfDayOverrides[savedHabit.id] = savedHabit.timeOfDay
+            // Guardar siempre los hábitos personalizados como override, ya que
+            // no tienen un valor "original" en el repositorio contra el que comparar
+            if (savedHabit.isCustom) {
+                habitOverrides[savedHabit.id] = savedHabit
+            } else if (original != null && (
+                    savedHabit.timeOfDay != original.timeOfDay ||
+                    savedHabit.duration != original.duration ||
+                    savedHabit.color != original.color
+                )
+            ) {
+                habitOverrides[savedHabit.id] = savedHabit
             }
         }
 
@@ -144,14 +153,9 @@ class HabitSelectionActivity : AppCompatActivity() {
 
         habitAdapter = HabitSelectionAdapter(categoryHabits, selectedHabitIds, onHabitToggled = { habit, isSelected ->
             if (isSelected) {
-                // Solo preguntamos la franja si el hábito es ALL_DAY —
-                // los que tienen franja fija (mañana/tarde/noche) ya la tienen clara
-                if (habit.timeOfDay == TimeOfDay.ALL_DAY) {
-                    showTimeOfDayDialog(habit)
-                }
+                showHabitCustomizationSheet(habit)
             } else {
-                // Al deseleccionar, eliminamos el override guardado si lo había
-                timeOfDayOverrides.remove(habit.id)
+                habitOverrides.remove(habit.id)
             }
             updateSelectedCount()
         })
@@ -168,9 +172,9 @@ class HabitSelectionActivity : AppCompatActivity() {
             selectedHabitIds,
             onHabitToggled = { habit, isSelected ->
                 if (isSelected) {
-                    showTimeOfDayDialog(habit)
+                    showHabitCustomizationSheet(habit)
                 } else {
-                    timeOfDayOverrides.remove(habit.id)
+                    habitOverrides.remove(habit.id)
                 }
                 updateSelectedCount()
             },
@@ -183,40 +187,26 @@ class HabitSelectionActivity : AppCompatActivity() {
         updateSelectedCount()
     }
 
-    // Muestra el dialog para que el usuario elija en qué franja del día
-    // quiere realizar el hábito. Solo aparece para hábitos con ALL_DAY —
-    // los que tienen franja fija no llegan aquí.
-    // Usa AlertDialog con setView() inflando un layout XML, siguiendo
-    // el patrón de inflate de la teoría.
-    private fun showTimeOfDayDialog(habit: Habit) {
-        val dialogView = layoutInflater.inflate(R.layout.dialog_time_of_day, null)
+    // Muestra el BottomSheet de personalización para que el usuario edite
+    // la franja horaria, duración y color de la tarjeta del hábito.
+    private fun showHabitCustomizationSheet(habit: Habit) {
+        val effectiveHabit = habitOverrides[habit.id] ?: habit
 
-        // AlertDialog estándar — sin tema personalizado para que
-        // tenga su propio fondo sólido y no se mezcle con el fondo de la pantalla
-        val dialog = AlertDialog.Builder(this)
-            .setTitle(getString(R.string.time_of_day_title, habit.name))
-            .setView(dialogView)
-            .setCancelable(true)
-            .create()
-
-        dialogView.findViewById<LinearLayout>(R.id.optionMorning).setOnClickListener {
-            timeOfDayOverrides[habit.id] = TimeOfDay.MORNING
-            dialog.dismiss()
+        val sheet = HabitCustomizationSheet(effectiveHabit) { updatedHabit ->
+            val original = allHabits.find { it.id == habit.id }
+                ?: customHabits.find { it.id == habit.id }
+            val isDifferent = original != null && (
+                updatedHabit.timeOfDay != original.timeOfDay ||
+                updatedHabit.duration != original.duration ||
+                updatedHabit.color != original.color
+            )
+            if (isDifferent) {
+                habitOverrides[habit.id] = updatedHabit
+            } else {
+                habitOverrides.remove(habit.id)
+            }
         }
-        dialogView.findViewById<LinearLayout>(R.id.optionAfternoon).setOnClickListener {
-            timeOfDayOverrides[habit.id] = TimeOfDay.AFTERNOON
-            dialog.dismiss()
-        }
-        dialogView.findViewById<LinearLayout>(R.id.optionEvening).setOnClickListener {
-            timeOfDayOverrides[habit.id] = TimeOfDay.EVENING
-            dialog.dismiss()
-        }
-        dialogView.findViewById<LinearLayout>(R.id.optionAllDay).setOnClickListener {
-            timeOfDayOverrides.remove(habit.id)
-            dialog.dismiss()
-        }
-
-        dialog.show()
+        sheet.show(supportFragmentManager, "HabitCustomizationSheet")
     }
 
     // Muestra el diálogo para crear un hábito personalizado.
@@ -293,8 +283,8 @@ class HabitSelectionActivity : AppCompatActivity() {
         selectedCountText.text = getString(R.string.selected_habits_count, selectedHabitIds.size)
     }
 
-    // Recoge todos los hábitos seleccionados, aplica los overrides de franja
-    // horaria elegidos por el usuario, y los guarda en Firebase y caché.
+    // Recoge todos los hábitos seleccionados, aplica los overrides de
+    // personalización elegidos por el usuario, y los guarda en Firebase y caché.
     private fun saveSelectedHabits() {
         // Los hábitos predefinidos solo se guardan si están seleccionados.
         // Los personalizados se guardan SIEMPRE (seleccionados o no) para no perderlos —
@@ -304,8 +294,7 @@ class HabitSelectionActivity : AppCompatActivity() {
                 if (habit.isCustom) true else selectedHabitIds.contains(habit.id)
             }
             .map { habit ->
-                val chosenTimeOfDay = timeOfDayOverrides[habit.id]
-                if (chosenTimeOfDay != null) habit.copy(timeOfDay = chosenTimeOfDay) else habit
+                habitOverrides[habit.id] ?: habit
             }
 
         if (selectedHabits.isEmpty()) {
@@ -339,7 +328,7 @@ class HabitSelectionActivity : AppCompatActivity() {
             .setPositiveButton(getString(R.string.delete)) { _, _ ->
                 customHabits.remove(habit)
                 selectedHabitIds.remove(habit.id)
-                timeOfDayOverrides.remove(habit.id)
+                habitOverrides.remove(habit.id)
                 customHabitAdapter.updateHabits(customHabits)
                 updateSelectedCount()
             }

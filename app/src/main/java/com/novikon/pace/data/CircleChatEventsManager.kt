@@ -46,7 +46,9 @@ class CircleChatEventsManager(
         circleId: String,
         habitName: String,
         scheduledAtMillis: Long,
-        eventTimeZoneId: String
+        eventTimeZoneId: String,
+        eventDuration: String = "",
+        eventDurationMs: Long = 0L
     ): Boolean {
         val uid = getUserId() ?: return false
         val userName = getUserName()
@@ -67,7 +69,7 @@ class CircleChatEventsManager(
 
             val now = System.currentTimeMillis()
 
-            val updates = mapOf<String, Any>(
+            val updates = mutableMapOf<String, Any>(
                 "circles/$circleId/events/$eventId/id" to eventId,
                 "circles/$circleId/events/$eventId/habitName" to habitName,
                 "circles/$circleId/events/$eventId/scheduledAt" to scheduledAtMillis,
@@ -80,6 +82,8 @@ class CircleChatEventsManager(
                 "circles/$circleId/events/$eventId/declinedIds" to emptyList<String>(),
                 "circles/$circleId/events/$eventId/declinedNames" to emptyList<String>(),
                 "circles/$circleId/events/$eventId/timeZoneId" to eventTimeZoneId,
+                "circles/$circleId/events/$eventId/eventDuration" to eventDuration,
+                "circles/$circleId/events/$eventId/eventDurationMs" to eventDurationMs,
 
                 "circles/$circleId/messages/$messageId/eventTimeZoneId" to eventTimeZoneId,
                 "circles/$circleId/messages/$messageId/id" to messageId,
@@ -95,7 +99,9 @@ class CircleChatEventsManager(
                 "circles/$circleId/messages/$messageId/eventJoinedIds" to listOf(uid),
                 "circles/$circleId/messages/$messageId/eventJoinedNames" to listOf(userName),
                 "circles/$circleId/messages/$messageId/eventDeclinedIds" to emptyList<String>(),
-                "circles/$circleId/messages/$messageId/eventDeclinedNames" to emptyList<String>()
+                "circles/$circleId/messages/$messageId/eventDeclinedNames" to emptyList<String>(),
+                "circles/$circleId/messages/$messageId/eventDuration" to eventDuration,
+                "circles/$circleId/messages/$messageId/eventDurationMs" to eventDurationMs
             )
 
             baseRef.updateChildren(updates)
@@ -259,6 +265,10 @@ class CircleChatEventsManager(
                     return
                 }
 
+                val eventDuration = eventSnapshot.child("eventDuration").getValue(String::class.java) ?: ""
+                val eventDurationMs = eventSnapshot.child("eventDurationMs").getValue(Long::class.java) ?: 0L
+                val eventScheduledAt = eventSnapshot.child("scheduledAt").getValue(Long::class.java) ?: now
+
                 val messageMap = mapOf(
                     "id" to msgId,
                     "type" to "EVENT_START",
@@ -270,6 +280,9 @@ class CircleChatEventsManager(
                     "timestamp" to now,
                     "eventId" to eventId,
                     "eventHabitName" to habitName,
+                    "eventScheduledAt" to eventScheduledAt,
+                    "eventDuration" to eventDuration,
+                    "eventDurationMs" to eventDurationMs,
                     "captureAllowedIds" to joinedIds
                 )
 
@@ -381,6 +394,8 @@ class CircleChatEventsManager(
                 eventDeclinedNames = snapshot.child("eventDeclinedNames").children.mapNotNull { it.getValue(String::class.java) },
                 captureAllowedIds = snapshot.child("captureAllowedIds").children.mapNotNull { it.getValue(String::class.java) },
                 photoUrl = snapshot.child("photoUrl").getValue(String::class.java) ?: "",
+                eventDuration = snapshot.child("eventDuration").getValue(String::class.java) ?: "",
+                eventDurationMs = snapshot.child("eventDurationMs").getValue(Long::class.java) ?: 0L,
                 messageTemplateKey = snapshot.child("messageTemplateKey").getValue(String::class.java) ?: "",
                 messageTemplateParams = snapshot.child("messageTemplateParams")
                     .children
