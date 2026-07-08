@@ -5,6 +5,7 @@ import android.content.SharedPreferences
 import android.os.Build
 import android.provider.Settings
 import com.novikon.pace.constants.PrefsConstants
+import com.novikon.pace.data.FCMTokenManager
 import com.novikon.pace.data.RealtimeDatabaseManager
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -45,6 +46,14 @@ class SessionManager(private val context: Context) {
                 osVersion = getOsVersion(),
                 loginTimestamp = now
             )
+            // Guardar token FCM
+            FCMTokenManager().getCurrentToken { token ->
+                if (token != null) {
+                    CoroutineScope(Dispatchers.IO).launch {
+                        FCMTokenManager().saveToken(token)
+                    }
+                }
+            }
         }
     }
 
@@ -62,6 +71,7 @@ class SessionManager(private val context: Context) {
 
         CoroutineScope(Dispatchers.IO).launch {
             databaseManager.removeDevice(deviceId, userId)
+            FCMTokenManager().removeAllTokens()
         }
     }
 
@@ -123,6 +133,9 @@ class SessionManager(private val context: Context) {
     // datos huérfanos en el dispositivo.
     fun clearSession() {
         prefs.edit().clear().apply()
+        CoroutineScope(Dispatchers.IO).launch {
+            FCMTokenManager().removeAllTokens()
+        }
     }
 
     // ── IDENTIFICACIÓN DEL DISPOSITIVO ────────────────────────────────────────

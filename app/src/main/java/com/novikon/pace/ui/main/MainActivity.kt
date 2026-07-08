@@ -313,13 +313,6 @@ class MainActivity : AppCompatActivity() {
                 R.layout.habits_preview_empty, habitsPreviewContainer, false
             )
             habitsPreviewContainer.addView(emptyView)
-            emptyView.findViewById<com.google.android.material.button.MaterialButton>(
-                R.id.configureHabitsButton
-            ).setOnClickListener {
-                habitSelectionLauncher.launch(
-                    Intent(this, HabitSelectionActivity::class.java)
-                )
-            }
         } else {
             selectedHabits.take(3).forEach { habit ->
                 val habitView = layoutInflater.inflate(

@@ -480,6 +480,10 @@
     <string name="notif_event_started">¡El evento %1$s ha comenzado!</string>
     <string name="notif_photo_sent">Ha enviado una foto 📷</string>
     <string name="notif_system_message">Nuevo mensaje en el círculo</string>
+    <string name="notif_new_message_in_circle">Tienes un nuevo mensaje en %s</string>
+    <string name="notif_mute_label">Silenciar notificaciones</string>
+    <string name="notif_muted_circle">Notificaciones silenciadas</string>
+    <string name="notif_unmuted_circle">Notificaciones activadas</string>
 
     <!-- Galería del grupo -->
     <string name="group_gallery_title">Fotos del círculo</string>

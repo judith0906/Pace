@@ -86,6 +86,7 @@ class CircleChatActivity : AppCompatActivity() {
     // Marca si el usuario está actualmente dentro de esta pantalla de chat.
     // Se usa para suprimir notificaciones mientras la actividad está en primer plano.
     private var isInForeground = false
+    private var isMuted = false
 
     private val cameraPermissionLauncher = registerForActivityResult(
         ActivityResultContracts.RequestPermission()
@@ -150,6 +151,10 @@ class CircleChatActivity : AppCompatActivity() {
         }
 
         eventStartTicker.run()
+
+        lifecycleScope.launch {
+            isMuted = circlesManager.isCircleMuted(circleId)
+        }
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
@@ -233,7 +238,8 @@ class CircleChatActivity : AppCompatActivity() {
                         currentUserId = currentUserId,
                         circleName = circleName,
                         circleId = circleId,
-                        targetActivityClass = CircleChatActivity::class.java
+                        targetActivityClass = CircleChatActivity::class.java,
+                        isMuted = isMuted
                     )
                 }
                 messagesAdapter.addMessage(message)
@@ -670,6 +676,23 @@ class CircleChatActivity : AppCompatActivity() {
                         .show()
                 }
             )
+
+            // Silenciar notificaciones
+            val switchMute = view.findViewById<androidx.appcompat.widget.SwitchCompat>(R.id.switch_mute)
+            lifecycleScope.launch {
+                isMuted = circlesManager.isCircleMuted(circleId)
+                switchMute.isChecked = isMuted
+            }
+            switchMute.setOnCheckedChangeListener { _, isChecked ->
+                isMuted = isChecked
+                lifecycleScope.launch {
+                    if (isChecked) {
+                        circlesManager.muteCircle(circleId)
+                    } else {
+                        circlesManager.unmuteCircle(circleId)
+                    }
+                }
+            }
 
             if (isAdmin) {
                 btnEditName.visibility = View.VISIBLE

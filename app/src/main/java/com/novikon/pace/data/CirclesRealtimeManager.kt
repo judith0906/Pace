@@ -644,6 +644,43 @@ class CirclesRealtimeManager(
         }
     }
 
+    // -------------------- MUTE --------------------
+
+    suspend fun muteCircle(circleId: String): Boolean {
+        val uid = getUserId() ?: return false
+        return suspendCancellableCoroutine { cont ->
+            database.getReference("users/$uid/mutedCircles/$circleId")
+                .setValue(true)
+                .addOnSuccessListener { cont.resume(true) }
+                .addOnFailureListener { cont.resume(false) }
+        }
+    }
+
+    suspend fun unmuteCircle(circleId: String): Boolean {
+        val uid = getUserId() ?: return false
+        return suspendCancellableCoroutine { cont ->
+            database.getReference("users/$uid/mutedCircles/$circleId")
+                .removeValue()
+                .addOnSuccessListener { cont.resume(true) }
+                .addOnFailureListener { cont.resume(false) }
+        }
+    }
+
+    suspend fun isCircleMuted(circleId: String): Boolean {
+        val uid = getUserId() ?: return false
+        return suspendCancellableCoroutine { cont ->
+            database.getReference("users/$uid/mutedCircles/$circleId")
+                .addListenerForSingleValueEvent(object : ValueEventListener {
+                    override fun onDataChange(snapshot: DataSnapshot) {
+                        cont.resume(snapshot.exists() && snapshot.getValue(Boolean::class.java) == true)
+                    }
+                    override fun onCancelled(error: DatabaseError) {
+                        cont.resume(false)
+                    }
+                })
+        }
+    }
+
     // -------------------- MESSAGES --------------------
 
     private suspend fun sendSystemTemplateMessage(

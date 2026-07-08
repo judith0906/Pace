@@ -196,6 +196,36 @@
             android:layout_marginTop="12dp"
             android:layout_marginBottom="12dp" />
 
+        <!-- Silenciar notificaciones -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="@string/notif_mute_label"
+                android:textSize="14sp"
+                android:textColor="@color/text_primary" />
+
+            <androidx.appcompat.widget.SwitchCompat
+                android:id="@+id/switch_mute"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+
+        </LinearLayout>
+
+        <!-- Divisor -->
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="@color/border_color"
+            android:layout_marginTop="12dp"
+            android:layout_marginBottom="12dp" />
+
         <!-- Galería -->
         <TextView
             android:layout_width="wrap_content"
