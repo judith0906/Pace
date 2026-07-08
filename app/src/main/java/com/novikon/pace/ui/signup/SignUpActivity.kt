@@ -11,6 +11,7 @@ import com.novikon.pace.R
 import com.novikon.pace.helpers.LanguageHelper
 import com.novikon.pace.helpers.ThemeHelper
 import com.novikon.pace.ui.main.MainActivity
+import com.novikon.pace.ui.tutorial.TutorialActivity
 import com.novikon.pace.utils.SessionManager
 import com.novikon.pace.utils.applySystemBarInsets
 
@@ -118,7 +119,7 @@ class SignUpActivity : AppCompatActivity() {
     }
 
     // Se ejecuta cuando el registro es exitoso.
-    // Guarda el timestamp del login, rehabilita el botón y navega a MainActivity.
+    // Guarda el timestamp del login, rehabilita el botón y navega al tutorial.
     private fun onRegistrationSuccess() {
         sessionManager.saveLastLoginTime()
 
@@ -132,7 +133,7 @@ class SignUpActivity : AppCompatActivity() {
             Toast.LENGTH_SHORT
         ).show()
 
-        startActivity(Intent(this, MainActivity::class.java))
+        startActivity(Intent(this, TutorialActivity::class.java))
         finish()
     }
 

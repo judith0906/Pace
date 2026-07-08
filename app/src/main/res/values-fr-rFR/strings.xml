@@ -714,4 +714,33 @@
 
     <string name="invite_share_message">Hé ! %1$s t\'invite à rejoindre %2$s sur Pace. Clique sur le lien pour rejoindre la bande !\n\n%3$s\n\nSi tu n\'as pas Pace, cherche-le sur Google Play.</string>
     <string name="invite_share_code_message">Hé ! %1$s t\'invite à rejoindre %2$s sur Pace. Utilise ce code pour te joindre : %3$s</string>
+
+    <!-- ========================================================= -->
+    <!-- PICKY LA MASCOTTE                                           -->
+    <!-- ========================================================= -->
+    <string name="picky_app_open">Salut ! Tu as %1$s habitudes aujourd\'hui</string>
+    <string name="picky_habit_done">Bien joué !</string>
+    <string name="picky_all_done">Journée terminée ! Picky est fière de toi</string>
+    <string name="picky_streak_broken">Demain est un nouveau jour. Tu peux le faire !</string>
+    <string name="picky_milestone">%1$s jours d\'affilée ! Tu es incroyable</string>
+    <string name="picky_circle_joined">Nouveau cercle ! Picky est contente</string>
+    <string name="picky_moment_shared">Partagé ! Tes cercles vont le voir</string>
+    <string name="picky_night">Dernière habitude du jour, au repos</string>
+
+    <!-- ========================================================= -->
+    <!-- TUTORIEL DE BIENVENUE (PICKY)                              -->
+    <!-- ========================================================= -->
+    <string name="tutorial_welcome_title">Salut ! Je suis Picky</string>
+    <string name="tutorial_welcome_desc">Je suis ta compagne d\'habitudes. Je serai là chaque jour pour t\'aider à atteindre tes objectifs.</string>
+    <string name="tutorial_habits_title">Tes habitudes quotidiennes</string>
+    <string name="tutorial_habits_desc">Chaque jour, tu marques tes habitudes ici. Simple, rapide et sans complication.</string>
+    <string name="tutorial_circles_title">Partage avec des amis</string>
+    <string name="tutorial_circles_desc">Dans les Cercles, tu peux te connecter avec des amis, partager tes progrès et vous motiver mutuellement.</string>
+    <string name="tutorial_motivation_title">Chaque réussite compte</string>
+    <string name="tutorial_motivation_desc">Chaque habitude complétée s\'additionne. Picky sera là pour célébrer avec toi.</string>
+    <string name="tutorial_ready_title">Prêt ?</string>
+    <string name="tutorial_ready_desc">Choisis tes premières habitudes et c\'est parti !</string>
+    <string name="tutorial_next">Suivant</string>
+    <string name="tutorial_previous">Précédent</string>
+    <string name="tutorial_start">C\'est parti !</string>
 </resources>

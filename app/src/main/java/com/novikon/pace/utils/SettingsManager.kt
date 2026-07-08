@@ -34,6 +34,7 @@ class SettingsManager(private val context: Context) {
         private const val KEY_FIRST_RUN = "first_run"
         private const val KEY_FIRST_INSTALL_DATE = "first_install_date"
         private const val KEY_DEVICE_LANGUAGE = "device_language"
+        private const val KEY_TUTORIAL_SHOWN = "tutorial_shown"
 
         // Claves para cada franja horaria
         private const val KEY_MORNING_ENABLED = "reminder_morning_enabled"
@@ -107,6 +108,13 @@ class SettingsManager(private val context: Context) {
     private fun isFirstRun(): Boolean = prefs.getBoolean(KEY_FIRST_RUN, true)
     private fun markFirstRunComplete() {
         prefs.edit { putBoolean(KEY_FIRST_RUN, false) }
+    }
+
+    // ── TUTORIAL ─────────────────────────────────────────────────────────────
+
+    fun isTutorialShown(): Boolean = prefs.getBoolean(KEY_TUTORIAL_SHOWN, false)
+    fun markTutorialShown() {
+        prefs.edit { putBoolean(KEY_TUTORIAL_SHOWN, true) }
     }
 
     // ── HISTORIAL DE CONFIGURACIÓN SEMANAL ───────────────────────────────────

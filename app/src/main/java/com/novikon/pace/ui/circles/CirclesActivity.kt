@@ -2,7 +2,13 @@ package com.novikon.pace.ui.circles
 
 import android.content.Intent
 import android.os.Bundle
+import android.view.Gravity
+import android.view.View
+import android.view.ViewGroup
+import android.widget.FrameLayout
 import android.widget.ImageButton
+import android.widget.ImageView
+import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
@@ -13,7 +19,10 @@ import com.novikon.pace.R
 import com.novikon.pace.data.CirclesRealtimeManager
 import com.novikon.pace.helpers.LanguageHelper
 import com.novikon.pace.helpers.ThemeHelper
+import com.novikon.pace.utils.PickyEvent
+import com.novikon.pace.utils.PickyManager
 import com.novikon.pace.utils.applySystemBarInsets
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 // Pantalla de circulos: lista grupos del usuario y permite crear/unirse a nuevos.
@@ -99,11 +108,7 @@ class CirclesActivity : AppCompatActivity() {
             val result = circlesManager.joinCircleByCode(code)
 
             if (result.success) {
-                Toast.makeText(
-                    this@CirclesActivity,
-                    getString(R.string.circle_joined),
-                    Toast.LENGTH_SHORT
-                ).show()
+                showPickyJoined()
                 loadCircles()
                 return@launch
             }
@@ -124,6 +129,22 @@ class CirclesActivity : AppCompatActivity() {
             }
 
             Toast.makeText(this@CirclesActivity, msg, Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    private fun showPickyJoined() {
+        val state = PickyManager.getPickyState(PickyEvent.CIRCLE_JOINED)
+        val overlay = layoutInflater.inflate(R.layout.overlay_picky, null) as ViewGroup
+
+        overlay.findViewById<ImageView>(R.id.pickyImage).setImageResource(state.imageRes)
+        overlay.findViewById<TextView>(R.id.pickyMessage).setText(state.messageRes)
+
+        val container = window.decorView.findViewById<FrameLayout>(android.R.id.content)
+        container.addView(overlay)
+
+        lifecycleScope.launch {
+            delay(2500)
+            container.removeView(overlay)
         }
     }
 }

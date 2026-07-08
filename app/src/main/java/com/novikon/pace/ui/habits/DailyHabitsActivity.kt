@@ -1,10 +1,13 @@
 package com.novikon.pace.ui.habits
 
+import android.animation.ObjectAnimator
 import android.content.Intent
 import android.os.Bundle
 import android.text.format.DateFormat
 import android.view.View
+import android.view.animation.DecelerateInterpolator
 import android.widget.ImageButton
+import android.widget.ImageView
 import android.widget.ProgressBar
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
@@ -19,6 +22,8 @@ import com.novikon.pace.helpers.LanguageHelper
 import com.novikon.pace.helpers.ThemeHelper
 import com.novikon.pace.models.Habit
 import com.novikon.pace.repositories.HabitsRepository
+import com.novikon.pace.utils.PickyEvent
+import com.novikon.pace.utils.PickyManager
 import com.novikon.pace.utils.SettingsManager
 import com.novikon.pace.utils.applySystemBarInsets
 import kotlinx.coroutines.Dispatchers
@@ -42,6 +47,9 @@ class DailyHabitsActivity : AppCompatActivity() {
     private lateinit var progressCard: CardView
     private lateinit var progressText: TextView
     private lateinit var progressBar: ProgressBar
+    private lateinit var pickyCard: CardView
+    private lateinit var pickyImage: ImageView
+    private lateinit var pickyMessage: TextView
     private lateinit var habitsRecyclerView: RecyclerView
 
     private lateinit var habitAdapter: DailyHabitAdapter
@@ -93,6 +101,9 @@ class DailyHabitsActivity : AppCompatActivity() {
         progressCard = findViewById(R.id.progressCard)
         progressText = findViewById(R.id.progressText)
         progressBar = findViewById(R.id.progressBar)
+        pickyCard = findViewById(R.id.pickyCard)
+        pickyImage = findViewById(R.id.pickyImage)
+        pickyMessage = findViewById(R.id.pickyMessage)
         habitsRecyclerView = findViewById(R.id.habitsRecyclerView)
 
         habitsRecyclerView.layoutManager = LinearLayoutManager(this)
@@ -173,14 +184,53 @@ class DailyHabitsActivity : AppCompatActivity() {
                     }
                     habitStatus[habitId] = isDone
                     updateProgress()
+                    if (isDone) {
+                        val completed = habitStatus.values.count { it }
+                        if (completed >= selectedHabits.size) {
+                            showPicky(PickyEvent.ALL_COMPLETED)
+                        } else {
+                            showPicky(PickyEvent.HABIT_COMPLETED)
+                        }
+                    }
                 },
                 onEditHabit = { habit -> showHabitCustomizationSheet(habit) }
             )
 
             habitsRecyclerView.adapter = habitAdapter
             updateProgress()
+            if (restDayCard.visibility != View.VISIBLE) {
+                showPicky(PickyEvent.APP_OPEN, selectedHabits.size)
+            }
         }
     }
+    private fun showPicky(event: PickyEvent, habitCount: Int = 0) {
+        val state = PickyManager.getPickyState(event)
+        pickyImage.setImageResource(state.imageRes)
+
+        val message = if (event == PickyEvent.APP_OPEN && habitCount > 0) {
+            getString(state.messageRes, habitCount)
+        } else {
+            getString(state.messageRes)
+        }
+        pickyMessage.text = message
+
+        if (pickyCard.visibility != View.VISIBLE) {
+            pickyCard.visibility = View.VISIBLE
+            pickyCard.scaleX = 0f
+            pickyCard.scaleY = 0f
+            ObjectAnimator.ofFloat(pickyCard, "scaleX", 0f, 1.05f, 1f).apply {
+                duration = 400L
+                interpolator = DecelerateInterpolator()
+                start()
+            }
+            ObjectAnimator.ofFloat(pickyCard, "scaleY", 0f, 1.05f, 1f).apply {
+                duration = 400L
+                interpolator = DecelerateInterpolator()
+                start()
+            }
+        }
+    }
+
     private fun showHabitCustomizationSheet(habit: Habit) {
         val sheet = HabitCustomizationSheet(habit) { updatedHabit ->
             val index = selectedHabits.indexOfFirst { it.id == habit.id }
