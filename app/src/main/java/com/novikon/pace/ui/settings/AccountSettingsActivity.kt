@@ -305,7 +305,10 @@ class AccountSettingsActivity : AppCompatActivity() {
                 lifecycleScope.launch {
                     val userId = user.uid
 
-                    // 1) Borrar subnodos de users/$userId explícitamente
+                    // 1) Limpiar círculos (ANTES de borrar datos del usuario para poder leer sus círculos)
+                    circlesManager.removeUserFromAllCircles(userId)
+
+                    // 2) Borrar subnodos de users/$UserId explícitamente
                     // (evita conflictos con reglas en cascada)
                     val userRef = database.getReference("users/$userId")
                     val subnodes = listOf("habits", "habit_logs", "settings", "profile", "devices", "circles", "blocked", "firstInstallDate")
@@ -330,9 +333,6 @@ class AccountSettingsActivity : AppCompatActivity() {
                             .addOnSuccessListener { cont.resume(Unit) }
                             .addOnFailureListener { cont.resume(Unit) }
                     }
-
-                    // 2) Limpiar círculos
-                    circlesManager.removeUserFromAllCircles(userId)
 
                     // 3) Borrar cuenta de Auth (al final, cuando ya no necesitamos permisos)
                     val deleteOk = suspendCancellableCoroutine<Boolean> { cont ->
