@@ -772,4 +772,57 @@ class CirclesRealtimeManager(
                 .addOnFailureListener { cont.resume(false) }
         }
     }
+
+    suspend fun sendAchievementNotificationToAllCircles(
+        achievementName: String,
+        context: android.content.Context
+    ) {
+        val userId = getUserId() ?: return
+        val userName = getUserName()
+
+        val circleIds = suspendCancellableCoroutine<List<String>> { cont ->
+            database.getReference("users/$userId/circles")
+                .addListenerForSingleValueEvent(object : ValueEventListener {
+                    override fun onDataChange(snapshot: DataSnapshot) {
+                        cont.resume(snapshot.children.mapNotNull { it.key })
+                    }
+                    override fun onCancelled(error: DatabaseError) {
+                        cont.resume(emptyList())
+                    }
+                })
+        }
+
+        val text = context.getString(
+            com.novikon.pace.R.string.achievement_notification_circle,
+            userName, achievementName
+        )
+
+        for (circleId in circleIds) {
+            sendAchievementMessage(circleId, text)
+        }
+    }
+
+    private suspend fun sendAchievementMessage(circleId: String, text: String): Boolean {
+        return suspendCancellableCoroutine { cont ->
+            val messagesRef = database.getReference("circles/$circleId/messages")
+            val newMsgRef = messagesRef.push()
+            val messageId = newMsgRef.key ?: run {
+                cont.resume(false)
+                return@suspendCancellableCoroutine
+            }
+
+            val messageMap = mapOf(
+                "id" to messageId,
+                "text" to text,
+                "senderId" to "system",
+                "senderName" to "system",
+                "type" to "SYSTEM",
+                "timestamp" to System.currentTimeMillis()
+            )
+
+            newMsgRef.setValue(messageMap)
+                .addOnSuccessListener { cont.resume(true) }
+                .addOnFailureListener { cont.resume(false) }
+        }
+    }
 }

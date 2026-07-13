@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_margin="6dp"
+    app:cardCornerRadius="14dp"
+    app:cardElevation="2dp"
+    app:strokeWidth="0dp"
+    app:cardBackgroundColor="@color/background_card">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:gravity="center"
+        android:padding="16dp">
+
+        <FrameLayout
+            android:layout_width="48dp"
+            android:layout_height="48dp">
+
+            <TextView
+                android:id="@+id/achievementEmoji"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:textSize="28sp"
+                android:gravity="center" />
+
+            <ImageView
+                android:id="@+id/completedCheck"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:src="@drawable/ic_check_completed"
+                android:visibility="gone"
+                android:scaleType="centerInside" />
+
+        </FrameLayout>
+
+        <TextView
+            android:id="@+id/achievementName"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:textSize="13sp"
+            android:textStyle="bold"
+            android:textColor="@color/text_primary"
+            android:gravity="center_horizontal"
+            android:lines="2"
+            android:ellipsize="end"
+            android:letterSpacing="0.01" />
+
+        <ProgressBar
+            android:id="@+id/achievementProgress"
+            style="?android:attr/progressBarStyleHorizontal"
+            android:layout_width="match_parent"
+            android:layout_height="4dp"
+            android:layout_marginTop="8dp"
+            android:max="100"
+            android:progress="0"
+            android:progressDrawable="@drawable/progress_bar_rounded" />
+
+        <TextView
+            android:id="@+id/achievementProgressText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:textSize="11sp"
+            android:textColor="@color/text_tertiary"
+            android:gravity="center_horizontal"
+            android:letterSpacing="0.01" />
+
+    </LinearLayout>
+
+</com.google.android.material.card.MaterialCardView>

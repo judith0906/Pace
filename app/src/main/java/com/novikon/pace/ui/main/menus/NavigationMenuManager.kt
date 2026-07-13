@@ -11,6 +11,7 @@ import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
 import com.google.android.material.navigation.NavigationView
 import com.novikon.pace.R
+import com.novikon.pace.ui.achievements.MonthlyAchievementsActivity
 import com.novikon.pace.ui.habits.HabitHistoryActivity
 import com.novikon.pace.ui.settings.SettingsActivity
 
@@ -52,6 +53,8 @@ class NavigationMenuManager(
                 onNavigateToDailyHabits()
             R.id.menu_circles ->
                 onNavigateToCircles()
+            R.id.menu_achievements ->
+                activity.startActivity(Intent(activity, MonthlyAchievementsActivity::class.java))
             R.id.menu_settings ->
                 settingsLauncher.launch(Intent(activity, SettingsActivity::class.java))
         }

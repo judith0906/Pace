@@ -14,6 +14,11 @@
             android:title="@string/daily_habits" />
 
         <item
+            android:id="@+id/menu_achievements"
+            android:icon="@drawable/ic_trophy"
+            android:title="@string/achievements" />
+
+        <item
             android:id="@+id/menu_circles"
             android:icon="@drawable/ic_circles"
             android:title="@string/my_circles" />

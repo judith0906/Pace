@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/rootOverlay"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:clickable="true"
+    android:clipChildren="false"
+    android:background="#CC000000">
+
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/celebrationCard"
+        android:layout_width="280dp"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:clickable="true"
+        app:cardCornerRadius="24dp"
+        app:cardElevation="12dp"
+        app:strokeWidth="0dp"
+        app:cardBackgroundColor="@color/background_card"
+        android:alpha="0"
+        android:scaleX="0.5"
+        android:scaleY="0.5">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:gravity="center"
+            android:padding="32dp">
+
+            <FrameLayout
+                android:layout_width="80dp"
+                android:layout_height="80dp"
+                android:layout_marginBottom="16dp">
+
+                <ImageView
+                    android:id="@+id/confettiBackground"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:src="@drawable/ic_confetti"
+                    android:scaleType="centerCrop"
+                    android:alpha="0.3" />
+
+                <TextView
+                    android:id="@+id/achievementEmoji"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:textSize="44sp"
+                    android:gravity="center" />
+
+            </FrameLayout>
+
+            <FrameLayout
+                android:id="@+id/checkBadge"
+                android:layout_width="36dp"
+                android:layout_height="36dp"
+                android:layout_marginTop="-20dp"
+                android:layout_marginBottom="12dp"
+                android:visibility="gone">
+
+                <ImageView
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:src="@drawable/ic_check_completed"
+                    android:scaleType="fitCenter" />
+
+            </FrameLayout>
+
+            <TextView
+                android:id="@+id/unlockTitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/achievement_completed_title"
+                android:textSize="16sp"
+                android:textColor="@color/text_secondary"
+                android:letterSpacing="0.05"
+                android:textAllCaps="true"
+                android:gravity="center" />
+
+            <TextView
+                android:id="@+id/achievementName"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:textSize="20sp"
+                android:textStyle="bold"
+                android:textColor="@color/text_primary"
+                android:gravity="center"
+                android:lines="2"
+                android:ellipsize="end"
+                android:letterSpacing="0.01" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:text="@string/achievement_unlocked_new"
+                android:textSize="13sp"
+                android:textColor="@color/text_tertiary"
+                android:gravity="center"
+                android:letterSpacing="0.01" />
+
+            <TextView
+                android:id="@+id/goToAchievements"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="24dp"
+                android:text="@string/go_to_achievements"
+                android:textSize="13sp"
+                android:textColor="@color/accent_primary"
+                android:gravity="center"
+                android:letterSpacing="0.02"
+                android:background="?attr/selectableItemBackground"
+                android:padding="8dp"
+                android:clickable="true"
+                android:focusable="true" />
+
+        </LinearLayout>
+
+    </com.google.android.material.card.MaterialCardView>
+
+</FrameLayout>

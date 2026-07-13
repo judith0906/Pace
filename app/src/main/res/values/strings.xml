@@ -748,4 +748,65 @@
     <string name="tutorial_next">Siguiente</string>
     <string name="tutorial_previous">Anterior</string>
     <string name="tutorial_start">¡Empezar!</string>
+
+    <!-- ========================================================= -->
+    <!-- LOGROS MENSUALES                                           -->
+    <!-- ========================================================= -->
+    <string name="achievements">Logros</string>
+    <string name="achievements_title_month">Logros de %1$s</string>
+    <string name="achievements_progress">%1$d/%2$d logros completados</string>
+    <string name="achievement_completed_title">¡Logro conseguido!</string>
+    <string name="achievement_completed_message">Has desbloqueado %1$s</string>
+    <string name="achievement_unlocked_new">¡Nuevo logro desbloqueado!</string>
+    <string name="go_to_achievements">Ir a Logros</string>
+    <string name="achievement_hidden_title">Oculto</string>
+    <string name="achievement_hidden_desc">Sigue así para descubrir este logro oculto</string>
+    <string name="achievement_share_to_circle">He conseguido %1$d logros este mes en Pace!</string>
+    <string name="achievement_notification_circle">%1$s ha conseguido el logro %2$s en Pace!</string>
+
+    <!-- Nombres de logros -->
+    <string name="ach_streak_7_name">Siete Días Seguidos</string>
+    <string name="ach_streak_7_desc">Mantén una racha activa de 7 días consecutivos</string>
+    <string name="ach_perfect_day_name">Día Perfecto</string>
+    <string name="ach_perfect_day_desc">Completa todos tus hábitos en un día (mín. 4 hábitos)</string>
+    <string name="ach_streak_14_name">Racha Imparable</string>
+    <string name="ach_streak_14_desc">Mantén una racha activa de 14 días consecutivos</string>
+    <string name="ach_consistency_90_name">Constancia de Acero</string>
+    <string name="ach_consistency_90_desc">Alcanza el 90 por ciento de consistencia mensual</string>
+    <string name="ach_marathon_21_name">Maratón</string>
+    <string name="ach_marathon_21_desc">Completa hábitos en al menos 21 días del mes</string>
+    <string name="ach_social_hero_name">Héroe del Círculo</string>
+    <string name="ach_social_hero_desc">Únete a 5 eventos de círculo en el mes</string>
+    <string name="ach_host_3_name">Anfitrión</string>
+    <string name="ach_host_3_desc">Crea 3 eventos en círculos en el mes</string>
+    <string name="ach_supporter_10_name">Apoyo Mutuo</string>
+    <string name="ach_supporter_10_desc">Envía 10 mensajes de apoyo en círculos</string>
+    <string name="ach_category_dominance_name">Categoría Dominada</string>
+    <string name="ach_category_dominance_desc">Completa 20 hábitos de una misma categoría</string>
+    <string name="ach_five_categories_name">El Completo</string>
+    <string name="ach_five_categories_desc">Completa hábitos de 5 categorías distintas</string>
+
+    <!-- Logros rotatorios adicionales -->
+    <string name="ach_all_categories_name">Todoterreno</string>
+    <string name="ach_all_categories_desc">Completa hábitos de las 7 categorías distintas</string>
+    <string name="ach_perfect_week_name">Semana Perfecta</string>
+    <string name="ach_perfect_week_desc">Completa todos tus hábitos 7 días seguidos</string>
+    <string name="ach_double_day_name">Doble Día</string>
+    <string name="ach_double_day_desc">Completa 10 hábitos en un solo día</string>
+    <string name="ach_morning_rush_name">Reto Matutino</string>
+    <string name="ach_morning_rush_desc">Completa todos tus hábitos matutinos 5 días</string>
+    <string name="ach_favorite_habit_name">Hábito Favorito</string>
+    <string name="ach_favorite_habit_desc">Completa un mismo hábito 25 veces en el mes</string>
+
+    <!-- Logros ocultos -->
+    <string name="ach_early_bird_name">Madrugador</string>
+    <string name="ach_early_bird_desc">Completa hábitos antes de las 8am en 3 días distintos</string>
+    <string name="ach_bad_habit_slayer_name">Rompe Malos Hábitos</string>
+    <string name="ach_bad_habit_slayer_desc">Completa 15 hábitos de la categoría «Malos Hábitos»</string>
+    <string name="ach_comeback_king_name">El Regreso</string>
+    <string name="ach_comeback_king_desc">Rompe una racha y vuelve a alcanzar 7 días seguidos</string>
+
+
+    <!-- Picky -->
+    <string name="picky_achievement_unlocked">¡Has desbloqueado un logro! Picky está orgullosa</string>
 </resources>

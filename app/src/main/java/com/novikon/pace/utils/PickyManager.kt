@@ -6,10 +6,14 @@ object PickyManager {
 
     fun getPickyState(event: PickyEvent): PickyState {
         return when (event) {
-            PickyEvent.APP_OPEN -> PickyState(
-                R.drawable.picky_normal,
-                R.string.picky_app_open
-            )
+    PickyEvent.ACHIEVEMENT_UNLOCKED -> PickyState(
+        R.drawable.picky_orgulloso,
+        R.string.picky_achievement_unlocked
+    )
+    PickyEvent.APP_OPEN -> PickyState(
+        R.drawable.picky_normal,
+        R.string.picky_app_open
+    )
             PickyEvent.HABIT_COMPLETED -> PickyState(
                 R.drawable.picky_logro,
                 R.string.picky_habit_done
@@ -43,6 +47,7 @@ object PickyManager {
 }
 
 enum class PickyEvent {
+    ACHIEVEMENT_UNLOCKED,
     APP_OPEN, HABIT_COMPLETED, ALL_COMPLETED,
     STREAK_BROKEN, MILESTONE_REACHED,
     CIRCLE_JOINED, MOMENT_SHARED, NIGHT_TIME

@@ -744,4 +744,65 @@
     <string name="tutorial_next">Next</string>
     <string name="tutorial_previous">Previous</string>
     <string name="tutorial_start">Let\'s start!</string>
+
+    <!-- ========================================================= -->
+    <!-- MONTHLY ACHIEVEMENTS                                       -->
+    <!-- ========================================================= -->
+    <string name="achievements">Achievements</string>
+    <string name="achievements_title_month">%1$s Achievements</string>
+    <string name="achievements_progress">%1$d/%2$d achievements completed</string>
+    <string name="achievement_completed_title">Achievement unlocked!</string>
+    <string name="achievement_completed_message">You have unlocked %1$s</string>
+    <string name="achievement_unlocked_new">New achievement unlocked!</string>
+    <string name="achievement_hidden_title">Hidden</string>
+    <string name="achievement_hidden_desc">Keep going to discover this hidden achievement</string>
+    <string name="achievement_share_to_circle">I have earned %1$d achievements this month on Pace!</string>
+    <string name="achievement_notification_circle">%1$s has earned the achievement %2$s on Pace!</string>
+
+    <!-- Achievement names -->
+    <string name="ach_streak_7_name">Seven Days Straight</string>
+    <string name="ach_streak_7_desc">Keep a streak of 7 consecutive days</string>
+    <string name="ach_perfect_day_name">Perfect Day</string>
+    <string name="ach_perfect_day_desc">Complete all your habits in one day (min. 4 habits)</string>
+    <string name="ach_streak_14_name">Unstoppable Streak</string>
+    <string name="ach_streak_14_desc">Keep a streak of 14 consecutive days</string>
+    <string name="ach_consistency_90_name">Steel Consistency</string>
+    <string name="ach_consistency_90_desc">Reach 90 percent monthly consistency</string>
+    <string name="ach_marathon_21_name">Marathon</string>
+    <string name="ach_marathon_21_desc">Complete habits on at least 21 days of the month</string>
+    <string name="ach_social_hero_name">Circle Hero</string>
+    <string name="ach_social_hero_desc">Join 5 circle events in the month</string>
+    <string name="ach_host_3_name">Host</string>
+    <string name="ach_host_3_desc">Create 3 events in circles in the month</string>
+    <string name="ach_supporter_10_name">Mutual Support</string>
+    <string name="ach_supporter_10_desc">Send 10 support messages in circles</string>
+    <string name="ach_category_dominance_name">Category Dominated</string>
+    <string name="ach_category_dominance_desc">Complete 20 habits from the same category</string>
+    <string name="ach_five_categories_name">The Complete Package</string>
+    <string name="ach_five_categories_desc">Complete habits from 5 different categories</string>
+
+    <!-- Rotating achievements -->
+    <string name="ach_all_categories_name">All-Rounder</string>
+    <string name="ach_all_categories_desc">Complete habits from all 7 different categories</string>
+    <string name="ach_perfect_week_name">Perfect Week</string>
+    <string name="ach_perfect_week_desc">Complete all your habits 7 days in a row</string>
+    <string name="ach_double_day_name">Double Day</string>
+    <string name="ach_double_day_desc">Complete 10 habits in a single day</string>
+    <string name="ach_morning_rush_name">Morning Rush</string>
+    <string name="ach_morning_rush_desc">Complete all your morning habits for 5 days</string>
+    <string name="ach_favorite_habit_name">Favorite Habit</string>
+    <string name="ach_favorite_habit_desc">Complete the same habit 25 times in the month</string>
+
+    <!-- Hidden achievements -->
+    <string name="ach_early_bird_name">Early Bird</string>
+    <string name="ach_early_bird_desc">Complete habits before 8am on 3 different days</string>
+    <string name="ach_bad_habit_slayer_name">Bad Habit Slayer</string>
+    <string name="ach_bad_habit_slayer_desc">Complete 15 habits from the \"Bad Habits\" category</string>
+    <string name="ach_comeback_king_name">The Comeback</string>
+    <string name="ach_comeback_king_desc">Break a streak then reach 7 consecutive days again</string>
+
+    <string name="go_to_achievements">Go to Achievements</string>
+
+    <!-- Picky -->
+    <string name="picky_achievement_unlocked">You have unlocked an achievement! Picky is proud</string>
 </resources>

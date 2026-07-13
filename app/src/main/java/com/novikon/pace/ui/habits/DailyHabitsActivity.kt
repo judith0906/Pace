@@ -17,10 +17,16 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.novikon.pace.R
 import com.novikon.pace.adapters.DailyHabitAdapter
+import com.novikon.pace.data.AchievementDefinitions
+import com.novikon.pace.data.AchievementsManager
+import com.novikon.pace.data.CirclesRealtimeManager
 import com.novikon.pace.data.HabitsManager
+import com.novikon.pace.data.MonthlyAchievementsAnalyzer
 import com.novikon.pace.helpers.LanguageHelper
 import com.novikon.pace.helpers.ThemeHelper
+import com.novikon.pace.models.DailyHabitLog
 import com.novikon.pace.models.Habit
+import com.novikon.pace.ui.achievements.AchievementUnlockActivity
 import com.novikon.pace.repositories.HabitsRepository
 import com.novikon.pace.utils.PickyEvent
 import com.novikon.pace.utils.PickyManager
@@ -31,12 +37,14 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.text.SimpleDateFormat
 import java.util.Calendar
+import java.util.Date
 import java.util.Locale
 
 // Pantalla de habitos diarios: permite marcar progreso y registrar completados.
 class DailyHabitsActivity : AppCompatActivity() {
 
     private lateinit var habitsManager: HabitsManager
+    private lateinit var achievementsManager: AchievementsManager
     private lateinit var settingsManager: SettingsManager
 
     private lateinit var backButton: ImageButton
@@ -76,6 +84,7 @@ class DailyHabitsActivity : AppCompatActivity() {
         applySystemBarInsets()
 
         habitsManager = HabitsManager(this)
+        achievementsManager = AchievementsManager(this)
         settingsManager = SettingsManager(this)
 
         initializeViews()
@@ -155,14 +164,25 @@ class DailyHabitsActivity : AppCompatActivity() {
             Calendar.SUNDAY -> 6; else -> 0
         }
         if (settingsManager.activeDayIndices.contains(todayIndex)) {
-            // Forzar sync antes de inicializar para que los hábitos recién
-            // añadidos o modificados estén en caché antes de crear los logs del día
             habitsManager.syncFromFirebase()
-            // Borrar logs del día para reinicializarlos con la lista actualizada
-            // de hábitos — así un custom recién añadido o uno deseleccionado
-            // queda reflejado correctamente desde el mismo día
-            habitsManager.clearDayLogs(currentDate)
-            habitsManager.initializeDayLogsIfNeeded(currentDate)
+            // Solo añadir logs para hábitos nuevos, sin borrar el progreso existente
+            val existingLogs = habitsManager.getHabitLogsForDate(currentDate)
+            val existingIds = existingLogs.map { it.habitId }.toSet()
+            selectedHabits.filter { it.id !in existingIds }.forEach { habit ->
+                val log = DailyHabitLog(
+                    habitId = habit.id,
+                    date = currentDate,
+                    isDone = false,
+                    timestamp = System.currentTimeMillis(),
+                    source = "MANUAL",
+                    eventId = "",
+                    habitName = habit.name,
+                    habitEmoji = habit.emoji,
+                    habitDuration = habit.duration,
+                    isEventHabit = false
+                )
+                habitsManager.logHabit(log)
+            }
         }
 
         // Cargar el estado de los hábitos para hoy desde el caché local
@@ -181,6 +201,7 @@ class DailyHabitsActivity : AppCompatActivity() {
                 onHabitStatusChanged = { habitId, isDone ->
                     lifecycleScope.launch {
                         habitsManager.logHabit(habitId, currentDate, isDone)
+                        checkAndCelebrateAchievements()
                     }
                     habitStatus[habitId] = isDone
                     updateProgress()
@@ -227,6 +248,70 @@ class DailyHabitsActivity : AppCompatActivity() {
                 duration = 400L
                 interpolator = DecelerateInterpolator()
                 start()
+            }
+        }
+    }
+
+    private suspend fun checkAndCelebrateAchievements() {
+        val yearMonth = SimpleDateFormat("yyyy-MM", Locale.getDefault()).format(Date())
+        val currentMonth = Calendar.getInstance().get(Calendar.MONTH) + 1
+
+        val habits = habitsManager.getSelectedHabitsFromCache()
+        val logs = habitsManager.getHabitLogs()
+
+        val cachedAchs = achievementsManager.loadAchievements(yearMonth)
+        val analyzer = MonthlyAchievementsAnalyzer()
+        val input = MonthlyAchievementsAnalyzer.AnalysisInput(
+            logs = logs,
+            habits = habits,
+            eventsCreated = 0,
+            supportMessagesSent = 0
+        )
+        val result = analyzer.analyze(input, currentMonth)
+
+        val merged = result.achievements.map { calc ->
+            val cached = cachedAchs.find { it.id == calc.id }
+            if (cached != null && cached.completedAt > 0L && calc.completed) {
+                calc.copy(completedAt = cached.completedAt)
+            } else {
+                calc
+            }
+        }
+
+        val newlyCompleted = merged.filter { it.completed }
+            .filter { calc ->
+                val cached = cachedAchs.find { it.id == calc.id }
+                cached == null || !cached.completed
+            }
+
+        if (newlyCompleted.isNotEmpty()) {
+            achievementsManager.saveAchievements(yearMonth, merged)
+
+            val lastNotified = achievementsManager.getLastNotifiedAchievements()
+            val newIds = newlyCompleted.map { it.id }.toSet()
+            achievementsManager.markNotified(lastNotified + newIds)
+
+            val circlesManager = CirclesRealtimeManager(this@DailyHabitsActivity)
+            val first = newlyCompleted.first()
+            val def = AchievementDefinitions.getDefinitionById(first.id)
+            val name = if (def != null) getString(def.nameRes) else first.id
+            val emoji = def?.emoji ?: "\uD83C\uDFC6"
+
+            withContext(Dispatchers.IO) {
+                circlesManager.sendAchievementNotificationToAllCircles(
+                    achievementName = name,
+                    context = this@DailyHabitsActivity
+                )
+            }
+
+            withContext(Dispatchers.Main) {
+                val intent = Intent(this@DailyHabitsActivity, AchievementUnlockActivity::class.java).apply {
+                    putExtra(AchievementUnlockActivity.EXTRA_ACHIEVEMENT_NAME, name)
+                    putExtra(AchievementUnlockActivity.EXTRA_ACHIEVEMENT_EMOJI, emoji)
+                    flags = Intent.FLAG_ACTIVITY_NEW_TASK
+                }
+                startActivity(intent)
+                overridePendingTransition(0, 0)
             }
         }
     }

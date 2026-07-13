@@ -743,4 +743,65 @@
     <string name="tutorial_next">Suivant</string>
     <string name="tutorial_previous">Précédent</string>
     <string name="tutorial_start">C\'est parti !</string>
+
+    <!-- ========================================================= -->
+    <!-- SUCCÈS MENSUELS                                            -->
+    <!-- ========================================================= -->
+    <string name="achievements">Succès</string>
+    <string name="achievements_title_month">Succès de %1$s</string>
+    <string name="achievements_progress">%1$d/%2$d succès complétés</string>
+    <string name="achievement_completed_title">Succès débloqué !</string>
+    <string name="achievement_completed_message">Tu as débloqué %1$s</string>
+    <string name="achievement_unlocked_new">Nouveau succès débloqué !</string>
+    <string name="achievement_hidden_title">Caché</string>
+    <string name="achievement_hidden_desc">Continue pour découvrir ce succès caché</string>
+    <string name="achievement_share_to_circle">J\'ai obtenu %1$d succès ce mois-ci sur Pace !</string>
+    <string name="achievement_notification_circle">%1$s a obtenu le succès %2$s sur Pace !</string>
+
+    <!-- Noms des succès -->
+    <string name="ach_streak_7_name">Sept Jours d\'Affilée</string>
+    <string name="ach_streak_7_desc">Maintiens une série de 7 jours consécutifs</string>
+    <string name="ach_perfect_day_name">Journée Parfaite</string>
+    <string name="ach_perfect_day_desc">Complete toutes tes habitudes en un jour (min. 4 habitudes)</string>
+    <string name="ach_streak_14_name">Série Imparable</string>
+    <string name="ach_streak_14_desc">Maintiens une série de 14 jours consécutifs</string>
+    <string name="ach_consistency_90_name">Constance d\'Acier</string>
+    <string name="ach_consistency_90_desc">Atteins 90 pour cent de constance mensuelle</string>
+    <string name="ach_marathon_21_name">Marathon</string>
+    <string name="ach_marathon_21_desc">Complete des habitudes sur au moins 21 jours du mois</string>
+    <string name="ach_social_hero_name">Héros du Cercle</string>
+    <string name="ach_social_hero_desc">Rejoins 5 événements de cercle dans le mois</string>
+    <string name="ach_host_3_name">Hôte</string>
+    <string name="ach_host_3_desc">Crée 3 événements dans des cercles dans le mois</string>
+    <string name="ach_supporter_10_name">Soutien Mutuel</string>
+    <string name="ach_supporter_10_desc">Envoie 10 messages de soutien dans les cercles</string>
+    <string name="ach_category_dominance_name">Catégorie Dominée</string>
+    <string name="ach_category_dominance_desc">Complete 20 habitudes d\'une même catégorie</string>
+    <string name="ach_five_categories_name">Le Complet</string>
+    <string name="ach_five_categories_desc">Complete des habitudes de 5 catégories différentes</string>
+
+    <!-- Succès rotatifs supplémentaires -->
+    <string name="ach_all_categories_name">Tout-Terrain</string>
+    <string name="ach_all_categories_desc">Complete des habitudes des 7 catégories différentes</string>
+    <string name="ach_perfect_week_name">Semaine Parfaite</string>
+    <string name="ach_perfect_week_desc">Complete toutes tes habitudes 7 jours d\'affilée</string>
+    <string name="ach_double_day_name">Double Journée</string>
+    <string name="ach_double_day_desc">Complete 10 habitudes en une seule journée</string>
+    <string name="ach_morning_rush_name">Défi Matinal</string>
+    <string name="ach_morning_rush_desc">Complete toutes tes habitudes matinales 5 jours</string>
+    <string name="ach_favorite_habit_name">Habitude Favorite</string>
+    <string name="ach_favorite_habit_desc">Complete la même habitude 25 fois dans le mois</string>
+
+    <!-- Succès cachés -->
+    <string name="ach_early_bird_name">Lève-tôt</string>
+    <string name="ach_early_bird_desc">Complete des habitudes avant 8h sur 3 jours différents</string>
+    <string name="ach_bad_habit_slayer_name">Tueur de Mauvaises Habitudes</string>
+    <string name="ach_bad_habit_slayer_desc">Complete 15 habitudes de la catégorie « Mauvaises Habitudes »</string>
+    <string name="ach_comeback_king_name">Le Retour</string>
+    <string name="ach_comeback_king_desc">Brise une série puis atteins à nouveau 7 jours consécutifs</string>
+
+    <string name="go_to_achievements">Voir les Succès</string>
+
+    <!-- Picky -->
+    <string name="picky_achievement_unlocked">Tu as debloqué un succès ! Picky est fière</string>
 </resources>

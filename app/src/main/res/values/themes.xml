@@ -17,6 +17,15 @@
         <item name="android:windowDisablePreview">false</item>
     </style>
 
+    <style name="AchievementUnlockTheme" parent="Theme.Material3.DayNight.NoActionBar">
+        <item name="android:windowBackground">@android:color/transparent</item>
+        <item name="android:windowIsTranslucent">true</item>
+        <item name="android:windowNoTitle">true</item>
+        <item name="android:statusBarColor">@android:color/transparent</item>
+        <item name="android:navigationBarColor">@android:color/transparent</item>
+        <item name="android:windowContentOverlay">@null</item>
+    </style>
+
     <style name="BlurredDialogTheme" parent="Theme.AppCompat.Light.Dialog.Alert">
         <item name="android:backgroundDimAmount">0.7</item>
         <item name="android:windowBackground">@android:color/transparent</item>

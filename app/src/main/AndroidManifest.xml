@@ -75,6 +75,15 @@
             android:name=".ui.habits.HabitHistoryActivity"
             android:exported="false" />
         <activity
+            android:name=".ui.achievements.MonthlyAchievementsActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ui.achievements.AchievementUnlockActivity"
+            android:theme="@style/AchievementUnlockTheme"
+            android:exported="false"
+            android:excludeFromRecents="true"
+            android:noHistory="true" />
+        <activity
             android:name=".ui.settings.AccountSettingsActivity"
             android:exported="false"/>
 
