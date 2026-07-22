@@ -76,6 +76,9 @@ dependencies {
     implementation("com.itextpdf:itext7-core:7.2.5")
     implementation("com.google.firebase:firebase-messaging-ktx")
 
+    implementation(libs.play.billing)
+    implementation(libs.google.ads)
+
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)

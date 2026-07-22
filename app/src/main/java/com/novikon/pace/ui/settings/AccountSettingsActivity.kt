@@ -311,7 +311,7 @@ class AccountSettingsActivity : AppCompatActivity() {
                     // 2) Borrar subnodos de users/$UserId explícitamente
                     // (evita conflictos con reglas en cascada)
                     val userRef = database.getReference("users/$userId")
-                    val subnodes = listOf("habits", "habit_logs", "settings", "profile", "devices", "circles", "blocked", "firstInstallDate")
+                    val subnodes = listOf("habits", "habit_logs", "settings", "profile", "devices", "circles", "blocked", "firstInstallDate", "subscription")
                     subnodes.forEach { node ->
                         suspendCancellableCoroutine<Unit> { cont ->
                             userRef.child(node).removeValue()

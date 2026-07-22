@@ -39,6 +39,8 @@ import com.novikon.pace.models.Circle
 import com.novikon.pace.repositories.HabitsRepository
 import com.novikon.pace.ui.circles.CirclesAdapter
 import com.novikon.pace.ui.circles.CircleChatActivity
+import com.novikon.pace.billing.AdManager
+import com.novikon.pace.data.SubscriptionManager
 import com.novikon.pace.ui.login.LoginActivity
 import com.novikon.pace.utils.applySystemBarInsets
 
@@ -58,6 +60,8 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var navigationMenuManager: NavigationMenuManager
     private lateinit var userMenuManager: UserMenuManager
+    private lateinit var adManager: AdManager
+    private lateinit var subscriptionManager: SubscriptionManager
 
     private lateinit var groupsRecyclerView: RecyclerView
     private lateinit var viewAllGroupsButton: MaterialButton
@@ -110,11 +114,14 @@ class MainActivity : AppCompatActivity() {
         habitsManager = HabitsManager(this)
         settingsManager = SettingsManager(this)
         database = FirebaseDatabase.getInstance()
+        adManager = AdManager(this)
+        subscriptionManager = SubscriptionManager(this)
 
         initializeViews()
         setupCirclesPreview()
         setupMenuManagers()
         setupListeners()
+        setupBannerAd()
 
         // Escuchar cambios de nombre en tiempo real desde Firebase
         listenToNameChanges()
@@ -275,6 +282,33 @@ class MainActivity : AppCompatActivity() {
         Toast.makeText(this, getString(R.string.view_all_connections), Toast.LENGTH_SHORT).show()
     }
 
+    // ── ANUNCIOS ──────────────────────────────────────────────────────────────
+
+    private fun setupBannerAd() {
+        val container = findViewById<android.widget.FrameLayout>(R.id.bannerAdContainer)
+        adManager.loadAndShowBanner(container)
+        adManager.loadInterstitial()
+        if (subscriptionManager.isPremium) {
+            container.visibility = android.view.View.GONE
+        } else {
+            container.visibility = android.view.View.VISIBLE
+        }
+    }
+
+    private fun syncSubscriptionAndAds() {
+        lifecycleScope.launch {
+            subscriptionManager.syncSubscriptionFromFirebase()
+            val container = findViewById<android.widget.FrameLayout>(R.id.bannerAdContainer)
+            if (subscriptionManager.isPremium) {
+                adManager.removeBannerIfPresent()
+                container.visibility = android.view.View.GONE
+            } else {
+                container.visibility = android.view.View.VISIBLE
+                adManager.loadAndShowBanner(container)
+            }
+        }
+    }
+
     // ── HÁBITOS ───────────────────────────────────────────────────────────────
 
     // Función única de carga de hábitos — decide la fuente según conectividad:
@@ -419,10 +453,13 @@ class MainActivity : AppCompatActivity() {
             lifecycleScope.launch { loadAndDisplayHabits() }
             loadAndDisplayCirclesPreview()
         }
+        syncSubscriptionAndAds()
+        adManager.showInterstitialWithCooldown(this, "main_resume")
     }
 
     override fun onDestroy() {
         super.onDestroy()
         sessionManager.stopSessionListener()
+        adManager.cleanup()
     }
 }

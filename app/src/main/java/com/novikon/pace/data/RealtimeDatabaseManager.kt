@@ -7,6 +7,7 @@ import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
 import com.novikon.pace.models.DailyHabitLog
 import com.novikon.pace.models.Habit
+import com.novikon.pace.models.Subscription
 import com.novikon.pace.models.HabitCategory
 import com.novikon.pace.models.TimeOfDay
 import kotlinx.coroutines.suspendCancellableCoroutine
@@ -308,6 +309,62 @@ class RealtimeDatabaseManager {
                     override fun onCancelled(error: DatabaseError) {
                         // Si Firebase falla, devolvemos null para que
                         // SettingsManager use el caché local como respaldo
+                        continuation.resume(null)
+                    }
+                })
+        }
+    }
+
+    // ── SUSCRIPCIÓN ───────────────────────────────────────────────────────────
+
+    suspend fun saveSubscription(subscription: Subscription): Boolean {
+        val userId = getUserId() ?: return false
+
+        return suspendCancellableCoroutine { continuation ->
+            val subMap = mapOf(
+                "isActive" to subscription.isActive,
+                "productId" to subscription.productId,
+                "purchaseToken" to subscription.purchaseToken,
+                "isTrial" to subscription.isTrial,
+                "activatedAt" to subscription.activatedAt,
+                "expiresAt" to subscription.expiresAt,
+                "lastValidatedAt" to subscription.lastValidatedAt,
+                "platform" to subscription.platform
+            )
+            database.getReference("users/$userId/subscription")
+                .setValue(subMap)
+                .addOnSuccessListener { continuation.resume(true) }
+                .addOnFailureListener { e ->
+                    e.printStackTrace()
+                    continuation.resume(false)
+                }
+        }
+    }
+
+    suspend fun getSubscription(): Subscription? {
+        val userId = getUserId() ?: return null
+
+        return suspendCancellableCoroutine { continuation ->
+            database.getReference("users/$userId/subscription")
+                .addListenerForSingleValueEvent(object : ValueEventListener {
+                    override fun onDataChange(snapshot: DataSnapshot) {
+                        if (!snapshot.exists()) {
+                            continuation.resume(null)
+                            return
+                        }
+                        val sub = Subscription(
+                            isActive = snapshot.child("isActive").getValue(Boolean::class.java) ?: false,
+                            productId = snapshot.child("productId").getValue(String::class.java) ?: "",
+                            purchaseToken = snapshot.child("purchaseToken").getValue(String::class.java) ?: "",
+                            isTrial = snapshot.child("isTrial").getValue(Boolean::class.java) ?: false,
+                            activatedAt = snapshot.child("activatedAt").getValue(Long::class.java) ?: 0L,
+                            expiresAt = snapshot.child("expiresAt").getValue(Long::class.java) ?: 0L,
+                            lastValidatedAt = snapshot.child("lastValidatedAt").getValue(Long::class.java) ?: 0L,
+                            platform = snapshot.child("platform").getValue(String::class.java) ?: "android"
+                        )
+                        continuation.resume(sub)
+                    }
+                    override fun onCancelled(error: DatabaseError) {
                         continuation.resume(null)
                     }
                 })

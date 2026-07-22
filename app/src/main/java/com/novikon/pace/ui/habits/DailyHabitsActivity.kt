@@ -17,6 +17,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.novikon.pace.R
 import com.novikon.pace.adapters.DailyHabitAdapter
+import com.novikon.pace.billing.AdManager
 import com.novikon.pace.data.AchievementDefinitions
 import com.novikon.pace.data.AchievementsManager
 import com.novikon.pace.data.CirclesRealtimeManager
@@ -26,12 +27,14 @@ import com.novikon.pace.helpers.LanguageHelper
 import com.novikon.pace.helpers.ThemeHelper
 import com.novikon.pace.models.DailyHabitLog
 import com.novikon.pace.models.Habit
-import com.novikon.pace.ui.achievements.AchievementUnlockActivity
 import com.novikon.pace.repositories.HabitsRepository
+import com.novikon.pace.ui.achievements.AchievementUnlockActivity
 import com.novikon.pace.utils.PickyEvent
 import com.novikon.pace.utils.PickyManager
 import com.novikon.pace.utils.SettingsManager
 import com.novikon.pace.utils.applySystemBarInsets
+import com.novikon.pace.data.SubscriptionManager
+import android.content.SharedPreferences
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -46,6 +49,8 @@ class DailyHabitsActivity : AppCompatActivity() {
     private lateinit var habitsManager: HabitsManager
     private lateinit var achievementsManager: AchievementsManager
     private lateinit var settingsManager: SettingsManager
+    private lateinit var adManager: AdManager
+    private lateinit var prefs: SharedPreferences
 
     private lateinit var backButton: ImageButton
     private lateinit var editHabitsButton: ImageButton
@@ -86,6 +91,8 @@ class DailyHabitsActivity : AppCompatActivity() {
         habitsManager = HabitsManager(this)
         achievementsManager = AchievementsManager(this)
         settingsManager = SettingsManager(this)
+        adManager = AdManager(this)
+        prefs = getSharedPreferences("pace_ads", MODE_PRIVATE)
 
         initializeViews()
         setupCurrentDate()
@@ -100,6 +107,9 @@ class DailyHabitsActivity : AppCompatActivity() {
                 initialLoadDone = true
             }
         }
+
+        adManager.initialize()
+        adManager.loadInterstitial()
     }
     private fun initializeViews() {
         backButton = findViewById(R.id.backButton)
@@ -209,6 +219,7 @@ class DailyHabitsActivity : AppCompatActivity() {
                         val completed = habitStatus.values.count { it }
                         if (completed >= selectedHabits.size) {
                             showPicky(PickyEvent.ALL_COMPLETED)
+                            showInterstitialIfAllowed()
                         } else {
                             showPicky(PickyEvent.HABIT_COMPLETED)
                         }
@@ -388,6 +399,38 @@ class DailyHabitsActivity : AppCompatActivity() {
         }
     }
 
+    // ── ANUNCIOS INTERSTITIAL ────────────────────────────────────────────────
+
+    // Máximo 3 interstitial por hora.
+    private fun canShowInterstitial(): Boolean {
+        val now = System.currentTimeMillis()
+        val oneHour = 60 * 60 * 1000L
+        val timestamps = prefs.getStringSet("interstitial_timestamps", mutableSetOf())?.toMutableSet()
+            ?: mutableSetOf()
+
+        // Limpiar timestamps anteriores a 1 hora
+        val recent = timestamps.filter { now - it.toLong() < oneHour }.toMutableSet()
+        if (recent.size >= 3) return false
+
+        prefs.edit().putStringSet("interstitial_timestamps", recent).apply()
+        return true
+    }
+
+    private fun recordInterstitialShown() {
+        val now = System.currentTimeMillis().toString()
+        val timestamps = prefs.getStringSet("interstitial_timestamps", mutableSetOf())?.toMutableSet()
+            ?: mutableSetOf()
+        timestamps.add(now)
+        prefs.edit().putStringSet("interstitial_timestamps", timestamps).apply()
+    }
+
+    private fun showInterstitialIfAllowed() {
+        if (!canShowInterstitial()) return
+        recordInterstitialShown()
+        adManager.showInterstitial(this)
+        adManager.loadInterstitial()
+    }
+
     // onResume se ejecuta siempre después de onCreate y también al volver
     // de editar hábitos. Solo recargamos si la carga inicial ya terminó —
     // si no, el propio onCreate ya está gestionando la primera carga.
@@ -396,5 +439,10 @@ class DailyHabitsActivity : AppCompatActivity() {
         if (initialLoadDone) {
             lifecycleScope.launch { loadHabits() }
         }
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        adManager.cleanup()
     }
 }

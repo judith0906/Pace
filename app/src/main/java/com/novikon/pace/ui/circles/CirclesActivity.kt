@@ -16,6 +16,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.novikon.pace.R
+import com.novikon.pace.billing.AdManager
 import com.novikon.pace.data.CirclesRealtimeManager
 import com.novikon.pace.helpers.LanguageHelper
 import com.novikon.pace.helpers.ThemeHelper
@@ -32,6 +33,7 @@ class CirclesActivity : AppCompatActivity() {
     private lateinit var backButton: ImageButton
     private lateinit var addButton: FloatingActionButton
     private lateinit var adapter: CirclesAdapter
+    private lateinit var adManager: AdManager
 
     private val circlesManager by lazy { CirclesRealtimeManager(this) }
 
@@ -69,12 +71,17 @@ class CirclesActivity : AppCompatActivity() {
             ).show(supportFragmentManager, "AddCircleDialog")
         }
 
+        adManager = AdManager(this)
+        adManager.initialize()
+        adManager.loadInterstitial()
+
         loadCircles()
         processPendingJoinCode()
     }
     override fun onResume() {
         super.onResume()
         loadCircles()
+        adManager.showInterstitialWithCooldown(this, "circles_open")
     }
 
     private fun processPendingJoinCode() {
@@ -130,6 +137,11 @@ class CirclesActivity : AppCompatActivity() {
 
             Toast.makeText(this@CirclesActivity, msg, Toast.LENGTH_SHORT).show()
         }
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        adManager.cleanup()
     }
 
     private fun showPickyJoined() {

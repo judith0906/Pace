@@ -12,6 +12,7 @@ import androidx.lifecycle.lifecycleScope
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
+import com.google.android.gms.ads.MobileAds
 import com.novikon.pace.R
 import com.novikon.pace.data.RealtimeDatabaseManager
 import com.novikon.pace.ui.login.LoginActivity
@@ -40,6 +41,12 @@ class SplashActivity : AppCompatActivity() {
         // si el idioma del dispositivo es soportado (es/en/fr) lo usa,
         // si no, usa inglés por defecto. Este valor persiste al cerrar sesión.
         val settingsManager = SettingsManager(this)
+
+        // Pre-inicializar el SDK de anuncios durante el splash para que esté
+        // listo cuando MainActivity cargue el banner — así no compite por CPU
+        // con el resto del startup. MobileAds.initialize() corre en segundo plano
+        // y no bloquea el hilo principal.
+        MobileAds.initialize(this) {}
 
         setupWindowInsets()
         setupAnimations()
