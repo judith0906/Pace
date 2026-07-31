@@ -805,4 +805,44 @@
 
     <!-- Picky -->
     <string name="picky_achievement_unlocked">You have unlocked an achievement! Picky is proud</string>
+
+    <!-- ========================================================= -->
+    <!-- PACE PREMIUM (PAYWALL)                                     -->
+    <!-- ========================================================= -->
+    <string name="premium">Premium</string>
+    <string name="premium_title">Pace Premium</string>
+    <string name="premium_subtitle">Unlock Pace\'s full potential and take your consistency to the next level</string>
+
+    <string name="premium_feature_adfree">Ad-free experience</string>
+    <string name="premium_feature_adfree_desc">Enjoy Pace without interruptions</string>
+    <string name="premium_feature_stats">Advanced statistics</string>
+    <string name="premium_feature_stats_desc">Detailed reports of your progress</string>
+    <string name="premium_feature_ai">AI-powered advice</string>
+    <string name="premium_feature_ai_desc">Personalized insights with Gemini</string>
+    <string name="premium_feature_export">Export PDF / CSV</string>
+    <string name="premium_feature_export_desc">Share and save your reports</string>
+    <string name="premium_feature_analytics">Advanced analytics</string>
+    <string name="premium_feature_analytics_desc">Deep metrics and trends</string>
+    <string name="premium_feature_integrations">External integrations</string>
+    <string name="premium_feature_integrations_desc">Connect your data with other apps</string>
+    <string name="premium_feature_backup">Cloud backup</string>
+    <string name="premium_feature_backup_desc">Your data always safe</string>
+
+    <string name="premium_plan_monthly">Monthly</string>
+    <string name="premium_plan_monthly_price">€4.99/month</string>
+    <string name="premium_plan_yearly">Yearly</string>
+    <string name="premium_plan_yearly_price">€39.99/year</string>
+    <string name="premium_plan_yearly_note">2 months free</string>
+    <string name="premium_plan_badge">BEST VALUE</string>
+    <string name="premium_trial">7-day free trial</string>
+    <string name="premium_trial_subtitle">After the trial it renews automatically. Cancel anytime.</string>
+    <string name="premium_cta_monthly">Subscribe monthly</string>
+    <string name="premium_cta_yearly">Start free trial</string>
+    <string name="premium_current_plan">You are currently Premium</string>
+    <string name="premium_restore">Restore purchases</string>
+    <string name="premium_terms">Terms and privacy</string>
+    <string name="premium_purchase_error">Purchase could not be completed</string>
+    <string name="premium_restore_success">Purchases restored</string>
+    <string name="premium_restore_error">No purchases found to restore</string>
+    <string name="premium_coming_soon">Purchases will be enabled soon</string>
 </resources>

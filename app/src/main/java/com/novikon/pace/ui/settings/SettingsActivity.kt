@@ -1,6 +1,7 @@
 package com.novikon.pace.ui.settings
 
 import android.Manifest
+import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
@@ -18,8 +19,10 @@ import androidx.lifecycle.lifecycleScope
 import com.google.android.material.switchmaterial.SwitchMaterial
 import com.novikon.pace.R
 import com.novikon.pace.constants.Language
+import com.novikon.pace.data.SubscriptionManager
 import com.novikon.pace.helpers.LanguageHelper
 import com.novikon.pace.helpers.ThemeHelper
+import com.novikon.pace.ui.premium.PremiumActivity
 import com.novikon.pace.utils.ReminderScheduler
 import com.novikon.pace.utils.SettingsManager
 import com.novikon.pace.utils.applySystemBarInsets
@@ -29,6 +32,7 @@ import kotlinx.coroutines.launch
 class SettingsActivity : AppCompatActivity() {
 
     private lateinit var settingsManager: SettingsManager
+    private lateinit var subscriptionManager: SubscriptionManager
 
     private lateinit var darkModeSwitch: SwitchMaterial
     private lateinit var currentLanguageText: TextView
@@ -65,6 +69,7 @@ class SettingsActivity : AppCompatActivity() {
         applySystemBarInsets()
 
         settingsManager = SettingsManager(this)
+        subscriptionManager = SubscriptionManager(this)
 
         initializeViews()
         loadSettings()
@@ -95,6 +100,17 @@ class SettingsActivity : AppCompatActivity() {
     private fun setupListeners() {
         findViewById<ImageButton>(R.id.backButton).setOnClickListener {
             finish()
+        }
+
+        // ── PACE PREMIUM ──────────────────────────────────────────────────────
+        findViewById<android.view.View>(R.id.premiumCard).setOnClickListener {
+            startActivity(Intent(this, PremiumActivity::class.java))
+        }
+        val premiumStatus = findViewById<TextView>(R.id.premiumStatusText)
+        premiumStatus.text = if (subscriptionManager.isPremium) {
+            getString(R.string.premium_current_plan)
+        } else {
+            getString(R.string.premium_feature_adfree)
         }
 
         // ── MODO OSCURO ───────────────────────────────────────────────────────

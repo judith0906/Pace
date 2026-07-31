@@ -26,6 +26,10 @@
 
     <!-- Colores especiales -->
     <color name="error_red">#EF5350</color>
+    <color name="premium_gold">#E6C14E</color>
+    <color name="premium_gold_soft">#3A3520</color>
+    <color name="premium_gold_text">#E6C14E</color>
+    <color name="premium_button_text">#121212</color>
 
     <!-- Colores para personalización de tarjetas de hábitos (modo oscuro) -->
     <color name="habit_color_rose">#5C2A2A</color>

@@ -37,6 +37,10 @@
 
     <!-- Colores especiales -->
     <color name="error_red">#D32F2F</color>        <!-- Para "Cerrar sesión" -->
+    <color name="premium_gold">#B8860B</color>     <!-- Acento Premium -->
+    <color name="premium_gold_soft">#FDF6E3</color> <!-- Fondo suave del badge premium -->
+    <color name="premium_gold_text">#7A5C00</color> <!-- Texto sobre badge premium -->
+    <color name="premium_button_text">#FFFFFF</color> <!-- Texto del botón premium -->
 
     <!-- Colores para personalización de tarjetas de hábitos -->
     <color name="habit_color_rose">#FFCDD2</color>

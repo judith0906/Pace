@@ -119,6 +119,10 @@
             android:exported="false" />
 
         <activity
+            android:name=".ui.premium.PremiumActivity"
+            android:exported="false" />
+
+        <activity
             android:name=".ui.circles.DeepLinkActivity"
             android:exported="true"
             android:launchMode="singleTask"

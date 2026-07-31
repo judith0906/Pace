@@ -804,4 +804,52 @@
 
     <!-- Picky -->
     <string name="picky_achievement_unlocked">Tu as debloqué un succès ! Picky est fière</string>
+
+    <!-- ========================================================= -->
+    <!-- CIRCULOS: NOTIFICATIONS                                     -->
+    <!-- ========================================================= -->
+    <string name="notif_mute_label">Mettre en sourdine les notifications</string>
+    <string name="notif_muted_circle">Notifications en sourdine</string>
+    <string name="notif_new_message_in_circle">Tu as un nouveau message dans %s</string>
+    <string name="notif_unmuted_circle">Notifications activées</string>
+
+    <!-- ========================================================= -->
+    <!-- PACE PREMIUM (PAYWALL)                                     -->
+    <!-- ========================================================= -->
+    <string name="premium">Premium</string>
+    <string name="premium_title">Pace Premium</string>
+    <string name="premium_subtitle">Débloque tout le potentiel de Pace et fais passer ta constance au niveau supérieur</string>
+
+    <string name="premium_feature_adfree">Sans publicité</string>
+    <string name="premium_feature_adfree_desc">Profite de Pace sans interruptions</string>
+    <string name="premium_feature_stats">Statistiques avancées</string>
+    <string name="premium_feature_stats_desc">Rapports détaillés de tes progrès</string>
+    <string name="premium_feature_ai">Conseils avec intelligence artificielle</string>
+    <string name="premium_feature_ai_desc">Analyses personnalisées avec Gemini</string>
+    <string name="premium_feature_export">Exporter PDF / CSV</string>
+    <string name="premium_feature_export_desc">Partage et sauvegarde tes rapports</string>
+    <string name="premium_feature_analytics">Analyse avancée</string>
+    <string name="premium_feature_analytics_desc">Métriques et tendances approfondies</string>
+    <string name="premium_feature_integrations">Intégrations externes</string>
+    <string name="premium_feature_integrations_desc">Connecte tes données à d\'autres applications</string>
+    <string name="premium_feature_backup">Sauvegarde dans le cloud</string>
+    <string name="premium_feature_backup_desc">Tes données toujours en sécurité</string>
+
+    <string name="premium_plan_monthly">Mensuel</string>
+    <string name="premium_plan_monthly_price">4,99 €/mois</string>
+    <string name="premium_plan_yearly">Annuel</string>
+    <string name="premium_plan_yearly_price">39,99 €/an</string>
+    <string name="premium_plan_yearly_note">2 mois offerts</string>
+    <string name="premium_plan_badge">MEILLEURE OFFRE</string>
+    <string name="premium_trial">7 jours d\'essai gratuit</string>
+    <string name="premium_trial_subtitle">Après l\'essai, l\'abonnement se renouvelle automatiquement. Annule quand tu veux.</string>
+    <string name="premium_cta_monthly">S\'abonner mensuellement</string>
+    <string name="premium_cta_yearly">Commencer l\'essai gratuit</string>
+    <string name="premium_current_plan">Tu es actuellement Premium</string>
+    <string name="premium_restore">Restaurer les achats</string>
+    <string name="premium_terms">Conditions et confidentialité</string>
+    <string name="premium_purchase_error">L\'achat n\'a pas pu être finalisé</string>
+    <string name="premium_restore_success">Achats restaurés</string>
+    <string name="premium_restore_error">Aucun achat à restaurer</string>
+    <string name="premium_coming_soon">Les achats seront activés prochainement</string>
 </resources>

@@ -809,4 +809,44 @@
 
     <!-- Picky -->
     <string name="picky_achievement_unlocked">¡Has desbloqueado un logro! Picky está orgullosa</string>
+
+    <!-- ========================================================= -->
+    <!-- PACE PREMIUM (PAYWALL)                                     -->
+    <!-- ========================================================= -->
+    <string name="premium">Premium</string>
+    <string name="premium_title">Pace Premium</string>
+    <string name="premium_subtitle">Desbloquea todo el potencial de Pace y lleva tu constancia al siguiente nivel</string>
+
+    <string name="premium_feature_adfree">Sin anuncios</string>
+    <string name="premium_feature_adfree_desc">Disfruta de Pace sin interrupciones</string>
+    <string name="premium_feature_stats">Estadísticas avanzadas</string>
+    <string name="premium_feature_stats_desc">Informes detallados de tu progreso</string>
+    <string name="premium_feature_ai">Consejos con inteligencia artificial</string>
+    <string name="premium_feature_ai_desc">Análisis personalizados con Gemini</string>
+    <string name="premium_feature_export">Exportar PDF / CSV</string>
+    <string name="premium_feature_export_desc">Comparte y guarda tus informes</string>
+    <string name="premium_feature_analytics">Analítica avanzada</string>
+    <string name="premium_feature_analytics_desc">Métricas y tendencias profundas</string>
+    <string name="premium_feature_integrations">Integraciones externas</string>
+    <string name="premium_feature_integrations_desc">Conecta tus datos con otras apps</string>
+    <string name="premium_feature_backup">Copia de seguridad en la nube</string>
+    <string name="premium_feature_backup_desc">Tus datos siempre a salvo</string>
+
+    <string name="premium_plan_monthly">Mensual</string>
+    <string name="premium_plan_monthly_price">4,99 €/mes</string>
+    <string name="premium_plan_yearly">Anual</string>
+    <string name="premium_plan_yearly_price">39,99 €/año</string>
+    <string name="premium_plan_yearly_note">2 meses gratis</string>
+    <string name="premium_plan_badge">MEJOR VALOR</string>
+    <string name="premium_trial">7 días de prueba gratis</string>
+    <string name="premium_trial_subtitle">Después de la prueba, se renovará automáticamente. Cancela cuando quieras.</string>
+    <string name="premium_cta_monthly">Suscribirse mensualmente</string>
+    <string name="premium_cta_yearly">Comenzar prueba gratis</string>
+    <string name="premium_current_plan">Actualmente eres Premium</string>
+    <string name="premium_restore">Restaurar compras</string>
+    <string name="premium_terms">Términos y privacidad</string>
+    <string name="premium_purchase_error">No se pudo completar la compra</string>
+    <string name="premium_restore_success">Compras restauradas</string>
+    <string name="premium_restore_error">No se encontraron compras para restaurar</string>
+    <string name="premium_coming_soon">Las compras se activarán próximamente</string>
 </resources>
