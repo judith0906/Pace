@@ -845,4 +845,8 @@
     <string name="premium_restore_success">Purchases restored</string>
     <string name="premium_restore_error">No purchases found to restore</string>
     <string name="premium_coming_soon">Purchases will be enabled soon</string>
+    <string name="premium_gate_title">Premium Feature</string>
+    <string name="premium_gate_message">This feature requires Pace Premium. Go Premium to unlock statistics, AI-powered advice and report export.</string>
+    <string name="premium_gate_go">Go Premium</string>
+    <string name="premium_gate_later">Not now</string>
 </resources>

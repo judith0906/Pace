@@ -24,9 +24,11 @@ import com.google.firebase.ktx.Firebase
 import com.novikon.pace.R
 import com.novikon.pace.data.CirclesRealtimeManager
 import com.novikon.pace.data.HabitsManager
+import com.novikon.pace.billing.PremiumGate
 import com.novikon.pace.helpers.LanguageHelper
 import com.novikon.pace.helpers.ThemeHelper
 import com.novikon.pace.ui.login.LoginActivity
+import com.novikon.pace.ui.premium.PremiumActivity
 import com.novikon.pace.ui.stats.StatsActivity
 import com.novikon.pace.utils.SessionManager
 import com.novikon.pace.utils.applySystemBarInsets
@@ -112,7 +114,11 @@ class AccountSettingsActivity : AppCompatActivity() {
         }
 
         findViewById<View>(R.id.downloadDataOption).setOnClickListener {
-            startActivity(Intent(this, StatsActivity::class.java))
+            if (PremiumGate.isPremium(this)) {
+                startActivity(Intent(this, StatsActivity::class.java))
+            } else {
+                startActivity(Intent(this, PremiumActivity::class.java))
+            }
         }
 
         findViewById<View>(R.id.deleteAccountOption).setOnClickListener {

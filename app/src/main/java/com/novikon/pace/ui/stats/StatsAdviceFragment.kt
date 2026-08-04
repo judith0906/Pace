@@ -14,6 +14,7 @@ import com.google.android.material.button.MaterialButton
 import com.novikon.pace.R
 import com.novikon.pace.adapters.AdviceAdapter
 import com.novikon.pace.adapters.AdviceSection
+import com.novikon.pace.billing.PremiumGate
 import com.novikon.pace.data.GeminiResult
 import com.novikon.pace.data.GeminiService
 import com.novikon.pace.data.RealtimeDatabaseManager
@@ -55,12 +56,25 @@ class StatsAdviceFragment : Fragment() {
 
         btnRefresh.setOnClickListener { loadAdvice() }
 
+        if (!PremiumGate.isPremium(requireContext())) {
+            showLocked()
+            return
+        }
+
         val cached = (activity as? StatsActivity)?.adviceContent
         if (cached != null) {
             displayAdvice(cached)
         } else {
             loadAdvice()
         }
+    }
+
+    private fun showLocked() {
+        showLoading(false)
+        rvAdvice.visibility = View.GONE
+        btnRefresh.visibility = View.GONE
+        tvEmpty.text = getString(R.string.premium_gate_message)
+        tvEmpty.visibility = View.VISIBLE
     }
 
     private fun loadAdvice() {

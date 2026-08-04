@@ -849,4 +849,8 @@
     <string name="premium_restore_success">Compras restauradas</string>
     <string name="premium_restore_error">No se encontraron compras para restaurar</string>
     <string name="premium_coming_soon">Las compras se activarán próximamente</string>
+    <string name="premium_gate_title">Función Premium</string>
+    <string name="premium_gate_message">Esta función requiere Pace Premium. Hazte Premium para desbloquear estadísticas, consejos con IA y la exportación de informes.</string>
+    <string name="premium_gate_go">Ir a Premium</string>
+    <string name="premium_gate_later">Ahora no</string>
 </resources>

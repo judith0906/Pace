@@ -20,6 +20,7 @@ import com.github.mikephil.charting.data.*
 import com.github.mikephil.charting.formatter.IndexAxisValueFormatter
 import com.github.mikephil.charting.formatter.ValueFormatter
 import com.novikon.pace.R
+import com.novikon.pace.billing.PremiumGate
 import com.novikon.pace.data.RealtimeDatabaseManager
 import com.novikon.pace.models.AdviceContent
 import com.novikon.pace.models.HabitCategory
@@ -59,7 +60,11 @@ class StatsReportFragment : Fragment() {
         legendContainer = view.findViewById(R.id.legendContainer)
 
         view.findViewById<View>(R.id.btn_download_pdf).setOnClickListener {
-            generateAndSharePdf()
+            if (PremiumGate.isPremium(requireContext())) {
+                generateAndSharePdf()
+            } else {
+                PremiumGate.showGate(requireActivity())
+            }
         }
 
         loadData()
