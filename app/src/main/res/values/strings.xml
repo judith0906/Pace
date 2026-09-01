@@ -672,6 +672,22 @@
     <string name="stats_star_habit">Tu hábito estrella: %1$s %2$s</string>
 
     <string name="stats_share_pdf">Compartir informe PDF</string>
+    <string name="stats_download_csv">Descargar informe CSV</string>
+    <string name="stats_share_csv">Compartir informe CSV</string>
+    <string name="csv_header_title">Pace - Estadísticas</string>
+    <string name="csv_section_summary">Resumen</string>
+    <string name="csv_section_categories">Distribución por categoría</string>
+    <string name="csv_section_monthly">Constancia mensual</string>
+    <string name="csv_section_yearly">Constancia anual</string>
+    <string name="csv_section_top5">Top 5 hábitos</string>
+    <string name="csv_col_category">Categoría</string>
+    <string name="csv_col_percent">Porcentaje</string>
+    <string name="csv_col_day">Día</string>
+    <string name="csv_col_done">Completado</string>
+    <string name="csv_col_month">Mes</string>
+    <string name="csv_col_rank">Posición</string>
+    <string name="csv_col_habit">Hábito</string>
+    <string name="csv_col_times">Veces</string>
     <string name="pdf_tagline">Tu compañero de hábitos</string>
     <string name="pdf_from">Desde</string>
     <string name="pdf_advice_placeholder">Consejos personalizados próximamente</string>
@@ -821,14 +837,12 @@
     <string name="premium_feature_adfree_desc">Disfruta de Pace sin interrupciones</string>
     <string name="premium_feature_stats">Estadísticas avanzadas</string>
     <string name="premium_feature_stats_desc">Informes detallados de tu progreso</string>
-    <string name="premium_feature_ai">Consejos con inteligencia artificial</string>
-    <string name="premium_feature_ai_desc">Análisis personalizados con Gemini</string>
+    <string name="premium_feature_ai">Consejos personalizados</string>
+    <string name="premium_feature_ai_desc">Recomendaciones basadas en tu progreso</string>
     <string name="premium_feature_export">Exportar PDF / CSV</string>
     <string name="premium_feature_export_desc">Comparte y guarda tus informes</string>
     <string name="premium_feature_analytics">Analítica avanzada</string>
     <string name="premium_feature_analytics_desc">Métricas y tendencias profundas</string>
-    <string name="premium_feature_integrations">Integraciones externas</string>
-    <string name="premium_feature_integrations_desc">Conecta tus datos con otras apps</string>
     <string name="premium_feature_backup">Copia de seguridad en la nube</string>
     <string name="premium_feature_backup_desc">Tus datos siempre a salvo</string>
 
@@ -850,7 +864,21 @@
     <string name="premium_restore_error">No se encontraron compras para restaurar</string>
     <string name="premium_coming_soon">Las compras se activarán próximamente</string>
     <string name="premium_gate_title">Función Premium</string>
-    <string name="premium_gate_message">Esta función requiere Pace Premium. Hazte Premium para desbloquear estadísticas, consejos con IA y la exportación de informes.</string>
+    <string name="premium_gate_message">Esta función requiere Pace Premium. Hazte Premium para desbloquear estadísticas, consejos personalizados y la exportación de informes.</string>
     <string name="premium_gate_go">Ir a Premium</string>
     <string name="premium_gate_later">Ahora no</string>
+    <string name="cloud_backup_menu">Copia de seguridad en la nube</string>
+    <string name="cloud_backup_title">Copia de seguridad en la nube</string>
+    <string name="cloud_backup_description">Guarda un snapshot de tus hábitos, registros y la conversación reciente de tus círculos (últimos 3 meses) en la nube (Premium). Crea copias cuando quieras y restáuralas si pierdes datos.</string>
+    <string name="cloud_backup_last">Última copia</string>
+    <string name="cloud_backup_date">Última copia: %1$s</string>
+    <string name="cloud_backup_none">Aún no has creado ninguna copia.</string>
+    <string name="cloud_backup_create">Crear copia de seguridad</string>
+    <string name="cloud_backup_restore">Restaurar</string>
+    <string name="cloud_backup_in_progress">Procesando…</string>
+    <string name="cloud_backup_success">Copia creada correctamente</string>
+    <string name="cloud_backup_error">No se pudo crear la copia</string>
+    <string name="cloud_backup_restore_confirm">¿Restaurar la copia más reciente? Sobrescribirá tus hábitos y registros actuales.</string>
+    <string name="cloud_backup_restore_success">Copia restaurada correctamente</string>
+    <string name="cloud_backup_restore_error">No se pudo restaurar la copia</string>
 </resources>

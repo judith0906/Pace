@@ -672,6 +672,22 @@
     <string name="stats_star_habit">Your star habit: %1$s %2$s</string>
 
     <string name="stats_share_pdf">Share PDF report</string>
+    <string name="stats_download_csv">Download CSV report</string>
+    <string name="stats_share_csv">Share CSV report</string>
+    <string name="csv_header_title">Pace - Statistics</string>
+    <string name="csv_section_summary">Summary</string>
+    <string name="csv_section_categories">Category breakdown</string>
+    <string name="csv_section_monthly">Monthly consistency</string>
+    <string name="csv_section_yearly">Yearly consistency</string>
+    <string name="csv_section_top5">Top 5 habits</string>
+    <string name="csv_col_category">Category</string>
+    <string name="csv_col_percent">Percent</string>
+    <string name="csv_col_day">Day</string>
+    <string name="csv_col_done">Done</string>
+    <string name="csv_col_month">Month</string>
+    <string name="csv_col_rank">Rank</string>
+    <string name="csv_col_habit">Habit</string>
+    <string name="csv_col_times">Times</string>
     <string name="pdf_tagline">Your habits companion</string>
     <string name="pdf_from">From</string>
     <string name="pdf_advice_placeholder">Personalized advice coming soon</string>
@@ -817,14 +833,12 @@
     <string name="premium_feature_adfree_desc">Enjoy Pace without interruptions</string>
     <string name="premium_feature_stats">Advanced statistics</string>
     <string name="premium_feature_stats_desc">Detailed reports of your progress</string>
-    <string name="premium_feature_ai">AI-powered advice</string>
-    <string name="premium_feature_ai_desc">Personalized insights with Gemini</string>
+    <string name="premium_feature_ai">Personalized advice</string>
+    <string name="premium_feature_ai_desc">Recommendations based on your progress</string>
     <string name="premium_feature_export">Export PDF / CSV</string>
     <string name="premium_feature_export_desc">Share and save your reports</string>
     <string name="premium_feature_analytics">Advanced analytics</string>
     <string name="premium_feature_analytics_desc">Deep metrics and trends</string>
-    <string name="premium_feature_integrations">External integrations</string>
-    <string name="premium_feature_integrations_desc">Connect your data with other apps</string>
     <string name="premium_feature_backup">Cloud backup</string>
     <string name="premium_feature_backup_desc">Your data always safe</string>
 
@@ -846,7 +860,21 @@
     <string name="premium_restore_error">No purchases found to restore</string>
     <string name="premium_coming_soon">Purchases will be enabled soon</string>
     <string name="premium_gate_title">Premium Feature</string>
-    <string name="premium_gate_message">This feature requires Pace Premium. Go Premium to unlock statistics, AI-powered advice and report export.</string>
+    <string name="premium_gate_message">This feature requires Pace Premium. Go Premium to unlock statistics, personalized advice and report export.</string>
     <string name="premium_gate_go">Go Premium</string>
     <string name="premium_gate_later">Not now</string>
+    <string name="cloud_backup_menu">Cloud backup</string>
+    <string name="cloud_backup_title">Cloud backup</string>
+    <string name="cloud_backup_description">Store a snapshot of your habits, logs and your circles\' recent conversation (last 3 months) in the cloud (Premium). Create backups anytime and restore them if you lose data.</string>
+    <string name="cloud_backup_last">Last backup</string>
+    <string name="cloud_backup_date">Last backup: %1$s</string>
+    <string name="cloud_backup_none">You haven\'t created a backup yet.</string>
+    <string name="cloud_backup_create">Create backup</string>
+    <string name="cloud_backup_restore">Restore</string>
+    <string name="cloud_backup_in_progress">Processing…</string>
+    <string name="cloud_backup_success">Backup created successfully</string>
+    <string name="cloud_backup_error">Could not create the backup</string>
+    <string name="cloud_backup_restore_confirm">Restore the most recent backup? This will overwrite your current habits and logs.</string>
+    <string name="cloud_backup_restore_success">Backup restored successfully</string>
+    <string name="cloud_backup_restore_error">Could not restore the backup</string>
 </resources>

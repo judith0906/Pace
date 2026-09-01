@@ -27,6 +27,8 @@ import com.novikon.pace.data.HabitsManager
 import com.novikon.pace.billing.PremiumGate
 import com.novikon.pace.helpers.LanguageHelper
 import com.novikon.pace.helpers.ThemeHelper
+import com.novikon.pace.ui.backup.CloudBackupActivity
+
 import com.novikon.pace.ui.login.LoginActivity
 import com.novikon.pace.ui.premium.PremiumActivity
 import com.novikon.pace.ui.stats.StatsActivity
@@ -116,6 +118,14 @@ class AccountSettingsActivity : AppCompatActivity() {
         findViewById<View>(R.id.downloadDataOption).setOnClickListener {
             if (PremiumGate.isPremium(this)) {
                 startActivity(Intent(this, StatsActivity::class.java))
+            } else {
+                startActivity(Intent(this, PremiumActivity::class.java))
+            }
+        }
+
+        findViewById<View>(R.id.cloudBackupOption).setOnClickListener {
+            if (PremiumGate.isPremium(this)) {
+                startActivity(Intent(this, CloudBackupActivity::class.java))
             } else {
                 startActivity(Intent(this, PremiumActivity::class.java))
             }

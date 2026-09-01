@@ -292,9 +292,19 @@
             android:id="@+id/btn_download_pdf"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="16dp"
+            android:layout_marginBottom="8dp"
             android:text="@string/stats_download_pdf"
             app:backgroundTint="@color/accent_primary" />
+
+        <!-- Botón descargar CSV -->
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btn_download_csv"
+            style="@style/Widget.Material3.Button.OutlinedButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp"
+            android:text="@string/stats_download_csv"
+            android:textColor="@color/accent_primary" />
 
     </LinearLayout>
 

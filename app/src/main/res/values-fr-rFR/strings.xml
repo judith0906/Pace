@@ -671,6 +671,22 @@
     <string name="stats_star_habit">Votre habitude vedette : %1$s %2$s</string>
 
     <string name="stats_share_pdf">Partager le rapport PDF</string>
+    <string name="stats_download_csv">Télécharger le rapport CSV</string>
+    <string name="stats_share_csv">Partager le rapport CSV</string>
+    <string name="csv_header_title">Pace - Statistiques</string>
+    <string name="csv_section_summary">Résumé</string>
+    <string name="csv_section_categories">Répartition par catégorie</string>
+    <string name="csv_section_monthly">Régularité mensuelle</string>
+    <string name="csv_section_yearly">Régularité annuelle</string>
+    <string name="csv_section_top5">Top 5 des habitudes</string>
+    <string name="csv_col_category">Catégorie</string>
+    <string name="csv_col_percent">Pourcentage</string>
+    <string name="csv_col_day">Jour</string>
+    <string name="csv_col_done">Fait</string>
+    <string name="csv_col_month">Mois</string>
+    <string name="csv_col_rank">Rang</string>
+    <string name="csv_col_habit">Habitude</string>
+    <string name="csv_col_times">Fois</string>
     <string name="pdf_tagline">Votre compagnon d\'habitudes</string>
     <string name="pdf_from">Depuis</string>
     <string name="pdf_advice_placeholder">Conseils personnalisés bientôt disponibles</string>
@@ -824,14 +840,12 @@
     <string name="premium_feature_adfree_desc">Profite de Pace sans interruptions</string>
     <string name="premium_feature_stats">Statistiques avancées</string>
     <string name="premium_feature_stats_desc">Rapports détaillés de tes progrès</string>
-    <string name="premium_feature_ai">Conseils avec intelligence artificielle</string>
-    <string name="premium_feature_ai_desc">Analyses personnalisées avec Gemini</string>
+    <string name="premium_feature_ai">Conseils personnalisés</string>
+    <string name="premium_feature_ai_desc">Recommandations basées sur ta progression</string>
     <string name="premium_feature_export">Exporter PDF / CSV</string>
     <string name="premium_feature_export_desc">Partage et sauvegarde tes rapports</string>
     <string name="premium_feature_analytics">Analyse avancée</string>
     <string name="premium_feature_analytics_desc">Métriques et tendances approfondies</string>
-    <string name="premium_feature_integrations">Intégrations externes</string>
-    <string name="premium_feature_integrations_desc">Connecte tes données à d\'autres applications</string>
     <string name="premium_feature_backup">Sauvegarde dans le cloud</string>
     <string name="premium_feature_backup_desc">Tes données toujours en sécurité</string>
 
@@ -853,7 +867,21 @@
     <string name="premium_restore_error">Aucun achat à restaurer</string>
     <string name="premium_coming_soon">Les achats seront activés prochainement</string>
     <string name="premium_gate_title">Fonction Premium</string>
-    <string name="premium_gate_message">Cette fonction nécessite Pace Premium. Passez à Premium pour débloquer les statistiques, les conseils IA et l\'exportation de rapports.</string>
+    <string name="premium_gate_message">Cette fonction nécessite Pace Premium. Passez à Premium pour débloquer les statistiques, les conseils personnalisés et l\'exportation de rapports.</string>
     <string name="premium_gate_go">Passer à Premium</string>
     <string name="premium_gate_later">Plus tard</string>
+    <string name="cloud_backup_menu">Sauvegarde dans le cloud</string>
+    <string name="cloud_backup_title">Sauvegarde dans le cloud</string>
+    <string name="cloud_backup_description">Stocke un aperçu de tes habitudes, de tes enregistrements et de la conversation récente de tes cercles (3 derniers mois) dans le cloud (Premium). Crée des sauvegardes à tout moment et restaure-les si tu perds des données.</string>
+    <string name="cloud_backup_last">Dernière sauvegarde</string>
+    <string name="cloud_backup_date">Dernière sauvegarde : %1$s</string>
+    <string name="cloud_backup_none">Tu n\'as pas encore créé de sauvegarde.</string>
+    <string name="cloud_backup_create">Créer une sauvegarde</string>
+    <string name="cloud_backup_restore">Restaurer</string>
+    <string name="cloud_backup_in_progress">Traitement…</string>
+    <string name="cloud_backup_success">Sauvegarde créée avec succès</string>
+    <string name="cloud_backup_error">Impossible de créer la sauvegarde</string>
+    <string name="cloud_backup_restore_confirm">Restaurer la sauvegarde la plus récente ? Cela écrasera tes habitudes et enregistrements actuels.</string>
+    <string name="cloud_backup_restore_success">Sauvegarde restaurée avec succès</string>
+    <string name="cloud_backup_restore_error">Impossible de restaurer la sauvegarde</string>
 </resources>

@@ -454,6 +454,52 @@
                         android:layout_marginTop="8dp"
                         android:layout_marginBottom="8dp" />
 
+                    <!-- Copia de seguridad en la nube -->
+                    <LinearLayout
+                        android:id="@+id/cloudBackupOption"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:gravity="center_vertical"
+                        android:paddingTop="8dp"
+                        android:paddingBottom="8dp"
+                        android:clickable="true"
+                        android:focusable="true"
+                        android:background="?attr/selectableItemBackground">
+
+                        <LinearLayout
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:orientation="vertical">
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="@string/cloud_backup_menu"
+                                android:textSize="16sp"
+                                android:textColor="@color/text_primary"
+                                android:textStyle="bold" />
+
+                        </LinearLayout>
+
+                        <ImageView
+                            android:layout_width="20dp"
+                            android:layout_height="20dp"
+                            android:src="@drawable/ic_arrow_right"
+                            android:contentDescription="Copia de seguridad"
+                            app:tint="@color/icon_color" />
+
+                    </LinearLayout>
+
+                    <!-- Divisor -->
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:background="@color/border_color"
+                        android:layout_marginTop="8dp"
+                        android:layout_marginBottom="8dp" />
+
                     <!-- Eliminar cuenta -->
                     <LinearLayout
                         android:id="@+id/deleteAccountOption"

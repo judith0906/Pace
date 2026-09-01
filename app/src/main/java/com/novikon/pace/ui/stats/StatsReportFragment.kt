@@ -67,6 +67,14 @@ class StatsReportFragment : Fragment() {
             }
         }
 
+        view.findViewById<View>(R.id.btn_download_csv).setOnClickListener {
+            if (PremiumGate.isPremium(requireContext())) {
+                generateAndShareCsv()
+            } else {
+                PremiumGate.showGate(requireActivity())
+            }
+        }
+
         loadData()
         return view
     }
@@ -552,6 +560,95 @@ class StatsReportFragment : Fragment() {
         }
     }
 
+    // ═══════════════════════════════════════════════════════════════════════
+    // GENERACIÓN DEL CSV
+    // ═══════════════════════════════════════════════════════════════════════
+
+    private fun generateAndShareCsv() {
+        val currentData = statsData ?: return
+        lifecycleScope.launch(kotlinx.coroutines.Dispatchers.IO) {
+            val csvFile = buildCsv(currentData)
+            withContext(kotlinx.coroutines.Dispatchers.Main) { shareCsv(csvFile) }
+        }
+    }
+
+    private fun csvField(value: String): String {
+        val needsQuotes = value.contains(',') || value.contains('"') || value.contains('\n')
+        return if (needsQuotes) "\"${value.replace("\"", "\"\"")}\"" else value
+    }
+
+    private fun buildCsv(data: StatsData): java.io.File {
+        val sb = StringBuilder()
+
+        val sdf = java.text.SimpleDateFormat("dd/MM/yyyy HH:mm", java.util.Locale.getDefault())
+        val now = sdf.format(java.util.Date())
+
+        // Cabecera general
+        sb.appendLine("${csvField(getString(R.string.csv_header_title))},${csvField(now)}")
+        sb.appendLine()
+
+        // Resumen
+        sb.appendLine(csvField(getString(R.string.csv_section_summary)))
+        sb.appendLine("${csvField(getString(R.string.stats_current_streak))},${csvField(data.currentStreak.toString())}")
+        sb.appendLine("${csvField(getString(R.string.stats_max_streak))},${csvField(data.maxStreak.toString())}")
+        sb.appendLine("${csvField(getString(R.string.stats_monthly_consistency))},${csvField("${data.monthlyConsistency}%")}")
+        sb.appendLine()
+
+        // Distribución por categoría
+        sb.appendLine(csvField(getString(R.string.csv_section_categories)))
+        sb.appendLine("${csvField(getString(R.string.csv_col_category))},${csvField(getString(R.string.csv_col_percent))}")
+        data.categoryPercentages.entries.sortedByDescending { it.value }.forEach { (cat, pct) ->
+            sb.appendLine("${csvField(getCategoryLabel(cat))},${csvField(java.lang.String.format(java.util.Locale.US, "%.1f", pct))}")
+        }
+        sb.appendLine()
+
+        // Constancia mensual
+        sb.appendLine(csvField(getString(R.string.csv_section_monthly)))
+        sb.appendLine("${csvField(getString(R.string.csv_col_day))},${csvField(getString(R.string.csv_col_done))}")
+        data.monthlyDays.entries.sortedBy { it.key }.forEach { (day, done) ->
+            sb.appendLine("${csvField(day.toString())},${csvField(done.toString())}")
+        }
+        sb.appendLine()
+
+        // Constancia anual
+        sb.appendLine(csvField(getString(R.string.csv_section_yearly)))
+        sb.appendLine("${csvField(getString(R.string.csv_col_month))},${csvField(getString(R.string.csv_col_percent))}")
+        data.yearlyConsistency.entries.sortedBy { it.key }.forEach { (month, pct) ->
+            sb.appendLine("${csvField(month.toString())},${csvField(java.lang.String.format(java.util.Locale.US, "%.1f", pct))}")
+        }
+        sb.appendLine()
+
+        // Top 5 hábitos
+        sb.appendLine(csvField(getString(R.string.csv_section_top5)))
+        sb.appendLine("${csvField(getString(R.string.csv_col_rank))},${csvField(getString(R.string.csv_col_habit))},${csvField(getString(R.string.csv_col_times))}")
+        data.top5Habits.forEachIndexed { index, (name, count) ->
+            sb.appendLine("${csvField((index + 1).toString())},${csvField(name)},${csvField(count.toString())}")
+        }
+
+        val fileName = "pace_stats_${System.currentTimeMillis()}.csv"
+        val file = java.io.File(requireContext().cacheDir, fileName)
+        file.writeText(sb.toString())
+        return file
+    }
+
+    private fun shareCsv(file: java.io.File) {
+        val uri = androidx.core.content.FileProvider.getUriForFile(
+            requireContext(),
+            "${requireContext().packageName}.fileprovider",
+            file
+        )
+
+        val shareIntent = android.content.Intent(android.content.Intent.ACTION_SEND).apply {
+            type = "text/csv"
+            putExtra(android.content.Intent.EXTRA_STREAM, uri)
+            addFlags(android.content.Intent.FLAG_GRANT_READ_URI_PERMISSION)
+        }
+
+        saveToDownloads(file, "text/csv")
+
+        startActivity(android.content.Intent.createChooser(shareIntent, getString(R.string.stats_share_csv)))
+    }
+
     private fun buildPdf(
         data: StatsData,
         advice: AdviceContent?,
@@ -926,17 +1023,17 @@ class StatsReportFragment : Fragment() {
         }
 
         // También guardar en Descargas
-        saveToDownloads(file)
+        saveToDownloads(file, "application/pdf")
 
         startActivity(android.content.Intent.createChooser(shareIntent, getString(R.string.stats_share_pdf)))
     }
 
-    private fun saveToDownloads(file: java.io.File) {
+    private fun saveToDownloads(file: java.io.File, mimeType: String) {
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.Q) {
             val resolver = requireContext().contentResolver
             val contentValues = android.content.ContentValues().apply {
                 put(android.provider.MediaStore.Downloads.DISPLAY_NAME, file.name)
-                put(android.provider.MediaStore.Downloads.MIME_TYPE, "application/pdf")
+                put(android.provider.MediaStore.Downloads.MIME_TYPE, mimeType)
                 put(android.provider.MediaStore.Downloads.IS_PENDING, 1)
             }
             val uri = resolver.insert(android.provider.MediaStore.Downloads.EXTERNAL_CONTENT_URI, contentValues)

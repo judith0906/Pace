@@ -33,7 +33,6 @@ import com.novikon.pace.utils.PickyEvent
 import com.novikon.pace.utils.PickyManager
 import com.novikon.pace.utils.SettingsManager
 import com.novikon.pace.utils.applySystemBarInsets
-import com.novikon.pace.data.SubscriptionManager
 import android.content.SharedPreferences
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
