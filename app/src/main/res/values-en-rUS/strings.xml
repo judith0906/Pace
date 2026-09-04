@@ -856,6 +856,7 @@
     <string name="premium_restore">Restore purchases</string>
     <string name="premium_terms">Terms and privacy</string>
     <string name="premium_purchase_error">Purchase could not be completed</string>
+    <string name="premium_subscribe_success">Premium subscription activated!</string>
     <string name="premium_restore_success">Purchases restored</string>
     <string name="premium_restore_error">No purchases found to restore</string>
     <string name="premium_coming_soon">Purchases will be enabled soon</string>

@@ -23,6 +23,22 @@
           }
         },
         {
+          "client_id": "485785577266-fevjqq63jgqck46nd3s89c0jriu7ff36.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.novikon.pace",
+            "certificate_hash": "f9ffd4f1cbbdd040ad552ac35bfece53136227a4"
+          }
+        },
+        {
+          "client_id": "485785577266-l60h8mu89q45fcj6n185iiel0upfsf5q.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.novikon.pace",
+            "certificate_hash": "44c772a713d908047d2cdaae921a5c5b3e4ea440"
+          }
+        },
+        {
           "client_id": "485785577266-es6u7llmnjpu3ct4frk8gk4dpk7smfls.apps.googleusercontent.com",
           "client_type": 3
         }

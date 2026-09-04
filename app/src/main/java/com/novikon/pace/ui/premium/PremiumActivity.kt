@@ -1,29 +1,37 @@
 package com.novikon.pace.ui.premium
 
 import android.os.Bundle
-import android.view.View
 import android.widget.ImageButton
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.lifecycleScope
+import com.android.billingclient.api.Purchase
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.card.MaterialCardView
 import com.novikon.pace.R
+import com.novikon.pace.billing.BillingManager
 import com.novikon.pace.data.SubscriptionManager
 import com.novikon.pace.helpers.LanguageHelper
 import com.novikon.pace.helpers.ThemeHelper
+import com.novikon.pace.models.Subscription
 import com.novikon.pace.utils.applySystemBarInsets
+import kotlinx.coroutines.launch
+import java.util.concurrent.TimeUnit
 
 // Pantalla de Pace Premium: presenta los beneficios de la suscripción,
-// permite elegir plan (mensual/anual) y dispara la compra.
+// permite elegir plan (mensual/anual) y lanza la compra vía Google Play Billing.
 class PremiumActivity : AppCompatActivity() {
 
     private lateinit var subscriptionManager: SubscriptionManager
+    private lateinit var billingManager: BillingManager
 
     private lateinit var monthlyPlanCard: MaterialCardView
     private lateinit var yearlyPlanCard: MaterialCardView
     private lateinit var subscribeButton: MaterialButton
     private lateinit var trialSubtitle: TextView
+    private lateinit var monthlyPriceView: TextView
+    private lateinit var yearlyPriceView: TextView
 
     private var isYearlySelected = true
 
@@ -41,6 +49,28 @@ class PremiumActivity : AppCompatActivity() {
         initializeViews()
         setupListeners()
         renderState()
+
+        billingManager = BillingManager(
+            activity = this,
+            onPurchaseResult = { purchase -> handlePurchaseResult(purchase) },
+            onProductsLoaded = { updatePrices() }
+        )
+    }
+
+    override fun onResume() {
+        super.onResume()
+        billingManager.restorePurchases { purchase ->
+            if (purchase != null && !subscriptionManager.isPremium) {
+                handlePurchaseResult(purchase)
+            } else {
+                updatePrices()
+            }
+        }
+    }
+
+    override fun onDestroy() {
+        billingManager.endConnection()
+        super.onDestroy()
     }
 
     private fun initializeViews() {
@@ -48,6 +78,8 @@ class PremiumActivity : AppCompatActivity() {
         yearlyPlanCard = findViewById(R.id.yearlyPlanCard)
         subscribeButton = findViewById(R.id.subscribeButton)
         trialSubtitle = findViewById(R.id.trialSubtitle)
+        monthlyPriceView = findViewById(R.id.monthlyPriceView)
+        yearlyPriceView = findViewById(R.id.yearlyPriceView)
     }
 
     private fun setupListeners() {
@@ -64,13 +96,32 @@ class PremiumActivity : AppCompatActivity() {
         }
 
         subscribeButton.setOnClickListener {
-            // Billing de Google Play se integrará cuando se cree el producto
-            // en Play Console. Por ahora mostramos un aviso.
-            Toast.makeText(this, getString(R.string.premium_coming_soon), Toast.LENGTH_SHORT).show()
+            if (!isYearlySelected) {
+                billingManager.launchMonthly()
+            } else {
+                billingManager.launchYearly()
+            }
         }
 
         findViewById<TextView>(R.id.restoreButton).setOnClickListener {
-            Toast.makeText(this, getString(R.string.premium_coming_soon), Toast.LENGTH_SHORT).show()
+            billingManager.restorePurchases { purchase ->
+                runOnUiThread {
+                    if (purchase != null) {
+                        handlePurchaseResult(purchase)
+                        Toast.makeText(
+                            this,
+                            getString(R.string.premium_restore_success),
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    } else {
+                        Toast.makeText(
+                            this,
+                            getString(R.string.premium_restore_error),
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    }
+                }
+            }
         }
 
         findViewById<TextView>(R.id.termsButton).setOnClickListener {
@@ -103,6 +154,40 @@ class PremiumActivity : AppCompatActivity() {
             subscribeButton.text = getString(R.string.premium_cta_yearly)
         } else {
             subscribeButton.text = getString(R.string.premium_cta_monthly)
+        }
+    }
+
+    private fun updatePrices() {
+        billingManager.monthlyPrice()?.let { monthlyPriceView.text = it }
+        billingManager.yearlyPrice()?.let { yearlyPriceView.text = it }
+    }
+
+    private fun handlePurchaseResult(purchase: Purchase?) {
+        if (purchase == null) return
+
+        val productId = purchase.products.firstOrNull() ?: BillingManager.MONTHLY_PRODUCT_ID
+        val isYearly = productId == BillingManager.YEARLY_PRODUCT_ID
+        val durationDays = if (isYearly) 365L else 30L
+
+        val subscription = Subscription(
+            isActive = true,
+            productId = productId,
+            purchaseToken = purchase.purchaseToken,
+            activatedAt = purchase.purchaseTime,
+            expiresAt = purchase.purchaseTime + TimeUnit.DAYS.toMillis(durationDays),
+            lastValidatedAt = System.currentTimeMillis(),
+            platform = "android"
+        )
+
+        subscriptionManager.updateLocalCache(subscription)
+        runOnUiThread {
+            Toast.makeText(this, getString(R.string.premium_subscribe_success), Toast.LENGTH_SHORT)
+                .show()
+            renderState()
+        }
+
+        lifecycleScope.launch {
+            subscriptionManager.saveSubscriptionToFirebase(subscription)
         }
     }
 }

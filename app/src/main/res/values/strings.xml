@@ -860,6 +860,7 @@
     <string name="premium_restore">Restaurar compras</string>
     <string name="premium_terms">Términos y privacidad</string>
     <string name="premium_purchase_error">No se pudo completar la compra</string>
+    <string name="premium_subscribe_success">¡Suscripción Premium activada!</string>
     <string name="premium_restore_success">Compras restauradas</string>
     <string name="premium_restore_error">No se encontraron compras para restaurar</string>
     <string name="premium_coming_soon">Las compras se activarán próximamente</string>
