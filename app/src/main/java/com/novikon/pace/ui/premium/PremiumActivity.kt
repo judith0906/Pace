@@ -34,6 +34,7 @@ class PremiumActivity : AppCompatActivity() {
     private lateinit var yearlyPriceView: TextView
 
     private var isYearlySelected = true
+    private var isDestroyed = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -59,16 +60,21 @@ class PremiumActivity : AppCompatActivity() {
 
     override fun onResume() {
         super.onResume()
-        billingManager.restorePurchases { purchase ->
-            if (purchase != null && !subscriptionManager.isPremium) {
-                handlePurchaseResult(purchase)
-            } else {
-                updatePrices()
+        if (!isDestroyed) {
+            billingManager.restorePurchases { purchase ->
+                if (!isDestroyed && !isFinishing) {
+                    if (purchase != null && !subscriptionManager.isPremium) {
+                        handlePurchaseResult(purchase)
+                    } else {
+                        updatePrices()
+                    }
+                }
             }
         }
     }
 
     override fun onDestroy() {
+        isDestroyed = true
         billingManager.endConnection()
         super.onDestroy()
     }
@@ -104,32 +110,41 @@ class PremiumActivity : AppCompatActivity() {
         }
 
         findViewById<TextView>(R.id.restoreButton).setOnClickListener {
-            billingManager.restorePurchases { purchase ->
-                runOnUiThread {
-                    if (purchase != null) {
-                        handlePurchaseResult(purchase)
-                        Toast.makeText(
-                            this,
-                            getString(R.string.premium_restore_success),
-                            Toast.LENGTH_SHORT
-                        ).show()
-                    } else {
-                        Toast.makeText(
-                            this,
-                            getString(R.string.premium_restore_error),
-                            Toast.LENGTH_SHORT
-                        ).show()
+            if (!isDestroyed && !isFinishing) {
+                billingManager.restorePurchases { purchase ->
+                    if (!isDestroyed && !isFinishing) {
+                        runOnUiThread {
+                            if (!isDestroyed && !isFinishing) {
+                                if (purchase != null) {
+                                    handlePurchaseResult(purchase)
+                                    Toast.makeText(
+                                        this@PremiumActivity,
+                                        getString(R.string.premium_restore_success),
+                                        Toast.LENGTH_SHORT
+                                    ).show()
+                                } else {
+                                    Toast.makeText(
+                                        this@PremiumActivity,
+                                        getString(R.string.premium_restore_error),
+                                        Toast.LENGTH_SHORT
+                                    ).show()
+                                }
+                            }
+                        }
                     }
                 }
             }
         }
 
         findViewById<TextView>(R.id.termsButton).setOnClickListener {
-            Toast.makeText(this, getString(R.string.premium_coming_soon), Toast.LENGTH_SHORT).show()
+            if (!isDestroyed && !isFinishing) {
+                Toast.makeText(this, getString(R.string.premium_coming_soon), Toast.LENGTH_SHORT).show()
+            }
         }
     }
 
     private fun renderState() {
+        if (isDestroyed || isFinishing) return
         if (subscriptionManager.isPremium) {
             monthlyPlanCard.isEnabled = false
             yearlyPlanCard.isEnabled = false
@@ -142,6 +157,7 @@ class PremiumActivity : AppCompatActivity() {
     }
 
     private fun updatePlanSelection() {
+        if (isDestroyed || isFinishing) return
         val selectedColor = getColor(R.color.premium_gold)
         val defaultColor = getColor(R.color.border_color)
 
@@ -158,12 +174,14 @@ class PremiumActivity : AppCompatActivity() {
     }
 
     private fun updatePrices() {
+        if (isDestroyed || isFinishing) return
         billingManager.monthlyPrice()?.let { monthlyPriceView.text = it }
         billingManager.yearlyPrice()?.let { yearlyPriceView.text = it }
     }
 
     private fun handlePurchaseResult(purchase: Purchase?) {
         if (purchase == null) return
+        if (isDestroyed || isFinishing) return
 
         val productId = purchase.products.firstOrNull() ?: BillingManager.MONTHLY_PRODUCT_ID
         val isYearly = productId == BillingManager.YEARLY_PRODUCT_ID
@@ -180,10 +198,14 @@ class PremiumActivity : AppCompatActivity() {
         )
 
         subscriptionManager.updateLocalCache(subscription)
-        runOnUiThread {
-            Toast.makeText(this, getString(R.string.premium_subscribe_success), Toast.LENGTH_SHORT)
-                .show()
-            renderState()
+        if (!isDestroyed && !isFinishing) {
+            runOnUiThread {
+                if (!isDestroyed && !isFinishing) {
+                    Toast.makeText(this, getString(R.string.premium_subscribe_success), Toast.LENGTH_SHORT)
+                        .show()
+                    renderState()
+                }
+            }
         }
 
         lifecycleScope.launch {

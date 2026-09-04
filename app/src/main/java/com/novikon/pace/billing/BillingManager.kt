@@ -37,12 +37,15 @@ class BillingManager(
 
     private val billingClient: BillingClient = BillingClient.newBuilder(activity)
         .setListener(this)
-        .enablePendingPurchases(PendingPurchasesParams.newBuilder().build())
+        .enablePendingPurchases(PendingPurchasesParams.newBuilder().enableOneTimeProducts().enablePrepaidPlans().build())
         .build()
 
     private var monthlyProduct: ProductDetails? = null
     private var yearlyProduct: ProductDetails? = null
     private var connected = false
+
+    private fun isActivityValid(): Boolean =
+        !activity.isFinishing && !activity.isDestroyed
 
     val isConnected: Boolean
         get() = connected
@@ -92,8 +95,10 @@ class BillingManager(
                     val details = productDetailsResult.productDetailsList
                     monthlyProduct = details.firstOrNull { it.productId == MONTHLY_PRODUCT_ID }
                     yearlyProduct = details.firstOrNull { it.productId == YEARLY_PRODUCT_ID }
-                    activity.runOnUiThread {
-                        onProductsLoaded()
+                    if (isActivityValid()) {
+                        activity.runOnUiThread {
+                            onProductsLoaded()
+                        }
                     }
                 }
             }
@@ -179,10 +184,12 @@ class BillingManager(
                     result: BillingResult,
                     purchases: List<Purchase>
                 ) {
-                    val active = purchases.firstOrNull {
-                        it.purchaseState == Purchase.PurchaseState.PURCHASED
+                    if (isActivityValid()) {
+                        val active = purchases.firstOrNull {
+                            it.purchaseState == Purchase.PurchaseState.PURCHASED
+                        }
+                        callback(active)
                     }
-                    callback(active)
                 }
             }
         )

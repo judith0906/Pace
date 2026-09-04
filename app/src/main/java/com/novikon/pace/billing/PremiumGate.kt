@@ -23,6 +23,7 @@ object PremiumGate {
      * pulsa "Ir a Premium".
      */
     fun showGate(activity: Activity) {
+        if (activity.isFinishing || activity.isDestroyed) return
         AlertDialog.Builder(activity)
             .setTitle(R.string.premium_gate_title)
             .setMessage(R.string.premium_gate_message)
