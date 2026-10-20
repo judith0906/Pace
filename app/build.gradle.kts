@@ -65,6 +65,7 @@ dependencies {
     implementation("com.google.firebase:firebase-analytics-ktx")
     implementation("com.google.firebase:firebase-database-ktx")
     implementation("com.google.firebase:firebase-auth-ktx")
+    implementation("com.google.android.recaptcha:recaptcha:18.4.0")
     implementation("com.google.android.gms:play-services-auth:20.7.0")
     implementation("com.google.android.material:material:1.12.0")
     implementation("androidx.drawerlayout:drawerlayout:1.2.0")
